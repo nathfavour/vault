@@ -8,14 +8,12 @@ import { Button } from "@/components/ui/Button";
 import { useState } from "react";
 import { DropdownMenu } from "@/components/ui/DropdownMenu";
 import PasswordGenerator from "@/components/ui/PasswordGenerator";
-import { AuthModal } from "@/components/overlays/AuthModal";
+import { openAuthPopup } from "@/lib/authUrl";
 
 export function Navbar() {
   const { theme, setTheme } = useTheme();
   const { user, logout } = useAppwrite();
   const [showMenu, setShowMenu] = useState(false);
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const [authModalType, setAuthModalType] = useState<"login" | "register">("login");
 
   return (
     <nav className="border-b border-border fixed top-0 left-0 right-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
@@ -68,11 +66,14 @@ export function Navbar() {
               size="sm" 
               variant="outline"
               onClick={() => {
-                setAuthModalType("login");
-                setShowAuthModal(true);
+                try {
+                  openAuthPopup();
+                } catch (err) {
+                  alert(err instanceof Error ? err.message : "Failed to open authentication");
+                }
               }}
             >
-              Sign in
+              Connect
             </Button>
           ) : (
             <div className="relative">
@@ -154,12 +155,6 @@ export function Navbar() {
           )}
         </div>
       </div>
-      
-      <AuthModal 
-        isOpen={showAuthModal} 
-        onClose={() => setShowAuthModal(false)}
-        initialType={authModalType}
-      />
     </nav>
   );
 }

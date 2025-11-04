@@ -9,10 +9,6 @@ import {
 } from "react";
 import {
   appwriteAccount,
-  loginWithEmailPassword,
-  registerWithEmailPassword,
-  sendEmailOtp,
-  completeEmailOtp,
   resetMasterpassAndWipe,
   hasMasterpass,
   logoutAppwrite,
@@ -33,27 +29,6 @@ interface AppwriteContextType {
   logout: () => Promise<void>;
   resetMasterpass: () => Promise<void>;
   refresh: () => Promise<void>;
-  loginWithEmailPassword: (
-    email: string,
-    password: string,
-  ) => Promise<Models.Session>;
-  registerWithEmailPassword: (
-    email: string,
-    password: string,
-    name?: string,
-  ) => Promise<Models.User<Models.Preferences>>;
-  sendEmailOtp: (
-    email: string,
-    enablePhrase?: boolean,
-  ) => Promise<Models.Token>;
-  completeEmailOtp: (userId: string, otp: string) => Promise<Models.Session>;
-  forgotPassword: (email: string) => Promise<void>;
-  resetPassword: (
-    userId: string,
-    secret: string,
-    password: string,
-    passwordAgain: string,
-  ) => Promise<void>;
 }
 
 const AppwriteContext = createContext<AppwriteContextType | undefined>(
@@ -141,52 +116,6 @@ export function AppwriteProvider({ children }: { children: ReactNode }) {
     return unlocked;
   };
 
-  // AUTH FUNCTIONS
-  const loginWithEmailPasswordFn = async (
-    email: string,
-    password: string,
-  ): Promise<Models.Session> => {
-    const result = await loginWithEmailPassword(email, password);
-    await refresh();
-    return result;
-  };
-
-  const registerWithEmailPasswordFn = async (
-    email: string,
-    password: string,
-    name?: string,
-  ): Promise<Models.User<Models.Preferences>> => {
-    const result = await registerWithEmailPassword(email, password, name);
-    await refresh();
-    return result;
-  };
-
-  const completeEmailOtpFn = async (
-    userId: string,
-    otp: string,
-  ): Promise<Models.Session> => {
-    const result = await completeEmailOtp(userId, otp);
-    await refresh();
-    return result;
-  };
-
-  // Password reset flow (from old provider)
-  const forgotPassword = async (email: string) => {
-    // Assumes you have a getRedirectUrl util
-    const getRedirectUrl = () => window.location.origin + "/login";
-    await appwriteAccount.createRecovery(email, getRedirectUrl());
-  };
-
-  const resetPassword = async (
-    userId: string,
-    secret: string,
-    password: string,
-    _passwordAgain: string,
-  ) => {
-    await appwriteAccount.updateRecovery(userId, secret, password);
-    await fetchUser();
-  };
-
   return (
     <AppwriteContext.Provider
       value={{
@@ -199,12 +128,6 @@ export function AppwriteProvider({ children }: { children: ReactNode }) {
         logout,
         resetMasterpass,
         refresh,
-        loginWithEmailPassword: loginWithEmailPasswordFn,
-        registerWithEmailPassword: registerWithEmailPasswordFn,
-        sendEmailOtp,
-        completeEmailOtp: completeEmailOtpFn,
-        forgotPassword,
-        resetPassword,
       }}
     >
       {children}

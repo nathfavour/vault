@@ -89,7 +89,7 @@ export function TwoFAModal({ isOpen, onClose }: TwoFAModalProps) {
     try {
       await completeMfaChallenge(challengeId, code);
       onClose();
-      await finalizeAuth({ redirect: true, fallback: "/login" });
+      await finalizeAuth({ redirect: true, fallback: "/masterpass" });
     } catch (e: unknown) {
       const err = e as { message?: string };
       toast.error(err.message || "Invalid code");

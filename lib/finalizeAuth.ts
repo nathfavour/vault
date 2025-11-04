@@ -38,9 +38,9 @@ export function useFinalizeAuth() {
           await refresh();
           return null;
         })());
-      // If no user after refresh, go to fallback/login
+      // If no user after refresh, go to fallback/masterpass
       if (!u) {
-        router.replace(options.fallback || "/login");
+        router.replace(options.fallback || "/masterpass");
         return;
       }
       // Check masterpass and vault

@@ -1253,7 +1253,7 @@ export async function addEmailFactor(
 
     // Send verification email
     await appwriteAccount.createVerification(
-      window.location.origin + "/verify-email",
+      window.location.origin + "/"
     );
     return { email };
   } catch (error) {

@@ -93,7 +93,7 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
             await setMasterpassFlag(user.$id, user.email);
           }
           onClose();
-          await finalizeAuth({ redirect: true, fallback: "/login" });
+          await finalizeAuth({ redirect: true, fallback: "/masterpass" });
         } else {
           toast.error("Failed to set master password");
         }
@@ -107,7 +107,7 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
 
         if (success) {
           onClose();
-          await finalizeAuth({ redirect: true, fallback: "/login" });
+          await finalizeAuth({ redirect: true, fallback: "/masterpass" });
         } else {
           toast.error("Incorrect master password. Please try again.");
         }
@@ -141,7 +141,7 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
     const success = await unlockWithPasskey(user.$id);
     if (success) {
       onClose();
-      await finalizeAuth({ redirect: true, fallback: "/login" });
+      await finalizeAuth({ redirect: true, fallback: "/masterpass" });
     }
     setPasskeyLoading(false);
   };

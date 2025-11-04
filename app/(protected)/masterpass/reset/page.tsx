@@ -15,10 +15,10 @@ export default function MasterpassResetPage() {
   const [step, setStep] = useState<"reset" | "done">("reset");
   const [loading, setLoading] = useState(false);
 
-  // Redirect to login if not logged in
+  // Redirect to masterpass page if not logged in
   useEffect(() => {
     if (!user) {
-      router.replace("/login");
+      router.replace("/masterpass");
     }
   }, [user, router]);
 

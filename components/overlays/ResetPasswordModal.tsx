@@ -39,7 +39,7 @@ export function ResetPasswordModal({ isOpen, onClose }: ResetPasswordModalProps)
     try {
       await createPasswordRecovery(
         email,
-        window.location.origin + "/reset-password",
+        window.location.origin,
       );
       toast.success("Password reset email sent! Check your inbox.");
       setEmail("");

@@ -36,10 +36,6 @@ const navigation = [
 
 const SIMPLIFIED_LAYOUT_PATHS = [
   "/",
-  "/login",
-  "/register",
-  "/reset-password",
-  "/verify-email",
   "/masterpass",
   "/masterpass/reset",
   "/twofa/access",
@@ -55,7 +51,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!loading && !user && !isSimplifiedLayout) {
-      router.replace("/login");
+      router.replace("/masterpass");
     }
   }, [loading, user, isSimplifiedLayout, router]);
 
