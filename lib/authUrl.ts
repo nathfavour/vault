@@ -96,7 +96,7 @@ export function openAuthPopup(): void {
   window.addEventListener("message", handleMessage);
 
   // Cleanup listener after 10 minutes (reasonable timeout for auth flow)
-  const timeoutId = setTimeout(() => {
+  setTimeout(() => {
     clearInterval(pollPopup);
     window.removeEventListener("message", handleMessage);
   }, 10 * 60 * 1000);
