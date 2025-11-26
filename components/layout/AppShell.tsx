@@ -156,69 +156,55 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <Navbar />
 
       <div className="flex-1 flex w-full overflow-x-hidden pt-16">
-        {/* Sidebar (desktop only, fixed) */}
-        <aside
-          className={clsx(
-            "hidden lg:block",
-            "fixed left-0 top-16 h-[calc(100vh-4rem)] w-64 bg-card border-r overflow-y-auto z-30",
-          )}
-          aria-label="Primary sidebar navigation"
-        >
-          <div className="flex flex-col h-full">
-            <nav className="flex-1 px-2 py-3 space-y-1">
-              {navigation.map((item) => {
-                const isActive = pathname === item.href;
-                const isBig = item.big;
-                return (
-                  <Link
-                    key={item.name}
-                    href={item.href}
+        {/* Bottom bar (mobile only) */}
+        <nav className="fixed bottom-0 left-0 right-0 z-40 bg-card/100 border-t flex lg:hidden justify-around items-center h-16 shadow-lg safe-area-inset-bottom">
+          {navigation
+            .filter((item) => item.name !== "Import" && item.name !== "Overview")
+            .map((item) => {
+              const isActive = pathname === item.href;
+              const isBig = item.big;
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={clsx(
+                    "flex flex-col items-center justify-center p-2 min-w-0 flex-1",
+                    isBig ? "scale-110" : "",
+                    isActive
+                      ? "text-primary"
+                      : "text-muted-foreground hover:text-primary",
+                  )}
+                  aria-label={item.name}
+                >
+                  <item.icon
                     className={clsx(
-                      "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors",
-                      isActive
-                        ? "bg-primary text-primary-foreground"
-                        : "hover:bg-accent hover:text-accent-foreground",
-                      isBig && "text-base py-3",
+                      "mb-1 flex-shrink-0",
+                      isBig ? "h-7 w-7" : "h-5 w-5",
                     )}
+                  />
+                  <span
+                    className={clsx("text-xs truncate", isBig && "font-semibold")}
                   >
-                    <item.icon
-                      className={clsx("h-5 w-5", isBig && "h-7 w-7")}
-                    />
                     {item.name}
-                  </Link>
-                );
-              })}
-            </nav>
-            <div className="px-2 py-3 border-t space-y-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="w-full justify-start gap-3"
-                onClick={() => {
-                  const themes: Array<"light" | "dark" | "system"> = [
-                    "light",
-                    "dark",
-                    "system",
-                  ];
-                  const currentIndex = themes.indexOf(theme);
-                  const nextTheme = themes[(currentIndex + 1) % themes.length];
-                  setTheme(nextTheme);
-                }}
-              >
-                <ThemeIcon className="h-4 w-4" />
-                {theme.charAt(0).toUpperCase() + theme.slice(1)} theme
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="w-full justify-start gap-3"
-                onClick={() => {
-                  masterPassCrypto.lockNow();
-                  if (!masterPassCrypto.isVaultUnlocked()) {
-                    sessionStorage.setItem("masterpass_return_to", pathname);
-                    router.replace("/masterpass");
-                  }
-                }}
+                  </span>
+                </Link>
+              );
+            })}
+        </nav>
+
+        {user && (
+          <PasskeySetup
+            isOpen={showPasskeySetup}
+            onClose={() => setShowPasskeySetup(false)}
+            userId={user.$id}
+            isEnabled={false}
+            onSuccess={() => {
+              setShowPasskeySetup(false);
+              refresh();
+            }}
+            trustUnlocked={true}
+          />
+        )}
               >
                 <Shield className="h-4 w-4" />
                 Lock now
