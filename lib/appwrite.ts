@@ -140,13 +140,8 @@ const ENCRYPTED_FIELDS = {
   ],
   user: [
     "email",          // User email
-    "check",          // Password verification check value
-    "salt",           // Encryption salt
     "twofaSecret",    // 2FA secret
     "backupCodes",    // 2FA backup codes
-    "passkeyBlob",    // Wrapped master key
-    "credentialId",   // WebAuthn credential ID
-    "publicKey",      // WebAuthn public key
     "sessionFingerprint", // Session fingerprint
   ],
   keychain: [], // Keychain entries are already encrypted/hashed or public
@@ -273,15 +268,10 @@ export const COLLECTION_SCHEMAS = {
         "userId",
         "email",
         "masterpass",
-        "check",
-        "salt",
         "twofa",
         "twofaSecret",
         "backupCodes",
         "isPasskey",
-        "passkeyBlob",
-        "credentialId",
-        "publicKey",
         "counter",
         "authVersion",
         "v2Migrated",
@@ -460,7 +450,6 @@ export class AppwriteService {
   /**
    * Sets the masterpass flag for the user in the database.
    * If the user doc exists, updates it; otherwise, creates it.
-   * Also sets the encrypted check value (for initial creation only).
    */
   static async setMasterpassFlag(userId: string, email: string): Promise<void> {
     const userDoc = await this.getUserDoc(userId);
@@ -483,8 +472,6 @@ export class AppwriteService {
         },
       );
     }
-    // Set the check value for initial creation
-    await masterPassCrypto.setMasterpassCheck(userId);
   }
 
   /**
@@ -1538,7 +1525,6 @@ export async function setMasterpassFlag(
 /**
  * Reset master password and wipe all user data.
  * This should be called after 2FA/email verification is successful.
- * Also clears the check value.
  */
 export async function resetMasterpassAndWipe(userId: string): Promise<void> {
   // Use raw Appwrite database API to avoid decryption
@@ -1637,9 +1623,6 @@ export async function resetMasterpassAndWipe(userId: string): Promise<void> {
       );
     }
   } catch {}
-
-  // After reset, clear the check value
-  await masterPassCrypto.clearMasterpassCheck(userId);
 }
 
 /**

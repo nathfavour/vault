@@ -34,33 +34,7 @@ export default function MasterPasswordVerificationDialog({
     setError("");
 
     try {
-      const encoder = new TextEncoder();
-      const userBytes = encoder.encode(user.$id);
-      const userSalt = await crypto.subtle.digest("SHA-256", userBytes);
-      const combinedSalt = new Uint8Array(userSalt);
-
-      const keyMaterial = await crypto.subtle.importKey(
-        "raw",
-        encoder.encode(password),
-        { name: "PBKDF2" },
-        false,
-        ["deriveBits", "deriveKey"],
-      );
-
-      const testKey = await crypto.subtle.deriveKey(
-        {
-          name: "PBKDF2",
-          salt: combinedSalt,
-          iterations: 200000,
-          hash: "SHA-256",
-        },
-        keyMaterial,
-        { name: "AES-GCM", length: 256 },
-        true,
-        ["encrypt", "decrypt"],
-      );
-
-      const isValid = await masterPassCrypto.verifyMasterpassCheck(testKey, user.$id);
+      const isValid = await masterPassCrypto.unlock(user.$id, password);
 
       if (isValid) {
         toast.success("Master password verified.");

@@ -2646,24 +2646,7 @@
                     "array": false,
                     "default": null
                 },
-                {
-                    "key": "check",
-                    "type": "string",
-                    "required": false,
-                    "array": false,
-                    "size": 5000,
-                    "default": null,
-                    "encrypt": true
-                },
-                {
-                    "key": "salt",
-                    "type": "string",
-                    "required": false,
-                    "array": false,
-                    "size": 1000,
-                    "default": null,
-                    "encrypt": true
-                },
+
                 {
                     "key": "twofa",
                     "type": "boolean",
@@ -2696,42 +2679,7 @@
                     "array": false,
                     "default": null
                 },
-                {
-                    "key": "passkeyBlob",
-                    "type": "string",
-                    "required": false,
-                    "array": false,
-                    "size": 5000,
-                    "default": null,
-                    "encrypt": true
-                },
-                {
-                    "key": "credentialId",
-                    "type": "string",
-                    "required": false,
-                    "array": false,
-                    "size": 500,
-                    "default": null,
-                    "encrypt": true
-                },
-                {
-                    "key": "publicKey",
-                    "type": "string",
-                    "required": false,
-                    "array": false,
-                    "size": 1000,
-                    "default": null,
-                    "encrypt": true
-                },
-                {
-                    "key": "counter",
-                    "type": "integer",
-                    "required": false,
-                    "array": false,
-                    "min": 0,
-                    "max": 2147483647,
-                    "default": null
-                },
+
                 {
                     "key": "authVersion",
                     "type": "integer",

@@ -413,16 +413,10 @@ export type User = Models.Row & {
     userId: string;
     email: string | null;
     masterpass: boolean | null;
-    check: string | null;
-    salt: string | null;
     twofa: boolean | null;
     twofaSecret: string | null;
     backupCodes: string | null;
     isPasskey: boolean | null;
-    passkeyBlob: string | null;
-    credentialId: string | null;
-    publicKey: string | null;
-    counter: number | null;
     authVersion: number;
     v2Migrated: boolean;
     mustCreatePasskey: boolean;
