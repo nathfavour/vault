@@ -249,20 +249,36 @@ export function PasskeySetup({
       const passkeyBlob = arrayBufferToBase64(combined.buffer);
 
       // 7. Store credential and encrypted blob
-      const newCredential = {
-        credentialID: regResp.id,
-        publicKey: regResp.response.publicKey || "",
-        counter: 0,
-        transports: regResp.response.transports || [],
-      };
-
-      // Store in database
-      await AppwriteService.setPasskey(userId, passkeyBlob, newCredential);
       
-      // If we were enforcing passkey, clear the flag
+      // Check if passkey entry exists
+      const existing = await AppwriteService.listKeychainEntries(userId);
+      const passkeyEntry = existing.find(k => k.type === 'passkey');
+      
+      if (passkeyEntry) {
+        await AppwriteService.deleteKeychainEntry(passkeyEntry.$id);
+      }
+
+      await AppwriteService.createKeychainEntry({
+        userId,
+        type: 'passkey',
+        credentialId: regResp.id,
+        wrappedKey: passkeyBlob,
+        salt: "", // Passkeys don't use salt in the same way
+        params: JSON.stringify({
+          publicKey: regResp.response.publicKey || "",
+          counter: 0,
+          transports: regResp.response.transports || [],
+        }),
+        isBackup: false
+      });
+
+      // Update user doc flags for UI consistency (optional but good practice)
       const userDoc = await AppwriteService.getUserDoc(userId);
-      if (userDoc && userDoc.mustCreatePasskey) {
-          await AppwriteService.updateUserDoc(userDoc.$id, { mustCreatePasskey: false });
+      if (userDoc && userDoc.$id) {
+        await AppwriteService.updateUserDoc(userDoc.$id, { 
+          isPasskey: true,
+          mustCreatePasskey: false 
+        });
       }
 
       setStep(3); // Success step

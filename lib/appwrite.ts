@@ -491,8 +491,8 @@ export class AppwriteService {
    * Checks if the user has set up a passkey.
    */
   static async hasPasskey(userId: string): Promise<boolean> {
-    const userDoc = await this.getUserDoc(userId);
-    return !!(userDoc && userDoc.isPasskey === true && userDoc.credentialId);
+    const entries = await this.listKeychainEntries(userId);
+    return entries.some(e => e.type === 'passkey');
   }
 
   /**
@@ -529,6 +529,14 @@ export class AppwriteService {
    * Removes all passkey credentials for the user.
    */
   static async removePasskey(userId: string): Promise<void> {
+    // Remove from keychain
+    const entries = await this.listKeychainEntries(userId);
+    const passkeyEntry = entries.find(e => e.type === 'passkey');
+    if (passkeyEntry) {
+      await this.deleteKeychainEntry(passkeyEntry.$id);
+    }
+
+    // Clear flags on user doc
     const userDoc = await this.getUserDoc(userId);
     if (userDoc && userDoc.$id) {
       await appwriteDatabases.updateDocument(

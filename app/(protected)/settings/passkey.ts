@@ -28,10 +28,12 @@ export async function unlockWithPasskey(userId: string): Promise<boolean> {
   try {
     const toastId = toast.loading("Waiting for passkey interaction...");
 
-    // 1. Get user document with passkey data
-    const userDoc = await AppwriteService.getUserDoc(userId);
-    if (!userDoc || !userDoc.passkeyBlob || !userDoc.credentialId) {
-      throw new Error("No passkey data found for this user.");
+    // 1. Get keychain entries for passkey
+    const keychainEntries = await AppwriteService.listKeychainEntries(userId);
+    const passkeyEntry = keychainEntries.find(k => k.type === 'passkey');
+
+    if (!passkeyEntry || !passkeyEntry.credentialId || !passkeyEntry.wrappedKey) {
+      throw new Error("No passkey found for this user.");
     }
 
     // 2. Generate authentication challenge (client-side)
@@ -42,7 +44,7 @@ export async function unlockWithPasskey(userId: string): Promise<boolean> {
       challenge: challengeBase64,
       allowCredentials: [
         {
-          id: userDoc.credentialId,
+          id: passkeyEntry.credentialId,
           type: "public-key" as const,
           transports: [] as AuthenticatorTransport[],
         },
@@ -66,8 +68,8 @@ export async function unlockWithPasskey(userId: string): Promise<boolean> {
       ["decrypt"],
     );
 
-    // 5. Decrypt master key from passkeyBlob
-    const passkeyBlob = base64ToArrayBuffer(userDoc.passkeyBlob);
+    // 5. Decrypt master key from wrappedKey
+    const passkeyBlob = base64ToArrayBuffer(passkeyEntry.wrappedKey);
     const iv = passkeyBlob.slice(0, 12);
     const encryptedKey = passkeyBlob.slice(12);
     const rawMasterKey = await crypto.subtle.decrypt(
@@ -92,7 +94,17 @@ export async function unlockWithPasskey(userId: string): Promise<boolean> {
 
 export async function disablePasskey(userId: string) {
   try {
+    // Find and delete passkey entry from keychain
+    const keychainEntries = await AppwriteService.listKeychainEntries(userId);
+    const passkeyEntry = keychainEntries.find(k => k.type === 'passkey');
+    
+    if (passkeyEntry) {
+      await AppwriteService.deleteKeychainEntry(passkeyEntry.$id);
+    }
+    
+    // Also clear legacy passkey fields if they exist
     await AppwriteService.removePasskey(userId);
+    
     toast.success("Passkey disabled successfully.");
     return true;
   } catch (error: unknown) {
