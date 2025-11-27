@@ -2783,6 +2783,106 @@
             ]
         },
         {
+            "$id": "keychain",
+            "$permissions": [
+                "create(\"users\")"
+            ],
+            "databaseId": "passwordManagerDb",
+            "name": "Keychain",
+            "enabled": true,
+            "rowSecurity": true,
+            "columns": [
+                {
+                    "key": "userId",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 255,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "type",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 50,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "credentialId",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 500,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "wrappedKey",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 5000,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "salt",
+                    "type": "string",
+                    "required": true,
+                    "array": false,
+                    "size": 1000,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "params",
+                    "type": "string",
+                    "required": false,
+                    "array": false,
+                    "size": 5000,
+                    "default": null,
+                    "encrypt": false
+                },
+                {
+                    "key": "isBackup",
+                    "type": "boolean",
+                    "required": false,
+                    "array": false,
+                    "default": false
+                },
+                {
+                    "key": "createdAt",
+                    "type": "datetime",
+                    "required": false,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                },
+                {
+                    "key": "updatedAt",
+                    "type": "datetime",
+                    "required": false,
+                    "array": false,
+                    "format": "",
+                    "default": null
+                }
+            ],
+            "indexes": [
+                {
+                    "key": "idx_userId",
+                    "type": "key",
+                    "status": "available",
+                    "columns": [
+                        "userId"
+                    ],
+                    "orders": []
+                }
+            ]
+        },
+        {
             "$id": "messages",
             "$permissions": [
                 "create(\"users\")",
