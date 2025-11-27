@@ -1524,102 +1524,50 @@ export async function setMasterpassFlag(
  * This should be called after 2FA/email verification is successful.
  */
 export async function resetMasterpassAndWipe(userId: string): Promise<void> {
-  // Use raw Appwrite database API to avoid decryption
-  // Delete user doc
-  try {
-    const userDocs = await appwriteDatabases.listDocuments(
-      APPWRITE_DATABASE_ID,
-      APPWRITE_COLLECTION_USER_ID,
-      [Query.equal("userId", userId)],
-    );
-    for (const doc of userDocs.documents) {
-      await appwriteDatabases.deleteDocument(
-        APPWRITE_DATABASE_ID,
-        APPWRITE_COLLECTION_USER_ID,
-        doc.$id,
-      );
-    }
-  } catch {}
+  // Helper to delete all documents in a collection for a user in parallel batches
+  const deleteCollectionDocs = async (collectionId: string) => {
+    try {
+      let hasMore = true;
+      while (hasMore) {
+        const response = await appwriteDatabases.listDocuments(
+          APPWRITE_DATABASE_ID,
+          collectionId,
+          [Query.equal("userId", userId), Query.limit(50)],
+        );
 
-  // Delete credentials
-  try {
-    const creds = await appwriteDatabases.listDocuments(
-      APPWRITE_DATABASE_ID,
-      APPWRITE_COLLECTION_CREDENTIALS_ID,
-      [Query.equal("userId", userId)],
-    );
-    for (const doc of creds.documents) {
-      await appwriteDatabases.deleteDocument(
-        APPWRITE_DATABASE_ID,
-        APPWRITE_COLLECTION_CREDENTIALS_ID,
-        doc.$id,
-      );
-    }
-  } catch {}
+        if (response.documents.length === 0) {
+          hasMore = false;
+          break;
+        }
 
-  // Delete totp secrets
-  try {
-    const totps = await appwriteDatabases.listDocuments(
-      APPWRITE_DATABASE_ID,
-      APPWRITE_COLLECTION_TOTPSECRETS_ID,
-      [Query.equal("userId", userId)],
-    );
-    for (const doc of totps.documents) {
-      await appwriteDatabases.deleteDocument(
-        APPWRITE_DATABASE_ID,
-        APPWRITE_COLLECTION_TOTPSECRETS_ID,
-        doc.$id,
-      );
+        // Delete in parallel
+        await Promise.all(
+          response.documents.map((doc) =>
+            appwriteDatabases
+              .deleteDocument(APPWRITE_DATABASE_ID, collectionId, doc.$id)
+              .catch((e) => console.warn(`Failed to delete doc ${doc.$id}`, e))
+          )
+        );
+        
+        // If we got fewer than limit, we're done
+        if (response.documents.length < 50) {
+          hasMore = false;
+        }
+      }
+    } catch (e) {
+      console.error(`Failed to wipe collection ${collectionId}`, e);
     }
-  } catch {}
+  };
 
-  // Delete folders
-  try {
-    const folders = await appwriteDatabases.listDocuments(
-      APPWRITE_DATABASE_ID,
-      APPWRITE_COLLECTION_FOLDERS_ID,
-      [Query.equal("userId", userId)],
-    );
-    for (const doc of folders.documents) {
-      await appwriteDatabases.deleteDocument(
-        APPWRITE_DATABASE_ID,
-        APPWRITE_COLLECTION_FOLDERS_ID,
-        doc.$id,
-      );
-    }
-  } catch {}
-
-  // Delete security logs
-  try {
-    const logs = await appwriteDatabases.listDocuments(
-      APPWRITE_DATABASE_ID,
-      APPWRITE_COLLECTION_SECURITYLOGS_ID,
-      [Query.equal("userId", userId)],
-    );
-    for (const doc of logs.documents) {
-      await appwriteDatabases.deleteDocument(
-        APPWRITE_DATABASE_ID,
-        APPWRITE_COLLECTION_SECURITYLOGS_ID,
-        doc.$id,
-      );
-    }
-  } catch {}
-
-  // Delete keychain entries
-  try {
-    const keys = await appwriteDatabases.listDocuments(
-      APPWRITE_DATABASE_ID,
-      APPWRITE_COLLECTION_KEYCHAIN_ID,
-      [Query.equal("userId", userId)],
-    );
-    for (const doc of keys.documents) {
-      await appwriteDatabases.deleteDocument(
-        APPWRITE_DATABASE_ID,
-        APPWRITE_COLLECTION_KEYCHAIN_ID,
-        doc.$id,
-      );
-    }
-  } catch {}
+  // Execute deletions for all collections in parallel
+  await Promise.all([
+    deleteCollectionDocs(APPWRITE_COLLECTION_USER_ID),
+    deleteCollectionDocs(APPWRITE_COLLECTION_CREDENTIALS_ID),
+    deleteCollectionDocs(APPWRITE_COLLECTION_TOTPSECRETS_ID),
+    deleteCollectionDocs(APPWRITE_COLLECTION_FOLDERS_ID),
+    deleteCollectionDocs(APPWRITE_COLLECTION_SECURITYLOGS_ID),
+    deleteCollectionDocs(APPWRITE_COLLECTION_KEYCHAIN_ID),
+  ]);
 }
 
 /**

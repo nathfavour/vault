@@ -77,7 +77,6 @@ export default function SettingsPage() {
   const [passkeyEnabled, setPasskeyEnabled] = useState(false);
   const [passkeySetupOpen, setPasskeySetupOpen] = useState(false);
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
-  const [isResetVerificationOpen, setIsResetVerificationOpen] = useState(false);
 
   // Folder Management State
   const [isFolderModalOpen, setIsFolderModalOpen] = useState(false);
@@ -281,7 +280,6 @@ export default function SettingsPage() {
     } finally {
       setDangerLoading(false);
       setIsResetModalOpen(false);
-      setIsResetVerificationOpen(false);
     }
   };
 
@@ -847,7 +845,7 @@ export default function SettingsPage() {
                   variant="destructive"
                   onClick={() => {
                     setIsResetModalOpen(false);
-                    setIsResetVerificationOpen(true);
+                    handleResetMasterPassword();
                   }}
                 >
                   Reset and Wipe Data
@@ -855,14 +853,6 @@ export default function SettingsPage() {
               </div>
             </div>
           </Dialog>
-        )}
-
-        {isResetVerificationOpen && (
-          <MasterPasswordVerificationDialog
-            open={isResetVerificationOpen}
-            onClose={() => setIsResetVerificationOpen(false)}
-            onSuccess={handleResetMasterPassword}
-          />
         )}
 
         {isChangePasswordModalOpen && (
