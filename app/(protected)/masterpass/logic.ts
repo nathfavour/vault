@@ -227,7 +227,7 @@ export class MasterPassCrypto {
       const passwordEntry = existing.find(k => k.type === 'password');
 
       if (passwordEntry) {
-        await AppwriteService.deleteKeychainEntry(passwordEntry.);
+        await AppwriteService.deleteKeychainEntry(passwordEntry.$id);
       }
 
       await AppwriteService.createKeychainEntry({

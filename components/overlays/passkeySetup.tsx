@@ -187,7 +187,6 @@ export function PasskeySetup({
       if (userDoc && userDoc.$id) {
         await AppwriteService.updateUserDoc(userDoc.$id, { 
           isPasskey: true,
-          mustCreatePasskey: false 
         });
       }
 

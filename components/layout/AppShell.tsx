@@ -25,7 +25,6 @@ import { PasskeySetup } from "@/components/overlays/passkeySetup";
 import type { Models } from "appwrite";
 
 interface ExtendedUser extends Models.User<Models.Preferences> {
-  mustCreatePasskey?: boolean;
   isPasskey?: boolean;
 }
 
@@ -58,8 +57,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     if (user && !loading) {
       const extendedUser = user as ExtendedUser;
       const shouldEnforcePasskey =
-        extendedUser.mustCreatePasskey ||
-        (process.env.NEXT_PUBLIC_PASSKEY_ENFORCE === "true" && !extendedUser.isPasskey);
+        process.env.NEXT_PUBLIC_PASSKEY_ENFORCE === "true" && !extendedUser.isPasskey;
       if (shouldEnforcePasskey && masterPassCrypto.isVaultUnlocked()) {
         setShowPasskeySetup(true);
       }

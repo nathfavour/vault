@@ -417,9 +417,6 @@ export type User = Models.Row & {
     twofaSecret: string | null;
     backupCodes: string | null;
     isPasskey: boolean | null;
-    authVersion: number;
-    v2Migrated: boolean;
-    mustCreatePasskey: boolean;
     sessionFingerprint: string | null;
     lastLoginAt: string | null;
     lastPasswordChangeAt: string | null;

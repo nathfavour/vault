@@ -2697,29 +2697,6 @@
                     "default": null
                 },
                 {
-                    "key": "authVersion",
-                    "type": "integer",
-                    "required": false,
-                    "array": false,
-                    "min": 1,
-                    "max": 100,
-                    "default": 1
-                },
-                {
-                    "key": "v2Migrated",
-                    "type": "boolean",
-                    "required": false,
-                    "array": false,
-                    "default": false
-                },
-                {
-                    "key": "mustCreatePasskey",
-                    "type": "boolean",
-                    "required": false,
-                    "array": false,
-                    "default": false
-                },
-                {
                     "key": "sessionFingerprint",
                     "type": "string",
                     "required": false,
@@ -2768,15 +2745,6 @@
                     "status": "available",
                     "columns": [
                         "userId"
-                    ],
-                    "orders": []
-                },
-                {
-                    "key": "idx_authVersion",
-                    "type": "key",
-                    "status": "available",
-                    "columns": [
-                        "authVersion"
                     ],
                     "orders": []
                 }
