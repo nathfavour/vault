@@ -35,7 +35,6 @@ export function PasskeySetup({
   userId,
   onSuccess,
   trustUnlocked = false,
-  isEnabled = true,
 }: PasskeySetupProps) {
   const [step, setStep] = useState(trustUnlocked && masterPassCrypto.isVaultUnlocked() ? 2 : 1);
   const [loading, setLoading] = useState(false);
