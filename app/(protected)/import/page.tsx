@@ -5,118 +5,23 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { useAppwrite } from "@/app/appwrite-provider";
-import {
-  ImportService,
-  type ImportProgress,
-  type ImportResult,
-} from "@/utils/import/import-service";
 import { validateBitwardenExport } from "@/utils/import/bitwarden-mapper";
+import { useBackgroundTask } from "@/app/context/BackgroundTaskContext";
 
-// Progress component
-function ImportProgressIndicator({
-  progress,
-}: {
-  progress: ImportProgress | null;
-}) {
-  if (!progress) return null;
-
-  const progressPercent = Math.round(
-    (progress.currentStep / progress.totalSteps) * 100,
-  );
-  const itemsPercent =
-    progress.itemsTotal > 0
-      ? Math.round((progress.itemsProcessed / progress.itemsTotal) * 100)
-      : 0;
-
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <span className="text-sm font-medium">{progress.message}</span>
-        <span className="text-sm text-gray-500">{progressPercent}%</span>
-      </div>
-
-      <div className="w-full bg-gray-200 rounded-full h-2">
-        <div
-          className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-          style={{ width: `${progressPercent}%` }}
-        />
-      </div>
-
-      {progress.itemsTotal > 0 && (
-        <div className="text-xs text-gray-500">
-          Items: {progress.itemsProcessed} / {progress.itemsTotal} (
-          {itemsPercent}%)
-        </div>
-      )}
-
-      {progress.errors.length > 0 && (
-        <div className="text-xs text-red-600">
-          {progress.errors.length} error(s) occurred
-        </div>
-      )}
-    </div>
-  );
-}
-
-// Results component
-function ImportResults({ result }: { result: ImportResult | null }) {
-  if (!result) return null;
-
-  return (
-    <div className="space-y-4">
-      <div
-        className={`p-4 rounded-lg ${result.success ? "bg-green-50 border border-green-200" : "bg-red-50 border border-red-200"}`}
-      >
-        <h3
-          className={`font-medium ${result.success ? "text-green-800" : "text-red-800"}`}
-        >
-          {result.success ? "Import Completed" : "Import Failed"}
-        </h3>
-
-        <div className="mt-2 space-y-1 text-sm">
-          <div>Folders created: {result.summary.foldersCreated}</div>
-          <div>Credentials imported: {result.summary.credentialsCreated}</div>
-          <div>TOTP secrets imported: {result.summary.totpSecretsCreated}</div>
-          {result.summary.skipped > 0 && (
-            <div>Items skipped: {result.summary.skipped}</div>
-          )}
-          {result.summary.errors > 0 && (
-            <div className="text-red-600">Errors: {result.summary.errors}</div>
-          )}
-        </div>
-      </div>
-
-      {result.errors.length > 0 && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <h4 className="font-medium text-red-800 mb-2">Errors:</h4>
-          <div className="space-y-1 text-sm text-red-700 max-h-32 overflow-y-auto">
-            {result.errors.map((error, index) => (
-              <div key={index}>• {error}</div>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
+// Remove unused components
+// function ImportProgressIndicator...
+// function ImportResults...
 
 export default function ImportPage() {
   const { user } = useAppwrite();
+  const { startImport, isImporting: globalImporting } = useBackgroundTask();
   const [importType, setImportType] = useState<string>("bitwarden");
   const [file, setFile] = useState<File | null>(null);
-  const [importing, setImporting] = useState(false);
-  const [progress, setProgress] = useState<ImportProgress | null>(null);
-  const [result, setResult] = useState<ImportResult | null>(null);
-  const importServiceRef = useRef<ImportService | null>(null);
-
-  const progressCallback = useCallback((newProgress: ImportProgress) => {
-    setProgress(newProgress);
-  }, []);
+  const [errorState, setErrorState] = useState<string | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFile(e.target.files?.[0] || null);
-    setProgress(null);
-    setResult(null);
+    setErrorState(null);
   };
 
   const validateFile = async (file: File): Promise<string> => {
@@ -156,80 +61,34 @@ export default function ImportPage() {
 
   const handleImport = async () => {
     if (!user) {
-      setResult({
-        success: false,
-        summary: {
-          foldersCreated: 0,
-          credentialsCreated: 0,
-          totpSecretsCreated: 0,
-          errors: 1,
-          skipped: 0,
-        },
-        errors: ["You must be logged in to import data."],
-        folderMapping: new Map(),
-      });
+      setErrorState("You must be logged in to import data.");
       return;
     }
 
     if (!file) {
-      setResult({
-        success: false,
-        summary: {
-          foldersCreated: 0,
-          credentialsCreated: 0,
-          totpSecretsCreated: 0,
-          errors: 1,
-          skipped: 0,
-        },
-        errors: ["Please select a file to import."],
-        folderMapping: new Map(),
-      });
+      setErrorState("Please select a file to import.");
       return;
     }
 
-    setImporting(true);
-    setProgress(null);
-    setResult(null);
+    if (globalImporting) {
+        setErrorState("An import is already in progress.");
+        return;
+    }
+
+    setErrorState(null);
 
     try {
       const fileContent = await validateFile(file);
-
-      if (importType === "bitwarden") {
-        importServiceRef.current = new ImportService(progressCallback);
-        const importResult = await importServiceRef.current.importBitwardenData(
-          fileContent,
-          user.$id,
-        );
-        setResult(importResult);
-      } else if (importType === "whisperrkeep") {
-        importServiceRef.current = new ImportService(progressCallback);
-        const importResult = await importServiceRef.current.importWhisperrKeepData(
-          fileContent,
-          user.$id
-        );
-        setResult(importResult);
-      } else {
-        throw new Error(`Import type "${importType}" is not yet implemented.`);
-      }
+      
+      // Start the background import task
+      startImport(importType, fileContent, user.$id);
+      
     } catch (error) {
       const errorMessage =
         error instanceof Error
           ? error.message
           : "Import failed with unknown error.";
-      setResult({
-        success: false,
-        summary: {
-          foldersCreated: 0,
-          credentialsCreated: 0,
-          totpSecretsCreated: 0,
-          errors: 1,
-          skipped: 0,
-        },
-        errors: [errorMessage],
-        folderMapping: new Map(),
-      });
-    } finally {
-      setImporting(false);
+      setErrorState(errorMessage);
     }
   };
 
@@ -365,25 +224,30 @@ export default function ImportPage() {
 
               <Button
                 onClick={handleImport}
-                disabled={importing || !isFileValid}
+                disabled={globalImporting || !isFileValid}
                 className="w-full"
               >
-                {importing ? "Importing..." : "Start Import"}
+                {globalImporting ? "Import in Progress..." : "Start Import"}
               </Button>
+              
+              {errorState && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-sm text-red-700">
+                      {errorState}
+                  </div>
+              )}
             </div>
           </Card>
 
-          {!importing && !result && (
+          {!globalImporting && (
             <Card className="p-6">
               <h3 className="font-medium mb-3">⚠️ Important Notes</h3>
               <div className="space-y-2 text-sm text-gray-600">
                 <p>
-                  • <strong>Do not navigate away</strong> from this page during
-                  import
+                  • <strong>Please stay connected</strong> to the internet.
                 </p>
-                <p>• Large imports may take several minutes to complete</p>
+                <p>• A floating widget will show progress.</p>
+                <p>• You can navigate to other pages while importing.</p>
                 <p>• Your data will be encrypted with your master password</p>
-                <p>• TOTP codes will be automatically separated and imported</p>
                 <p>• Folders and organization will be preserved</p>
               </div>
             </Card>
@@ -391,20 +255,6 @@ export default function ImportPage() {
         </div>
 
         <div className="space-y-6">
-          {importing && progress && (
-            <Card className="p-6">
-              <h3 className="font-medium mb-4">Import Progress</h3>
-              <ImportProgressIndicator progress={progress} />
-            </Card>
-          )}
-
-          {result && (
-            <Card className="p-6">
-              <h3 className="font-medium mb-4">Import Results</h3>
-              <ImportResults result={result} />
-            </Card>
-          )}
-
           <Card className="p-6">
             <h3 className="font-medium mb-3">What gets imported?</h3>
             <div className="space-y-3 text-sm">

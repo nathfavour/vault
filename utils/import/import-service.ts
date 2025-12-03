@@ -242,6 +242,7 @@ export class ImportService {
       const folderIdMapping = new Map<string, string>();
       
       for (const folder of folders) {
+        await this.throttle();
         try {
             // Clean folder object for creation
             const cleanFolder = {
@@ -276,6 +277,7 @@ export class ImportService {
       });
 
       for (const cred of credentials) {
+        await this.throttle();
         try {
             // Map folder ID
             let folderId = cred.folderId;
@@ -336,6 +338,7 @@ export class ImportService {
       });
 
       for (const totp of totpSecrets) {
+         await this.throttle();
          try {
              // Map folder ID
             let folderId = totp.folderId;
@@ -399,6 +402,12 @@ export class ImportService {
     }
   }
 
+  private async throttle() {
+    // Basic throttling: 50ms delay between operations
+    // This prevents flooding Appwrite with requests in a tight loop
+    await new Promise(resolve => setTimeout(resolve, 50));
+  }
+
   private async importFolders(
     folders: Omit<Folders, "$id" | "$createdAt" | "$updatedAt">[],
     mappedData: MappedImportData,
@@ -406,6 +415,7 @@ export class ImportService {
     const folderIdMapping = new Map<string, string>();
 
     for (let i = 0; i < folders.length; i++) {
+      await this.throttle(); // Throttle
       try {
         const folder = folders[i];
         const createdFolder = await AppwriteService.createFolder(folder);
@@ -434,6 +444,7 @@ export class ImportService {
     const errorMessages: string[] = [];
 
     for (let i = 0; i < credentials.length; i++) {
+      await this.throttle(); // Throttle
       try {
         const credential = { ...credentials[i] };
 
@@ -477,6 +488,7 @@ export class ImportService {
     const errorMessages: string[] = [];
 
     for (let i = 0; i < totpSecrets.length; i++) {
+      await this.throttle(); // Throttle
       try {
         const totpSecret = { ...totpSecrets[i] };
 
