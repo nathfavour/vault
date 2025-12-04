@@ -1,6 +1,6 @@
 l# 🔐 Whisperrauth
 
-Welcome to **Whisperrauth** – your next-generation, zero-knowledge password manager built with security, privacy, and usability at its core! 🚀
+Welcome to **Whisperrauth** – your next-generation, AI powered zero-knowledge password, 2fa factor, wallet keys manager built with security, privacy, and usability at its core! 🚀
 
 ---
 
