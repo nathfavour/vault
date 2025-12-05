@@ -10,6 +10,7 @@ import { useBackgroundTask } from "@/app/context/BackgroundTaskContext";
 import { ImportPreviewModal } from "@/components/import/ImportPreviewModal";
 import { ImportItem } from "@/lib/import/deduplication";
 import { analyzeBitwardenExport } from "@/utils/import/bitwarden-mapper";
+import { masterPassCrypto } from "@/app/(protected)/masterpass/logic";
 
 export default function ImportPage() {
   const { user } = useAppwrite();
@@ -97,6 +98,16 @@ export default function ImportPage() {
   };
 
   const handleFinalImport = (finalItems: ImportItem[]) => {
+      console.log("[ImportPage] handleFinalImport called with", finalItems.length, "items");
+      
+      if (!masterPassCrypto.isVaultUnlocked()) {
+          setErrorState("Vault is locked. Please unlock your vault to import.");
+          setIsPreviewOpen(false);
+          return;
+      }
+
+      console.log("[ImportPage] First item sample:", finalItems[0]);
+      
       setIsPreviewOpen(false);
       // We need to pass the FINAL deduplicated list to the background task
       // Currently startImport takes raw string. We might need to update startImport 
@@ -112,6 +123,7 @@ export default function ImportPage() {
           totpSecrets: []
       });
 
+      console.log("[ImportPage] Calling startImport with payload length:", processedPayload.length);
       // We send this as "whisperrkeep" type because it's now normalized JSON
       startImport("whisperrkeep", processedPayload, user!.$id);
   };

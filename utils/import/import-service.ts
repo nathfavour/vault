@@ -1,4 +1,4 @@
-import { AppwriteService } from "@/lib/appwrite";
+import { createCredential, createFolder, createTotpSecret } from "@/lib/appwrite";
 import type { Credentials, TotpSecrets, Folders } from "@/types/appwrite.d";
 import type { BitwardenExport } from "./bitwarden-types";
 import {
@@ -226,6 +226,13 @@ export class ImportService {
       const credentials = parsedData.credentials || [];
       const totpSecrets = parsedData.totpSecrets || [];
 
+      console.log("[ImportService] Parsed WhisperrKeep data:", {
+          foldersCount: folders.length,
+          credentialsCount: credentials.length,
+          totpSecretsCount: totpSecrets.length,
+          firstCredential: credentials[0] ? JSON.stringify(credentials[0]).substring(0, 200) : "NONE"
+      });
+
       const totalItems = folders.length + credentials.length + totpSecrets.length;
 
       // Stage 2: Import folders
@@ -249,7 +256,7 @@ export class ImportService {
                 name: folder.name,
                 // userId is handled by createFolder using current user
             };
-            const created = await AppwriteService.createFolder({
+            const created = await createFolder({
                 ...cleanFolder,
                 userId
             } as any);
@@ -279,6 +286,8 @@ export class ImportService {
       for (const cred of credentials) {
         await this.throttle();
         try {
+            console.log("[ImportService] Processing credential:", cred.name);
+            
             // Map folder ID
             let folderId = cred.folderId;
             if (folderId && folderIdMapping.has(folderId)) {
@@ -287,31 +296,54 @@ export class ImportService {
                 folderId = null; // Reset if folder not found/imported
             }
 
+            // STRICT VALIDATION: Ensure required fields are present
+            if (!cred.name) {
+                throw new Error("Credential name is missing");
+            }
+            if (!cred.username) {
+                throw new Error("Credential username is missing");
+            }
+
             const cleanCred = {
                 name: cred.name,
-                url: cred.url,
+                url: cred.url || null,
                 username: cred.username,
-                password: cred.password,
+                password: (cred.password || "").trim(),
                 // Ensure itemType is present, default to 'login' for backward compatibility
                 itemType: cred.itemType || "login", 
-                notes: cred.notes,
+                notes: cred.notes || null,
                 totpId: null, // Clear TOTP link initially
-                cardNumber: cred.cardNumber,
-                cardholderName: cred.cardholderName,
-                cardExpiry: cred.cardExpiry,
-                cardCVV: cred.cardCVV,
-                cardPIN: cred.cardPIN,
-                cardType: cred.cardType,
+                cardNumber: cred.cardNumber || null,
+                cardholderName: cred.cardholderName || null,
+                cardExpiry: cred.cardExpiry || null,
+                cardCVV: cred.cardCVV || null,
+                cardPIN: cred.cardPIN || null,
+                cardType: cred.cardType || null,
                 folderId: folderId,
-                tags: cred.tags,
-                customFields: cred.customFields,
-                faviconUrl: cred.faviconUrl,
-                isFavorite: cred.isFavorite,
-                userId // Force current user ID
+                tags: cred.tags || null,
+                customFields: typeof cred.customFields === 'object' ? JSON.stringify(cred.customFields) : (cred.customFields || null),
+                faviconUrl: cred.faviconUrl || null,
+                isFavorite: cred.isFavorite || false,
+                isDeleted: cred.isDeleted || false,
+                userId, // Force current user ID
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
             };
 
-            await AppwriteService.createCredential(cleanCred as any);
+            if (!cleanCred.password) {
+                 throw new Error("Password is empty");
+            }
+
+            console.log("[ImportService] cleanCred prepared:", { 
+                name: cleanCred.name, 
+                username: cleanCred.username, 
+                hasPassword: !!cleanCred.password,
+                userId: cleanCred.userId 
+            });
+
+            await createCredential(cleanCred as any);
             result.summary.credentialsCreated++;
+            console.log("[ImportService] Credential created successfully! Total:", result.summary.credentialsCreated);
             
             this.updateProgress({
                 stage: "credentials",
@@ -325,7 +357,7 @@ export class ImportService {
         } catch (e) {
              const error = e as Error;
              result.summary.errors++;
-             const errorMsg = `Failed to restore credential ${cred.name}: ${error.message}`;
+             const errorMsg = `Failed to restore credential ${cred.name || 'Unknown'}: ${error.message}`;
              result.errors.push(errorMsg);
              console.error(`Import Error [Credential]: ${errorMsg}`, e);
         }
@@ -363,11 +395,14 @@ export class ImportService {
                 url: totp.url,
                 folderId: folderId,
                 tags: totp.tags,
-                isFavorite: totp.isFavorite,
-                userId
+                isFavorite: totp.isFavorite || false,
+                isDeleted: totp.isDeleted || false,
+                userId,
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString(),
             };
 
-            await AppwriteService.createTOTPSecret(cleanTotp as any);
+            await createTotpSecret(cleanTotp as any);
             result.summary.totpSecretsCreated++;
          } catch (e) {
              result.summary.errors++;
@@ -423,7 +458,7 @@ export class ImportService {
       await this.throttle(); // Throttle
       try {
         const folder = folders[i];
-        const createdFolder = await AppwriteService.createFolder(folder);
+        const createdFolder = await createFolder(folder);
 
         // Map the original placeholder ID to the real ID
         const placeholderId = `folder_${i}`;
@@ -460,7 +495,7 @@ export class ImportService {
           credential.folderId = null;
         }
 
-        await AppwriteService.createCredential(credential);
+        await createCredential(credential);
         created++;
 
         // Update progress for each credential
@@ -504,7 +539,7 @@ export class ImportService {
           totpSecret.folderId = null;
         }
 
-        await AppwriteService.createTOTPSecret(totpSecret);
+        await createTotpSecret(totpSecret);
         created++;
 
         // Update progress for each TOTP secret

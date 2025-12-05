@@ -28,6 +28,8 @@ export function BackgroundTaskProvider({ children }: { children: ReactNode }) {
   const [showWidget, setShowWidget] = useState(false);
 
   const startImport = useCallback(async (type: string, data: string, userId: string) => {
+    console.log("[BackgroundTask] startImport called:", { type, dataLength: data.length, userId });
+    
     setIsImporting(true);
     setShowWidget(true);
     setImportProgress(null);
@@ -42,7 +44,9 @@ export function BackgroundTaskProvider({ children }: { children: ReactNode }) {
       if (type === "bitwarden") {
         result = await service.importBitwardenData(data, userId);
       } else if (type === "whisperrkeep") {
+        console.log("[BackgroundTask] Calling importWhisperrKeepData...");
         result = await service.importWhisperrKeepData(data, userId);
+        console.log("[BackgroundTask] importWhisperrKeepData returned:", result.summary);
       } else {
         throw new Error("Unsupported import type");
       }

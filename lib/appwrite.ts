@@ -350,21 +350,44 @@ export class AppwriteService {
         encryptedData.itemType = "login";
     }
 
-    const doc = await appwriteDatabases.createDocument(
-      APPWRITE_DATABASE_ID,
-      APPWRITE_COLLECTION_CREDENTIALS_ID,
-      ID.unique(),
-      encryptedData,
-      [
-        Permission.read(Role.user(data.userId)),
-        Permission.update(Role.user(data.userId)),
-        Permission.delete(Role.user(data.userId)),
-      ]
-    );
-    return (await this.decryptDocumentFields(
-      doc,
-      "credentials",
-    )) as Credentials;
+    // Validate password presence for login items
+    if (encryptedData.itemType === "login" && !encryptedData.password) {
+        console.error("[AppwriteService] Password missing for credential:", data.name);
+        throw new Error("Password is required for login credentials. It may be empty or encryption failed.");
+    }
+
+    console.log("[AppwriteService] Creating Credential...", {
+        dbId: APPWRITE_DATABASE_ID,
+        collId: APPWRITE_COLLECTION_CREDENTIALS_ID,
+        userId: data.userId,
+        permissions: [
+            Permission.read(Role.user(data.userId)),
+            Permission.update(Role.user(data.userId)),
+            Permission.delete(Role.user(data.userId)),
+        ]
+    });
+
+    try {
+        const doc = await appwriteDatabases.createDocument(
+          APPWRITE_DATABASE_ID,
+          APPWRITE_COLLECTION_CREDENTIALS_ID,
+          ID.unique(),
+          encryptedData,
+          [
+            Permission.read(Role.user(data.userId)),
+            Permission.update(Role.user(data.userId)),
+            Permission.delete(Role.user(data.userId)),
+          ]
+        );
+        console.log("[AppwriteService] Credential Created Successfully:", doc.$id);
+        return (await this.decryptDocumentFields(
+          doc,
+          "credentials",
+        )) as Credentials;
+    } catch (createError) {
+        console.error("[AppwriteService] Create Credential FAILED:", createError);
+        throw createError;
+    }
   }
 
   static async createTOTPSecret(
