@@ -153,7 +153,7 @@ export class ImportService {
       result.success =
         result.summary.errors === 0 ||
         result.summary.credentialsCreated + result.summary.totpSecretsCreated >
-          0;
+        0;
       result.summary.skipped = mappedData.mapping.statistics.skippedItems;
 
       this.updateProgress({
@@ -216,10 +216,10 @@ export class ImportService {
       });
 
       const parsedData = JSON.parse(jsonData);
-      
+
       // Basic validation
       if (!parsedData.version && (!parsedData.credentials && !parsedData.folders && !parsedData.totpSecrets)) {
-         throw new Error("Invalid WhisperrKeep export format");
+        throw new Error("Invalid WhisperrKeep export format");
       }
 
       const folders = parsedData.folders || [];
@@ -227,10 +227,10 @@ export class ImportService {
       const totpSecrets = parsedData.totpSecrets || [];
 
       console.log("[ImportService] Parsed WhisperrKeep data:", {
-          foldersCount: folders.length,
-          credentialsCount: credentials.length,
-          totpSecretsCount: totpSecrets.length,
-          firstCredential: credentials[0] ? JSON.stringify(credentials[0]).substring(0, 200) : "NONE"
+        foldersCount: folders.length,
+        credentialsCount: credentials.length,
+        totpSecretsCount: totpSecrets.length,
+        firstCredential: credentials[0] ? JSON.stringify(credentials[0]).substring(0, 200) : "NONE"
       });
 
       const totalItems = folders.length + credentials.length + totpSecrets.length;
@@ -247,27 +247,27 @@ export class ImportService {
       });
 
       const folderIdMapping = new Map<string, string>();
-      
+
       for (const folder of folders) {
         await this.throttle();
         try {
-            // Clean folder object for creation
-            const cleanFolder = {
-                name: folder.name,
-                // userId is handled by createFolder using current user
-            };
-            const created = await createFolder({
-                ...cleanFolder,
-                userId
-            } as any);
-            
-            // Map old ID to new ID
-            if (folder.$id) {
-                folderIdMapping.set(folder.$id, created.$id);
-            }
-            result.summary.foldersCreated++;
+          // Clean folder object for creation
+          const cleanFolder = {
+            name: folder.name,
+            // userId is handled by createFolder using current user
+          };
+          const created = await createFolder({
+            ...cleanFolder,
+            userId
+          } as any);
+
+          // Map old ID to new ID
+          if (folder.$id) {
+            folderIdMapping.set(folder.$id, created.$id);
+          }
+          result.summary.foldersCreated++;
         } catch (e) {
-            console.error("Failed to restore folder", e);
+          console.error("Failed to restore folder", e);
         }
       }
       result.folderMapping = folderIdMapping;
@@ -286,80 +286,47 @@ export class ImportService {
       for (const cred of credentials) {
         await this.throttle();
         try {
-            console.log("[ImportService] Processing credential:", cred.name);
-            
-            // Map folder ID
-            let folderId = cred.folderId;
-            if (folderId && folderIdMapping.has(folderId)) {
-                folderId = folderIdMapping.get(folderId);
-            } else {
-                folderId = null; // Reset if folder not found/imported
-            }
+          console.log("[ImportService] Processing credential:", cred.name);
 
-            // STRICT VALIDATION: Ensure required fields are present
-            if (!cred.name) {
-                throw new Error("Credential name is missing");
-            }
-            if (!cred.username) {
-                throw new Error("Credential username is missing");
-            }
+          // STRICT VALIDATION: Ensure required fields are present
+          if (!cred.name) {
+            throw new Error("Credential name is missing");
+          }
+          if (!cred.username) {
+            throw new Error("Credential username is missing");
+          }
 
-            const cleanCred = {
-                name: cred.name,
-                url: cred.url || null,
-                username: cred.username,
-                password: (cred.password || "").trim(),
-                // Ensure itemType is present, default to 'login' for backward compatibility
-                itemType: cred.itemType || "login", 
-                notes: cred.notes || null,
-                totpId: null, // Clear TOTP link initially
-                cardNumber: cred.cardNumber || null,
-                cardholderName: cred.cardholderName || null,
-                cardExpiry: cred.cardExpiry || null,
-                cardCVV: cred.cardCVV || null,
-                cardPIN: cred.cardPIN || null,
-                cardType: cred.cardType || null,
-                folderId: folderId,
-                tags: cred.tags || null,
-                customFields: typeof cred.customFields === 'object' ? JSON.stringify(cred.customFields) : (cred.customFields || null),
-                faviconUrl: cred.faviconUrl || null,
-                isFavorite: cred.isFavorite || false,
-                isDeleted: cred.isDeleted || false,
-                userId, // Force current user ID
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-            };
+          const cleanCred = this.cleanCredentialForCreate(cred, folderIdMapping, userId);
 
-            if (!cleanCred.password) {
-                 throw new Error("Password is empty");
-            }
+          if (!cleanCred.password) {
+            throw new Error("Password is empty");
+          }
 
-            console.log("[ImportService] cleanCred prepared:", { 
-                name: cleanCred.name, 
-                username: cleanCred.username, 
-                hasPassword: !!cleanCred.password,
-                userId: cleanCred.userId 
-            });
+          console.log("[ImportService] cleanCred prepared:", {
+            name: cleanCred.name,
+            username: cleanCred.username,
+            hasPassword: !!cleanCred.password,
+            userId: cleanCred.userId
+          });
 
-            await createCredential(cleanCred as any);
-            result.summary.credentialsCreated++;
-            console.log("[ImportService] Credential created successfully! Total:", result.summary.credentialsCreated);
-            
-            this.updateProgress({
-                stage: "credentials",
-                currentStep: 3,
-                totalSteps: 4,
-                message: `Restoring credentials... (${result.summary.credentialsCreated}/${credentials.length})`,
-                itemsProcessed: result.summary.foldersCreated + result.summary.credentialsCreated,
-                itemsTotal: totalItems,
-                errors: result.errors,
-            });
+          await createCredential(cleanCred as any);
+          result.summary.credentialsCreated++;
+
+          this.updateProgress({
+            stage: "credentials",
+            currentStep: 3,
+            totalSteps: 4,
+            message: `Restoring credentials... (${result.summary.credentialsCreated}/${credentials.length})`,
+            itemsProcessed: result.summary.foldersCreated + result.summary.credentialsCreated,
+            itemsTotal: totalItems,
+            errors: result.errors,
+          });
         } catch (e) {
-             const error = e as Error;
-             result.summary.errors++;
-             const errorMsg = `Failed to restore credential ${cred.name || 'Unknown'}: ${error.message}`;
-             result.errors.push(errorMsg);
-             console.error(`Import Error [Credential]: ${errorMsg}`, e);
+          const error = e as Error;
+          result.summary.errors++;
+          const errorMsg = `Failed to restore credential ${cred.name || 'Unknown'}: ${error.message}`;
+          result.errors.push(errorMsg);
+          console.error(`Import Error [Credential]: ${errorMsg}`, e);
         }
       }
 
@@ -375,43 +342,43 @@ export class ImportService {
       });
 
       for (const totp of totpSecrets) {
-         await this.throttle();
-         try {
-             // Map folder ID
-            let folderId = totp.folderId;
-            if (folderId && folderIdMapping.has(folderId)) {
-                folderId = folderIdMapping.get(folderId);
-            } else {
-                folderId = null;
-            }
+        await this.throttle();
+        try {
+          // Map folder ID
+          let folderId = totp.folderId;
+          if (folderId && folderIdMapping.has(folderId)) {
+            folderId = folderIdMapping.get(folderId);
+          } else {
+            folderId = null;
+          }
 
-            const cleanTotp = {
-                issuer: totp.issuer,
-                accountName: totp.accountName,
-                secretKey: totp.secretKey,
-                algorithm: totp.algorithm,
-                digits: totp.digits,
-                period: totp.period,
-                url: totp.url,
-                folderId: folderId,
-                tags: totp.tags,
-                isFavorite: totp.isFavorite || false,
-                isDeleted: totp.isDeleted || false,
-                userId,
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-            };
+          const cleanTotp = {
+            issuer: totp.issuer,
+            accountName: totp.accountName,
+            secretKey: totp.secretKey,
+            algorithm: totp.algorithm,
+            digits: totp.digits,
+            period: totp.period,
+            url: totp.url,
+            folderId: folderId,
+            tags: totp.tags,
+            isFavorite: totp.isFavorite || false,
+            isDeleted: totp.isDeleted || false,
+            userId,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          };
 
-            await createTotpSecret(cleanTotp as any);
-            result.summary.totpSecretsCreated++;
-         } catch (e) {
-             result.summary.errors++;
-             result.errors.push(`Failed to restore TOTP ${totp.issuer}`);
-         }
+          await createTotpSecret(cleanTotp as any);
+          result.summary.totpSecretsCreated++;
+        } catch (e) {
+          result.summary.errors++;
+          result.errors.push(`Failed to restore TOTP ${totp.issuer}`);
+        }
       }
 
       result.success = true;
-      
+
       this.updateProgress({
         stage: "completed",
         currentStep: 4,
@@ -425,7 +392,7 @@ export class ImportService {
       return result;
 
     } catch (error) {
-       const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
+      const errorMessage = error instanceof Error ? error.message : "Unknown error occurred";
       result.errors.push(errorMessage);
 
       this.updateProgress({
@@ -486,16 +453,10 @@ export class ImportService {
     for (let i = 0; i < credentials.length; i++) {
       await this.throttle(); // Throttle
       try {
-        const credential = { ...credentials[i] };
+        const credential = credentials[i];
+        const cleanCred = this.cleanCredentialForCreate(credential, folderIdMapping, credential.userId);
 
-        // Map folder ID if present
-        if (credential.folderId && folderIdMapping.has(credential.folderId)) {
-          credential.folderId = folderIdMapping.get(credential.folderId)!;
-        } else {
-          credential.folderId = null;
-        }
-
-        await createCredential(credential);
+        await createCredential(cleanCred as any);
         created++;
 
         // Update progress for each credential
@@ -567,6 +528,54 @@ export class ImportService {
     if (this.progressCallback) {
       this.progressCallback(progress);
     }
+  }
+
+  private cleanCredentialForCreate(cred: any, folderIdMapping: Map<string, string>, userId: string) {
+    const clean: any = {
+      userId: userId,
+      itemType: cred.itemType || "login",
+      name: cred.name,
+      username: cred.username,
+      password: (cred.password || "").trim(),
+      isFavorite: cred.isFavorite || false,
+      isDeleted: cred.isDeleted || false,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    if (cred.url && typeof cred.url === 'string' && cred.url.trim()) clean.url = cred.url.trim();
+    if (cred.notes && typeof cred.notes === 'string' && cred.notes.trim()) clean.notes = cred.notes.trim();
+
+    // Map folder ID
+    if (cred.folderId && folderIdMapping.has(cred.folderId)) {
+      clean.folderId = folderIdMapping.get(cred.folderId);
+    }
+
+    // Map tags
+    if (cred.tags && Array.isArray(cred.tags) && cred.tags.length > 0) {
+      clean.tags = cred.tags;
+    }
+
+    // Custom Fields
+    if (cred.customFields) {
+      if (typeof cred.customFields === 'string' && cred.customFields.trim()) {
+        clean.customFields = cred.customFields;
+      } else if (typeof cred.customFields === 'object') {
+        clean.customFields = JSON.stringify(cred.customFields);
+      }
+    }
+
+    // Optional fields - only include if truthy
+    if (cred.totpId) clean.totpId = cred.totpId;
+    if (cred.cardNumber) clean.cardNumber = cred.cardNumber;
+    if (cred.cardholderName) clean.cardholderName = cred.cardholderName;
+    if (cred.cardExpiry) clean.cardExpiry = cred.cardExpiry;
+    if (cred.cardCVV) clean.cardCVV = cred.cardCVV;
+    if (cred.cardPIN) clean.cardPIN = cred.cardPIN;
+    if (cred.cardType) clean.cardType = cred.cardType;
+    if (cred.faviconUrl) clean.faviconUrl = cred.faviconUrl;
+
+    return clean;
   }
 }
 
