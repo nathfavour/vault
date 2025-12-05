@@ -32,16 +32,18 @@ export function Navbar() {
           </span>
         </Link>
         <div className="flex items-center gap-2">
-          {/* AI Wand Button - Always visible */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={openAIModal}
-            className="text-primary hover:text-primary hover:bg-primary/10"
-            title="AI Assistant"
-          >
-            <Sparkles className="h-5 w-5" />
-          </Button>
+          {/* AI Wand Button - Only visible for authenticated users */}
+          {user && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={openAIModal}
+              className="text-primary hover:text-primary hover:bg-primary/10"
+              title="AI Assistant"
+            >
+              <Sparkles className="h-5 w-5" />
+            </Button>
+          )}
 
           <button
             className="p-2 rounded-full hover:bg-accent"

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { FloatingContainer } from "@/components/ui/FloatingContainer";
+import { Dialog } from "@/components/ui/Dialog";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Sparkles, Send, Loader2 } from "lucide-react";
@@ -72,22 +72,24 @@ export function AIModal({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <FloatingContainer
-      title="Whisperrkeep AI Commander"
-      onClose={onClose}
-      defaultPosition={{ x: window.innerWidth - 400, y: 100 }}
-      className="w-96"
-    >
-      <div className="space-y-4">
-        <div className="bg-primary/5 p-3 rounded-md text-sm text-muted-foreground border border-primary/10">
-          <div className="flex items-start gap-2">
-            <Sparkles className="h-4 w-4 text-primary mt-0.5" />
-            <p>
-              <strong>AI Commander</strong>
-              <br/>
-              Try: &quot;Add a login for Netflix&quot;, &quot;Go to Settings&quot;, or &quot;Help me organize&quot;.
-            </p>
-          </div>
+    <Dialog open={true} onClose={onClose} className="max-w-lg">
+      <div className="p-6 space-y-4">
+        <h2 className="text-xl font-semibold flex items-center gap-2">
+           <Sparkles className="h-5 w-5 text-primary" />
+           AI Commander
+        </h2>
+        <div className="bg-primary/5 p-4 rounded-md text-sm text-muted-foreground border border-primary/10">
+          <p>
+            <strong>How can I help?</strong>
+            <br/>
+            Try natural commands like:
+            <br/>
+            • &quot;Add a login for Netflix&quot;
+            <br/>
+            • &quot;Go to my Settings&quot;
+            <br/>
+            • &quot;Organize my vault&quot;
+          </p>
         </div>
 
         {response && (
@@ -96,15 +98,16 @@ export function AIModal({ onClose }: { onClose: () => void }) {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="flex gap-2">
+        <form onSubmit={handleSubmit} className="flex gap-2 pt-2">
           <Input
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
-            placeholder="Ask me anything..."
+            placeholder="Type your command..."
             disabled={isLoading}
             className="flex-1"
+            autoFocus
           />
-          <Button type="submit" size="sm" disabled={isLoading || !prompt.trim()}>
+          <Button type="submit" size="default" disabled={isLoading || !prompt.trim()}>
             {isLoading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
@@ -113,7 +116,7 @@ export function AIModal({ onClose }: { onClose: () => void }) {
           </Button>
         </form>
       </div>
-    </FloatingContainer>
+    </Dialog>
   );
 }
 
