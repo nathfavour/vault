@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState, ReactNode, useCallback } from "react";
 import { AnalysisMode } from "@/lib/ai/types";
 import { PrivacyFilter } from "@/lib/ai/sanitizer";
 import { generateAIContent } from "@/app/actions/ai";
@@ -37,17 +37,17 @@ export function AIProvider({ children }: { children: ReactNode }) {
   const [createModalHandler, setCreateModalHandler] = useState<((prefill?: { name?: string; url?: string; username?: string }) => void) | null>(null);
 
   // Allow components to register themselves as the "Create Modal" handler
-  const registerCreateModal = (handler: (prefill?: { name?: string; url?: string; username?: string }) => void) => {
+  const registerCreateModal = useCallback((handler: (prefill?: { name?: string; url?: string; username?: string }) => void) => {
     setCreateModalHandler(() => handler);
-  };
+  }, []);
 
-  const openGlobalCreateModal = (prefill?: { name?: string; url?: string; username?: string }) => {
+  const openGlobalCreateModal = useCallback((prefill?: { name?: string; url?: string; username?: string }) => {
     if (createModalHandler) {
         createModalHandler(prefill);
     } else {
         console.warn("No Create Modal Handler registered");
     }
-  };
+  }, [createModalHandler]);
 
   const analyze = async (mode: AnalysisMode, rawData: unknown) => {
     setIsLoading(true);
