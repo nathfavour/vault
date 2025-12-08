@@ -47,8 +47,15 @@ export function openAuthPopup(): void {
   const normalizedLoginPath = loginPath.startsWith("/")
     ? loginPath
     : `/${loginPath}`;
+  /*
+   * Add source param so IDM knows where to redirect back
+   * We want to come back to /masterpass to unlock the vault
+   */
+  const sourceURL = getSourceURL();
+  const separator = normalizedLoginPath.includes("?") ? "&" : "?";
+
   const popup = window.open(
-    `${authURL}${normalizedLoginPath}`,
+    `${authURL}${normalizedLoginPath}${separator}source=${encodeURIComponent(sourceURL)}`,
     "auth_popup",
     "width=500,height=700,resizable=yes,scrollbars=yes",
   );
@@ -60,16 +67,16 @@ export function openAuthPopup(): void {
   // Poll to detect if popup was closed without completing auth
   let pollCount = 0;
   const maxPolls = 600; // 10 minutes (600 * 1s)
-  
+
   const pollPopup = setInterval(() => {
     pollCount++;
-    
+
     // Check if popup is closed
     if (popup.closed) {
       clearInterval(pollPopup);
       return;
     }
-    
+
     // Timeout after 10 minutes
     if (pollCount >= maxPolls) {
       clearInterval(pollPopup);

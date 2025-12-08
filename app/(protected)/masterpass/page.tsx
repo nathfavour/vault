@@ -18,20 +18,39 @@ export default function MasterPassPage() {
     if (user) {
       // User is logged in, show masterpass unlock modal
       setShowModal(true);
-    } else {
-      // No user session, open auth popup
-      try {
-        openAuthPopup();
-      } catch (err) {
-        console.error("Failed to open auth popup:", err);
-      }
     }
+    // Do NOT auto-open auth popup - this causes confusion and loops
   }, [user, isAuthReady]);
 
   const handleModalClose = () => {
     // After unlocking masterpass, go to dashboard
     router.replace("/dashboard");
   };
+
+  if (!isAuthReady) return null;
+
+  if (!user) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen p-4">
+        <div className="text-center space-y-4">
+          <h1 className="text-2xl font-bold">Authentication Required</h1>
+          <p className="text-muted-foreground">Please log in to access your vault.</p>
+          <button
+            onClick={() => {
+              try {
+                openAuthPopup();
+              } catch (err) {
+                console.error("Failed to open auth popup:", err);
+              }
+            }}
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90"
+          >
+            Connect Account
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return <MasterPassModal isOpen={showModal} onClose={handleModalClose} />;
 }

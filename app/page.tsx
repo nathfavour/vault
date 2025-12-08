@@ -24,6 +24,8 @@ import { useTheme } from "@/app/providers";
 import { useRef } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { openAuthPopup } from "@/lib/authUrl";
+import { useAppwrite } from "@/app/appwrite-provider";
+import { useRouter } from "next/navigation";
 
 // Copy icon component - used in dashboard preview
 function Copy(props: React.SVGProps<SVGSVGElement>) {
@@ -48,6 +50,8 @@ function Copy(props: React.SVGProps<SVGSVGElement>) {
 
 export default function LandingPage() {
   const { } = useTheme();
+  const { user } = useAppwrite();
+  const router = useRouter();
   const demoRef = useRef<HTMLDivElement>(null);
 
   const handleViewDemo = () => {
@@ -96,7 +100,7 @@ export default function LandingPage() {
   const testimonials = [
     {
       quote:
-          "Whisperrkeep app has completely transformed how I manage my online security. I finally feel safe online.",
+        "Whisperrkeep app has completely transformed how I manage my online security. I finally feel safe online.",
       name: "Sarah Johnson",
       role: "Software Developer",
       stars: 5,
@@ -161,10 +165,14 @@ export default function LandingPage() {
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 mb-16">
-          <Button 
-            size="lg" 
+          <Button
+            size="lg"
             className="gap-2"
             onClick={() => {
+              if (user) {
+                router.push("/dashboard");
+                return;
+              }
               try {
                 openAuthPopup();
               } catch (err) {
@@ -172,7 +180,7 @@ export default function LandingPage() {
               }
             }}
           >
-            Get Started Free <ChevronRight className="h-4 w-4" />
+            {user ? "Go to Dashboard" : "Get Started Free"} <ChevronRight className="h-4 w-4" />
           </Button>
           <Button size="lg" variant="outline" onClick={handleViewDemo}>
             View Demo
@@ -479,10 +487,14 @@ export default function LandingPage() {
           <p className="text-xl text-muted-foreground mb-8">
             Join thousands of users who trust Whisperrkeep with their passwords.
           </p>
-          <Button 
-            size="lg" 
+          <Button
+            size="lg"
             className="gap-2"
             onClick={() => {
+              if (user) {
+                router.push("/dashboard");
+                return;
+              }
               try {
                 openAuthPopup();
               } catch (err) {
@@ -490,7 +502,7 @@ export default function LandingPage() {
               }
             }}
           >
-            Get Started Free <ChevronRight className="h-4 w-4" />
+            {user ? "Go to Dashboard" : "Get Started Free"} <ChevronRight className="h-4 w-4" />
           </Button>
           <p className="mt-4 text-sm text-muted-foreground">
             No credit card required. Free forever with premium options.
