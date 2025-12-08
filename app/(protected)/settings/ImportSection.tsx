@@ -75,7 +75,7 @@ export default function ImportSection() {
           setError(result.errors.join("\n") || "Import encountered issues.");
         } else {
           setSuccess(
-            `Imported ${result.summary.credentialsCreated} credentials, ${result.summary.totpSecretsCreated} TOTP secrets, created ${result.summary.foldersCreated} folders. Skipped: ${result.summary.skipped}.`,
+            `Imported ${result.summary.credentialsCreated} credentials, ${result.summary.totpSecretsCreated} TOTP secrets, created ${result.summary.foldersCreated} folders. Skipped: ${result.summary.skipped}. Skipped (Existing): ${result.summary.skippedExisting}.`,
           );
         }
         return;
@@ -87,7 +87,7 @@ export default function ImportSection() {
          if (!result.success && result.errors.length > 0) {
             setError(result.errors.join("\n") || "Import failed.");
          } else {
-            setSuccess(`Successfully restored ${result.summary.credentialsCreated} credentials, ${result.summary.totpSecretsCreated} secrets, and ${result.summary.foldersCreated} folders.`);
+            setSuccess(`Successfully restored ${result.summary.credentialsCreated} credentials, ${result.summary.totpSecretsCreated} secrets, and ${result.summary.foldersCreated} folders. Skipped (Existing): ${result.summary.skippedExisting}.`);
          }
          return;
       }
