@@ -236,19 +236,38 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       </div>
 
-      <nav className="fixed bottom-0 left-0 right-0 z-40 bg-card/100 border-t flex lg:hidden justify-around items-center h-16 shadow-lg safe-area-inset-bottom">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-t border-border flex lg:hidden justify-around items-center h-16 pb-[env(safe-area-inset-bottom)] box-content shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
         {navigation
           .filter((item) => item.name !== "Import")
           .map((item) => {
             const isActive = pathname === item.href;
             const isBig = item.big;
+            
+            if (isBig) {
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className="flex flex-col items-center justify-center -mt-8"
+                  aria-label={item.name}
+                >
+                  <div className={clsx(
+                    "h-14 w-14 rounded-full flex items-center justify-center shadow-lg border-4 border-background transition-transform active:scale-95",
+                    isActive ? "bg-primary text-primary-foreground" : "bg-primary text-primary-foreground"
+                  )}>
+                    <item.icon className="h-7 w-7" />
+                  </div>
+                  <span className="text-[10px] font-medium mt-1">{item.name}</span>
+                </Link>
+              );
+            }
+
             return (
               <Link
                 key={item.name}
                 href={item.href}
                 className={clsx(
-                  "flex flex-col items-center justify-center p-2 min-w-0 flex-1",
-                  isBig ? "scale-110" : "",
+                  "flex flex-col items-center justify-center p-2 min-w-0 flex-1 transition-colors",
                   isActive
                     ? "text-primary"
                     : "text-muted-foreground hover:text-primary",
@@ -258,10 +277,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <item.icon
                   className={clsx(
                     "mb-1 flex-shrink-0",
-                    isBig ? "h-7 w-7" : "h-5 w-5",
+                    "h-5 w-5",
                   )}
                 />
-                <span className={clsx("text-xs truncate", isBig && "font-semibold")}>{item.name}</span>
+                <span className="text-[10px] truncate font-medium">{item.name}</span>
               </Link>
             );
           })}
