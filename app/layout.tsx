@@ -17,8 +17,8 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "WhisperrKeep - Elite Security",
-  description: "Secure, glassmorphic password management for the modern era.",
+  title: "WhisperrKeep - Sovereign Vault",
+  description: "Digital inheritance for your life's work. Sovereign encryption, immutable storage, and technical honesty.",
 };
 
 export default function RootLayout({
