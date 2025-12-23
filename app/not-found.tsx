@@ -6,11 +6,10 @@ export default function NotFound() {
     <div className="min-h-screen flex items-center justify-center bg-background p-6">
       <div className="max-w-xl w-full text-center">
         <h1 className="text-4xl font-bold text-primary mb-4 font-mono uppercase tracking-tight">
-          Sovereign Error: 404
+          Page Not Found
         </h1>
         <p className="text-muted-foreground mb-6 font-medium">
-          The requested coordinate does not exist within the Whisperr Vault.
-          Return to territory.
+          The page you are looking for does not exist within the Whisperr Vault.
         </p>
         <div className="flex gap-3 justify-center">
           <Link href="/" passHref>
