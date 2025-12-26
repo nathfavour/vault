@@ -1,12 +1,19 @@
 "use client";
 
-import { useState } from "react";
-
-// Add advanced checkbox state
-
-import { Dialog } from "@/components/ui/Dialog";
-import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
+import { 
+  Dialog, 
+  DialogTitle, 
+  DialogContent, 
+  DialogActions, 
+  Button, 
+  TextField, 
+  Box, 
+  Typography, 
+  FormControlLabel, 
+  Checkbox,
+  Grid,
+  CircularProgress
+} from "@mui/material";
 import { createTotpSecret, updateTotpSecret } from "@/lib/appwrite";
 import { useAppwrite } from "@/app/appwrite-provider";
 import { useEffect } from "react";
@@ -65,7 +72,7 @@ export default function NewTotpDialog({
         period: 30,
       });
     }
-  }, [initialData]);
+  }, [initialData, open]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,96 +113,140 @@ export default function NewTotpDialog({
   };
 
   return (
-    <Dialog open={open} onClose={onClose}>
-      <form onSubmit={handleSubmit} className="p-6 space-y-4">
-        <h2 className="text-xl font-bold mb-2">
+    <Dialog 
+      open={open} 
+      onClose={onClose}
+      PaperProps={{
+        sx: {
+          borderRadius: '24px',
+          bgcolor: 'rgba(10, 10, 10, 0.9)',
+          backdropFilter: 'blur(20px)',
+          border: '1px solid',
+          borderColor: 'rgba(255, 255, 255, 0.08)',
+          backgroundImage: 'none',
+          maxWidth: '450px',
+          width: '100%'
+        }
+      }}
+    >
+      <form onSubmit={handleSubmit}>
+        <DialogTitle sx={{ fontWeight: 800, fontFamily: 'var(--font-space-grotesk)', pt: 3 }}>
           {initialData ? "Edit" : "Add"} TOTP Code
-        </h2>
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Issuer</label>
-          <Input
+        </DialogTitle>
+        <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, pt: 1 }}>
+          <TextField
+            fullWidth
+            label="Issuer"
+            placeholder="e.g. Google, GitHub"
             value={form.issuer}
             onChange={(e) => setForm({ ...form, issuer: e.target.value })}
             required
+            variant="outlined"
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '12px',
+                bgcolor: 'rgba(255, 255, 255, 0.02)',
+              }
+            }}
           />
-        </div>
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Account Name</label>
-          <Input
+          <TextField
+            fullWidth
+            label="Account Name"
+            placeholder="e.g. user@example.com"
             value={form.accountName}
             onChange={(e) => setForm({ ...form, accountName: e.target.value })}
             required
+            variant="outlined"
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '12px',
+                bgcolor: 'rgba(255, 255, 255, 0.02)',
+              }
+            }}
           />
-        </div>
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Secret Key</label>
-          <Input
+          <TextField
+            fullWidth
+            label="Secret Key"
+            placeholder="Enter the base32 secret"
             value={form.secretKey}
             onChange={(e) => setForm({ ...form, secretKey: e.target.value })}
             required
+            variant="outlined"
+            sx={{
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '12px',
+                bgcolor: 'rgba(255, 255, 255, 0.02)',
+              }
+            }}
           />
-        </div>
-        <div className="flex items-center space-x-2 pt-2">
-          <input
-            id="show-advanced"
-            type="checkbox"
-            checked={showAdvanced}
-            onChange={() => setShowAdvanced(!showAdvanced)}
+          
+          <FormControlLabel
+            control={
+              <Checkbox 
+                checked={showAdvanced} 
+                onChange={(e) => setShowAdvanced(e.target.checked)}
+                sx={{ color: 'rgba(255, 255, 255, 0.3)', '&.Mui-checked': { color: 'primary.main' } }}
+              />
+            }
+            label={<Typography variant="body2" sx={{ fontWeight: 600 }}>Advanced Settings</Typography>}
           />
-          <label
-            htmlFor="show-advanced"
-            className="text-sm select-none cursor-pointer"
-          >
-            Advanced
-          </label>
-        </div>
-        {showAdvanced && (
-          <>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Digits</label>
-              <Input
-                type="number"
-                value={form.digits}
-                min={6}
-                max={8}
-                disabled
-                readOnly
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Period (seconds)</label>
-              <Input
-                type="number"
-                value={form.period}
-                min={15}
-                max={60}
-                disabled
-                readOnly
-                required
-              />
-            </div>
-          </>
-        )}
-        <div className="flex gap-2">
-          <Button type="submit" className="flex-1" disabled={loading}>
-            {loading
-              ? initialData
-                ? "Saving..."
-                : "Adding..."
-              : initialData
-                ? "Save"
-                : "Add"}
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            className="flex-1"
+
+          {showAdvanced && (
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  label="Digits"
+                  type="number"
+                  value={form.digits}
+                  disabled
+                  variant="outlined"
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '12px',
+                      bgcolor: 'rgba(255, 255, 255, 0.01)',
+                    }
+                  }}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  fullWidth
+                  label="Period (s)"
+                  type="number"
+                  value={form.period}
+                  disabled
+                  variant="outlined"
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '12px',
+                      bgcolor: 'rgba(255, 255, 255, 0.01)',
+                    }
+                  }}
+                />
+              </Grid>
+            </Grid>
+          )}
+        </DialogContent>
+        <DialogActions sx={{ p: 3, gap: 1 }}>
+          <Button 
+            fullWidth 
+            variant="outlined" 
             onClick={onClose}
+            sx={{ borderRadius: '12px', py: 1.2 }}
           >
             Cancel
           </Button>
-        </div>
+          <Button 
+            fullWidth 
+            type="submit" 
+            variant="contained" 
+            disabled={loading}
+            sx={{ borderRadius: '12px', py: 1.2, fontWeight: 700 }}
+          >
+            {loading ? <CircularProgress size={24} color="inherit" /> : (initialData ? "Save Changes" : "Add TOTP")}
+          </Button>
+        </DialogActions>
       </form>
     </Dialog>
   );

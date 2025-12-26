@@ -1,17 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Box, Typography, Button, Grid, Paper, IconButton, TextField, CircularProgress, Dialog, DialogTitle, DialogContent, DialogActions, alpha, Chip } from "@mui/material";
 import { Shield, Plus, Copy, Edit, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
-import { useAppwrite } from "@/app/appwrite-provider";
-import { listTotpSecrets, deleteTotpSecret, listFolders } from "@/lib/appwrite";
-import NewTotpDialog from "@/components/app/totp/new";
-import { authenticator } from "otplib";
-import { Dialog } from "@/components/ui/Dialog";
-import toast from "react-hot-toast";
-import VaultGuard from "@/components/layout/VaultGuard";
-import { useSudo } from "@/app/context/SudoContext";
 
 export default function TOTPPage() {
   const [search, setSearch] = useState("");
@@ -39,18 +29,14 @@ export default function TOTPPage() {
 
   const { requestSudo } = useSudo();
 
-  // Fix infinite loop by removing unstable function reference from dependencies
-  // usage of isVaultUnlocked inside effect is sufficient
   useEffect(() => {
     if (!user?.$id) return;
 
-    // Ensure vault is unlocked before fetching to prevent decryption errors
     if (!isVaultUnlocked()) {
       return;
     }
 
     setLoading(true);
-    // Use Promise.allSettled to avoid failing completely if one request fails
     Promise.allSettled([listTotpSecrets(user.$id), listFolders(user.$id)])
       .then(([secretsResult, foldersResult]) => {
         if (secretsResult.status === "fulfilled") {
@@ -70,8 +56,7 @@ export default function TOTPPage() {
         toast.error("Failed to load data.");
       })
       .finally(() => setLoading(false));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, showNew]); // Removed isVaultUnlocked
+  }, [user, showNew]);
 
   const generateTOTP = (
     secret: string,
@@ -80,16 +65,9 @@ export default function TOTPPage() {
     algorithm: string = "SHA1",
   ): string => {
     try {
-      // Handle failed decryption or missing secret
       if (!secret || secret.includes("[DECRYPTION_FAILED]")) return "Locked";
-
-      // Sanitize: remove all spaces to ensure spaced/unspaced secrets yield same code
       const normalized = (secret || "").replace(/\s+/g, "").toUpperCase();
-
       if (!normalized) return "------";
-
-      // Otplib expects strictly uppercase base32 secret usually, but let's just pass normalized
-      // Algorithm must be lowercase for some versions of otplib / crypto wrappers
       const algo = (algorithm || "sha1").toLowerCase();
 
       authenticator.options = {
@@ -103,7 +81,6 @@ export default function TOTPPage() {
       return authenticator.generate(normalized);
     } catch (err) {
       console.warn("TOTP Generation warning for secret ending in ...", secret?.slice(-4), err);
-      // Fallback: try default algorithm if specific one failed
       if (algorithm?.toLowerCase() !== 'sha1') {
         try {
           // @ts-expect-error - type mismatch
@@ -146,6 +123,7 @@ export default function TOTPPage() {
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
+    toast.success("Code copied to clipboard");
   };
 
   const openEditDialog = (totp: TotpItem) => {
@@ -154,161 +132,168 @@ export default function TOTPPage() {
   };
 
   const TOTPCard = ({ totp }: { totp: TotpItem }) => {
-    // Debug logging
-    console.log("[TOTPCard] rendering", {
-      id: totp.$id,
-      issuer: totp.issuer,
-      hasSecret: !!totp.secretKey,
-      secretKeyLength: totp.secretKey?.length,
-      secretStart: totp.secretKey?.substring(0, 5)
-    });
-
     const code = generateTOTP(
       totp.secretKey,
       totp.period || 30,
       totp.digits || 6,
       totp.algorithm || "SHA1"
     );
-    console.log("[TOTPCard] generated code", code);
 
     const timeRemaining = getTimeRemaining(totp.period || 30);
     const progress = (timeRemaining / (totp.period || 30)) * 100;
     const folderName = totp.folderId ? folders.get(totp.folderId) : null;
 
     return (
-      <Card className="p-4 overflow-hidden relative">
-        <div className="flex items-center justify-between mb-3 min-w-0">
-          <div className="min-w-0">
-            <h3
-              className="font-semibold truncate max-w-full"
-              title={totp.issuer ?? undefined}
-            >
-              {totp.issuer || ""}
-            </h3>
-            <p
-              className="text-sm text-muted-foreground truncate max-w-full"
-              title={totp.accountName ?? undefined}
-            >
-              {totp.accountName || ""}
-            </p>
+      <Paper
+        elevation={0}
+        sx={{
+          p: 3,
+          borderRadius: '24px',
+          bgcolor: 'rgba(255, 255, 255, 0.02)',
+          border: '1px solid',
+          borderColor: 'rgba(255, 255, 255, 0.08)',
+          transition: 'all 0.2s ease',
+          '&:hover': {
+            bgcolor: 'rgba(255, 255, 255, 0.04)',
+            borderColor: 'rgba(255, 255, 255, 0.15)',
+            transform: 'translateY(-2px)'
+          }
+        }}
+      >
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
+          <Box sx={{ minWidth: 0 }}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 800, color: 'text.primary', noWrap: true }}>
+              {totp.issuer || "Unknown Issuer"}
+            </Typography>
+            <Typography variant="body2" sx={{ color: 'text.secondary', noWrap: true, mb: 1 }}>
+              {totp.accountName || "No account name"}
+            </Typography>
             {folderName && (
-              <span className="text-xs bg-secondary px-2 py-1 rounded mt-1 inline-block">
-                {folderName}
-              </span>
+              <Chip 
+                label={folderName} 
+                size="small" 
+                sx={{ 
+                  height: 20, 
+                  fontSize: '0.65rem', 
+                  fontWeight: 700, 
+                  bgcolor: 'rgba(255, 255, 255, 0.05)',
+                  color: 'text.secondary',
+                  borderRadius: '6px'
+                }} 
+              />
             )}
-            {/* DEBUG DISPLAY */}
-            {/* <div className="text-[10px] text-red-500 break-all">
-               DEBUG: {JSON.stringify(totp.secretKey)}
-            </div> */}
-          </div>
-          <div className="flex items-center gap-1 shrink-0">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => openEditDialog(totp)}
-            >
-              <Edit className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => openDeleteDialog(totp.$id)}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
+          </Box>
+          <Box sx={{ display: 'flex', gap: 0.5 }}>
+            <IconButton size="small" onClick={() => openEditDialog(totp)} sx={{ color: 'text.secondary' }}>
+              <Edit size={16} />
+            </IconButton>
+            <IconButton size="small" onClick={() => openDeleteDialog(totp.$id)} sx={{ color: 'text.secondary', '&:hover': { color: 'error.main' } }}>
+              <Trash2 size={16} />
+            </IconButton>
+          </Box>
+        </Box>
 
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="font-mono text-2xl font-bold tracking-wider">
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Typography variant="h4" sx={{ fontWeight: 800, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', color: '#00F0FF' }}>
               {code.substring(0, 3)} {code.substring(3)}
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => copyToClipboard(code)}
-            >
-              <Copy className="h-4 w-4" />
-            </Button>
-          </div>
+            </Typography>
+            <IconButton size="small" onClick={() => copyToClipboard(code)} sx={{ color: '#00F0FF', bgcolor: 'rgba(0, 240, 255, 0.05)' }}>
+              <Copy size={16} />
+            </IconButton>
+          </Box>
 
-          <div className="flex items-center gap-2">
-            <div className="text-sm text-muted-foreground">
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <Typography variant="caption" sx={{ fontWeight: 700, color: timeRemaining <= 5 ? 'error.main' : 'text.secondary' }}>
               {timeRemaining}s
-            </div>
-            <div className="w-8 h-8 relative">
-              <svg className="w-8 h-8 transform -rotate-90" viewBox="0 0 32 32">
-                <circle
-                  cx="16"
-                  cy="16"
-                  r="14"
-                  fill="transparent"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  className="text-muted-foreground/20"
-                />
-                <circle
-                  cx="16"
-                  cy="16"
-                  r="14"
-                  fill="transparent"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeDasharray={`${progress * 0.88} 88`}
-                  className={`transition-all duration-1000 ${timeRemaining <= 5 ? "text-red-500" : "text-primary"
-                    }`}
-                />
-              </svg>
-            </div>
-          </div>
-        </div>
-      </Card>
+            </Typography>
+            <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+              <CircularProgress
+                variant="determinate"
+                value={progress}
+                size={28}
+                thickness={6}
+                sx={{
+                  color: timeRemaining <= 5 ? 'error.main' : 'primary.main',
+                  '& .MuiCircularProgress-circle': {
+                    strokeLinecap: 'round',
+                  },
+                }}
+              />
+              <CircularProgress
+                variant="determinate"
+                value={100}
+                size={28}
+                thickness={6}
+                sx={{
+                  color: 'rgba(255, 255, 255, 0.05)',
+                  position: 'absolute',
+                  left: 0,
+                }}
+              />
+            </Box>
+          </Box>
+        </Box>
+      </Paper>
     );
   };
 
   return (
     <VaultGuard>
-      <div className="space-y-6">
-        {" "}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">TOTP Codes</h1>
-            <p className="text-muted-foreground">
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Box>
+            <Typography variant="h4" sx={{ fontWeight: 800, fontFamily: 'var(--font-space-grotesk)', letterSpacing: '-0.02em' }}>
+              TOTP Codes
+            </Typography>
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
               Manage your two-factor authentication codes
-            </p>
-          </div>
-          <Button onClick={() => setShowNew(true)}>
-            <Plus className="h-4 w-4 mr-2" />
+            </Typography>
+          </Box>
+          <Button 
+            variant="contained" 
+            startIcon={<Plus size={18} />} 
+            onClick={() => setShowNew(true)}
+            sx={{ borderRadius: '12px', fontWeight: 700, px: 3 }}
+          >
             Add TOTP
           </Button>
-        </div>
-        {/* Search Bar */}
-        <div className="mb-4">
-          <input
-            type="text"
-            placeholder="Search TOTP codes..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full max-w-xs px-3 py-2 border rounded-md focus:outline-none focus:ring focus:border-primary text-sm"
-          />
-        </div>
+        </Box>
+
+        <TextField
+          fullWidth
+          placeholder="Search TOTP codes..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          sx={{
+            maxWidth: 400,
+            '& .MuiOutlinedInput-root': {
+              borderRadius: '16px',
+              bgcolor: 'rgba(255, 255, 255, 0.02)',
+              '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.08)' },
+              '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.2)' },
+              '&.Mui-focused fieldset': { borderColor: 'primary.main' }
+            }
+          }}
+        />
+
         {loading ? (
-          <Card className="p-12 text-center">Loading...</Card>
+          <Box sx={{ display: 'flex', justifyContent: 'center', py: 12 }}>
+            <CircularProgress />
+          </Box>
         ) : totpCodes.length === 0 ? (
-          <Card className="p-12 text-center">
-            <Shield className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No TOTP codes found</h3>
-            <p className="text-muted-foreground mb-4">
+          <Paper sx={{ p: 8, textAlign: 'center', borderRadius: '32px', bgcolor: 'rgba(255, 255, 255, 0.01)', border: '1px dashed', borderColor: 'rgba(255, 255, 255, 0.1)' }}>
+            <Shield size={64} style={{ margin: '0 auto 24px', color: 'rgba(255, 255, 255, 0.1)' }} />
+            <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>No TOTP codes found</Typography>
+            <Typography variant="body2" sx={{ color: 'text.secondary', mb: 4 }}>
               Start by adding your first two-factor authentication code
-            </p>
-            <Button onClick={() => setShowNew(true)}>
-              <Plus className="h-4 w-4 mr-2" />
+            </Typography>
+            <Button variant="outlined" startIcon={<Plus size={18} />} onClick={() => setShowNew(true)} sx={{ borderRadius: '12px' }}>
               Add TOTP
             </Button>
-          </Card>
+          </Paper>
         ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <Grid container spacing={3}>
             {totpCodes
               .filter((totp) => {
                 const q = search.trim().toLowerCase();
@@ -320,10 +305,13 @@ export default function TOTPPage() {
                 );
               })
               .map((totp) => (
-                <TOTPCard key={totp.$id} totp={totp} />
+                <Grid item xs={12} md={6} lg={4} key={totp.$id}>
+                  <TOTPCard totp={totp} />
+                </Grid>
               ))}
-          </div>
+          </Grid>
         )}
+
         <NewTotpDialog
           open={showNew}
           onClose={() => {
@@ -332,112 +320,77 @@ export default function TOTPPage() {
           }}
           initialData={editingTotp || undefined}
         />
-        {/* Delete Confirmation Dialog */}
+
         <Dialog
           open={deleteDialog.open}
           onClose={() => setDeleteDialog({ open: false, id: null })}
+          PaperProps={{
+            sx: {
+              borderRadius: '24px',
+              bgcolor: 'rgba(10, 10, 10, 0.9)',
+              backdropFilter: 'blur(20px)',
+              border: '1px solid',
+              borderColor: 'rgba(255, 255, 255, 0.08)',
+              backgroundImage: 'none',
+              p: 1
+            }
+          }}
         >
-          <div className="p-6">
-            <h2 className="text-lg font-bold mb-2">Delete TOTP Code</h2>
-            <p className="mb-4">
-              Are you sure you want to delete this TOTP code? This action cannot
-              be undone.
-            </p>
-            {/* Show issuer and account name with truncation and hover title */}
+          <DialogTitle sx={{ fontWeight: 800, fontFamily: 'var(--font-space-grotesk)' }}>
+            Delete TOTP Code
+          </DialogTitle>
+          <DialogContent>
+            <Typography variant="body2" sx={{ color: 'text.secondary', mb: 3 }}>
+              Are you sure you want to delete this TOTP code? This action cannot be undone.
+            </Typography>
             {deleteDialog.open && (
-              <div className="mb-4">
-                {/* Resolve the selected TOTP for display */}
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, p: 2, borderRadius: '16px', bgcolor: 'rgba(255, 255, 255, 0.03)' }}>
                 {(() => {
-                  const selected = totpCodes.find(
-                    (t) => t.$id === deleteDialog.id,
-                  );
+                  const selected = totpCodes.find((t) => t.$id === deleteDialog.id);
                   if (!selected) return null;
                   return (
-                    <div className="flex flex-col gap-1">
-                      <div className="text-sm text-muted-foreground">
-                        Issuer
-                      </div>
-                      <div className="group relative">
-                        <div
-                          className="max-w-full truncate px-2 py-1 rounded bg-secondary"
-                          title={selected.issuer || ""}
-                          aria-label={selected.issuer || ""}
-                        >
-                          <span
-                            className="sm:hidden"
-                            aria-label={selected.issuer || ""}
-                          >
-                            {(selected.issuer || "").length > 6
-                              ? `${(selected.issuer || "").slice(0, 6)}...`
-                              : selected.issuer || "—"}
-                          </span>
-                          <span
-                            className="hidden sm:inline"
-                            aria-label={selected.issuer || ""}
-                          >
-                            {(selected.issuer || "").length > 15
-                              ? `${(selected.issuer || "").slice(0, 15)}...`
-                              : selected.issuer || "—"}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="text-sm text-muted-foreground mt-2">
-                        Account
-                      </div>
-                      <div className="group relative">
-                        <div
-                          className="max-w-full truncate px-2 py-1 rounded bg-secondary"
-                          title={selected.accountName || ""}
-                          aria-label={selected.accountName || ""}
-                        >
-                          <span
-                            className="sm:hidden"
-                            aria-label={selected.accountName || ""}
-                          >
-                            {(selected.accountName || "").length > 6
-                              ? `${(selected.accountName || "").slice(0, 6)}...`
-                              : selected.accountName || "—"}
-                          </span>
-                          <span
-                            className="hidden sm:inline"
-                            aria-label={selected.accountName || ""}
-                          >
-                            {(selected.accountName || "").length > 15
-                              ? `${(selected.accountName || "").slice(0, 15)}...`
-                              : selected.accountName || "—"}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
+                    <>
+                      <Box>
+                        <Typography variant="caption" sx={{ color: 'text.disabled', display: 'block', mb: 0.5 }}>Issuer</Typography>
+                        <Typography variant="body2" sx={{ fontWeight: 700 }}>{selected.issuer || "—"}</Typography>
+                      </Box>
+                      <Box>
+                        <Typography variant="caption" sx={{ color: 'text.disabled', display: 'block', mb: 0.5 }}>Account</Typography>
+                        <Typography variant="body2" sx={{ fontWeight: 700 }}>{selected.accountName || "—"}</Typography>
+                      </Box>
+                    </>
                   );
                 })()}
-              </div>
+              </Box>
             )}
-            <div className="flex gap-2">
-              <Button
-                variant="destructive"
-                className="flex-1"
-                onClick={() => {
-                  if (deleteDialog.id) {
-                    requestSudo({
-                      onSuccess: () => handleDelete(deleteDialog.id!)
-                    });
-                  }
-                }}
-              >
-                Delete
-              </Button>
-              <Button
-                variant="ghost"
-                className="flex-1"
-                onClick={() => setDeleteDialog({ open: false, id: null })}
-              >
-                Cancel
-              </Button>
-            </div>
-          </div>
+          </DialogContent>
+          <DialogActions sx={{ p: 3, gap: 1 }}>
+            <Button 
+              fullWidth 
+              variant="outlined" 
+              onClick={() => setDeleteDialog({ open: false, id: null })}
+              sx={{ borderRadius: '12px' }}
+            >
+              Cancel
+            </Button>
+            <Button 
+              fullWidth 
+              variant="contained" 
+              color="error"
+              onClick={() => {
+                if (deleteDialog.id) {
+                  requestSudo({
+                    onSuccess: () => handleDelete(deleteDialog.id!)
+                  });
+                }
+              }}
+              sx={{ borderRadius: '12px' }}
+            >
+              Delete
+            </Button>
+          </DialogActions>
         </Dialog>
-      </div>
+      </Box>
     </VaultGuard>
   );
 }
