@@ -24,27 +24,27 @@ const getDesignTokens = (): ThemeOptions => ({
     divider: '#222222', // Subtle Border
   },
   typography: {
-    fontFamily: 'var(--font-inter), "Inter", sans-serif',
+    fontFamily: '"Satoshi", "Inter", sans-serif',
     h1: {
-      fontFamily: 'var(--font-mono), monospace',
+      fontFamily: '"Space Grotesk", sans-serif',
       fontSize: '32px',
       fontWeight: 700,
       letterSpacing: '-0.02em',
       color: '#F2F2F2',
     },
     h2: {
-      fontFamily: 'var(--font-mono), monospace',
+      fontFamily: '"Space Grotesk", sans-serif',
       fontSize: '24px',
       fontWeight: 600,
       letterSpacing: '-0.02em',
     },
     h3: {
-      fontFamily: 'var(--font-mono), monospace',
+      fontFamily: '"Space Grotesk", sans-serif',
       fontSize: '20px',
       fontWeight: 600,
     },
     h4: {
-      fontFamily: 'var(--font-mono), monospace',
+      fontFamily: '"Space Grotesk", sans-serif',
       fontSize: '18px',
       fontWeight: 600,
     },
@@ -62,7 +62,7 @@ const getDesignTokens = (): ThemeOptions => ({
       color: '#A1A1AA',
     },
     button: {
-      fontFamily: 'var(--font-mono), monospace',
+      fontFamily: '"Space Grotesk", sans-serif',
       textTransform: 'none',
       fontWeight: 600,
     },
