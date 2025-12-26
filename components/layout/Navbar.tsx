@@ -13,7 +13,7 @@ import {
 import { useTheme } from "@/app/providers";
 import Link from "next/link";
 import { useAppwrite } from "@/app/appwrite-provider";
-import { Button } from "@/components/ui/Button";
+import { Button, Box, AppBar, Toolbar, Typography, IconButton, Menu, MenuItem, Divider, Tooltip } from "@mui/material";
 import { useState } from "react";
 import { DropdownMenu } from "@/components/ui/DropdownMenu";
 import PasswordGenerator from "@/components/ui/PasswordGenerator";
@@ -24,7 +24,7 @@ export function Navbar() {
   const { theme, setTheme } = useTheme();
   const { user, logout, openIDMWindow } = useAppwrite();
   const { openAIModal } = useAI();
-  const [showMenu, setShowMenu] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const pathname = usePathname();
 
   const isCorePage = [
@@ -37,36 +37,59 @@ export function Navbar() {
     "/overview"
   ].some(path => pathname?.startsWith(path));
 
+  const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+  };
+
   return (
-    <nav className="border-b border-border fixed top-0 left-0 right-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 animate-fadeIn">
-      <div className="max-w-screen-xl mx-auto flex justify-between items-center h-16 px-4 relative">
-        <Link href="/" className="flex items-center gap-2">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
+    <AppBar
+      position="fixed"
+      sx={{
+        zIndex: (theme) => theme.zIndex.drawer + 1,
+        bgcolor: 'rgba(0, 0, 0, 0.7)',
+        backdropFilter: 'blur(20px)',
+        borderBottom: '1px solid',
+        borderColor: 'divider',
+        boxShadow: 'none'
+      }}
+    >
+      <Toolbar sx={{ justifyContent: 'space-between', minHeight: 64 }}>
+        <Box component={Link} href="/" sx={{ display: 'flex', alignItems: 'center', gap: 1.5, textDecoration: 'none', color: 'inherit' }}>
+          <Box
+            component="img"
             src="/images/logo.png"
             alt="Whisperrkeep Logo"
-            className="h-8 w-8 rounded-lg object-contain"
+            sx={{ h: 32, w: 32, borderRadius: 1, objectFit: 'contain' }}
           />
-          <span className="font-semibold text-lg hidden sm:inline">
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 600,
+              display: { xs: 'none', sm: 'inline' },
+              fontFamily: 'var(--font-space-grotesk)'
+            }}
+          >
             Whisperrkeep
-          </span>
-        </Link>
-        <div className="flex items-center gap-2">
-          {/* AI Wand Button - Only visible for authenticated users AND core pages */}
+          </Typography>
+        </Box>
+
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           {user && isCorePage && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={openAIModal}
-              className="text-primary hover:text-primary hover:bg-primary/10"
-              title="AI Assistant"
-            >
-              <SparklesIcon className="h-5 w-5" />
-            </Button>
+            <Tooltip title="AI Assistant">
+              <IconButton
+                onClick={openAIModal}
+                sx={{ color: 'primary.main', '&:hover': { bgcolor: 'rgba(0, 240, 255, 0.1)' } }}
+              >
+                <SparklesIcon style={{ width: 20, height: 20 }} />
+              </IconButton>
+            </Tooltip>
           )}
 
-          <button
-            className="p-2 rounded-full hover:bg-accent"
+          <IconButton
             onClick={() => {
               const nextTheme =
                 theme === "light"
@@ -77,30 +100,29 @@ export function Navbar() {
               setTheme(nextTheme);
             }}
           >
-            {theme === "light" && <SunIcon className="h-5 w-5" />}
-            {theme === "dark" && <MoonIcon className="h-5 w-5" />}
-            {theme === "system" && <ComputerDesktopIcon className="h-5 w-5" />}
-          </button>
+            {theme === "light" && <SunIcon style={{ width: 20, height: 20 }} />}
+            {theme === "dark" && <MoonIcon style={{ width: 20, height: 20 }} />}
+            {theme === "system" && <ComputerDesktopIcon style={{ width: 20, height: 20 }} />}
+          </IconButton>
+
           <DropdownMenu
             trigger={
-              <button
-                className="p-2 rounded-full hover:bg-accent"
-                title="Password Generator"
-              >
-                <KeyIcon className="h-5 w-5" />
-              </button>
+              <IconButton title="Password Generator">
+                <KeyIcon style={{ width: 20, height: 20 }} />
+              </IconButton>
             }
             width="400px"
             align="right"
           >
-            <div className="p-2">
+            <Box sx={{ p: 2 }}>
               <PasswordGenerator />
-            </div>
+            </Box>
           </DropdownMenu>
+
           {!user ? (
             <Button
-              size="sm"
-              variant="outline"
+              variant="outlined"
+              size="small"
               onClick={() => {
                 try {
                   openIDMWindow();
@@ -108,89 +130,81 @@ export function Navbar() {
                   alert(err instanceof Error ? err.message : "Failed to open authentication");
                 }
               }}
+              sx={{ borderColor: 'divider' }}
             >
               Connect
             </Button>
           ) : (
-            <div className="relative">
+            <Box>
               <Button
-                size="sm"
-                variant="ghost"
-                className="flex items-center gap-2"
-                onClick={() => setShowMenu((v) => !v)}
+                variant="text"
+                size="small"
+                onClick={handleOpenMenu}
+                startIcon={<UserIcon style={{ width: 16, height: 16 }} />}
+                sx={{ color: 'text.primary' }}
               >
-                <UserIcon className="h-4 w-4" />
-                <span className="hidden sm:inline">
+                <Typography variant="body2" sx={{ display: { xs: 'none', sm: 'inline' } }}>
                   {user.name || user.email}
-                </span>
+                </Typography>
               </Button>
-              {showMenu && (
-                <div
-                  className="absolute right-0 mt-2 w-56 bg-background border rounded-lg shadow-lg z-50"
-                  onMouseLeave={() => setShowMenu(false)}
+              <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleCloseMenu}
+                PaperProps={{
+                  sx: {
+                    mt: 1.5,
+                    minWidth: 220,
+                    bgcolor: 'background.paper',
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.4)'
+                  }
+                }}
+                transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+              >
+                <Box sx={{ px: 2, py: 1.5 }}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                    {user.name || user.email}
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {user.email}
+                  </Typography>
+                </Box>
+                <Divider />
+                <MenuItem component={Link} href="/settings" onClick={handleCloseMenu}>
+                  <Typography variant="body2">Account Settings</Typography>
+                </MenuItem>
+                <MenuItem
+                  sx={{ display: { xs: 'flex', sm: 'none' }, gap: 1 }}
+                  onClick={() => {
+                    import("@/app/(protected)/masterpass/logic").then(({ masterPassCrypto }) => {
+                      masterPassCrypto.lockNow();
+                      sessionStorage.setItem("masterpass_return_to", window.location.pathname);
+                      window.location.replace("/masterpass");
+                    });
+                    handleCloseMenu();
+                  }}
                 >
-                  <div className="px-4 py-3 border-b">
-                    <div className="font-medium">{user.name || user.email}</div>
-                    <div className="text-xs text-muted-foreground truncate">
-                      {user.email}
-                    </div>
-                  </div>
-                  <Link href="/settings">
-                    <button
-                      className="w-full text-left px-4 py-2 hover:bg-accent text-sm"
-                      onClick={() => setShowMenu(false)}
-                    >
-                      Account Settings
-                    </button>
-                  </Link>
-                  {/* Mobile-only: Lock now in account dropdown */}
-                  <button
-                    className="w-full text-left px-4 py-2 hover:bg-accent text-sm flex items-center gap-2 sm:hidden"
-                    onClick={() => {
-                      // Lock immediately and redirect to masterpass
-                      import("next/navigation").then(
-                        () => {
-                          // Note: cannot use hooks here; fallback to direct masterPassCrypto + location
-                          Promise.resolve().then(async () => {
-                            const { masterPassCrypto } = await import(
-                              "@/app/(protected)/masterpass/logic"
-                            );
-                            masterPassCrypto.lockNow();
-                            try {
-                              const path = window.location.pathname;
-                              sessionStorage.setItem(
-                                "masterpass_return_to",
-                                path,
-                              );
-                              window.location.replace("/masterpass");
-                            } catch {
-                              window.location.href = "/masterpass";
-                            }
-                          });
-                        },
-                      );
-                      setShowMenu(false);
-                    }}
-                  >
-                    <ShieldCheckIcon className="h-4 w-4" />
-                    Lock now
-                  </button>
-                  <button
-                    className="w-full text-left px-4 py-2 hover:bg-accent text-sm flex items-center gap-2 text-destructive"
-                    onClick={async () => {
-                      setShowMenu(false);
-                      await logout();
-                    }}
-                  >
-                    <ArrowRightOnRectangleIcon className="h-4 w-4" />
-                    Logout
-                  </button>
-                </div>
-              )}
-            </div>
+                  <ShieldCheckIcon style={{ width: 16, height: 16 }} />
+                  <Typography variant="body2">Lock now</Typography>
+                </MenuItem>
+                <MenuItem
+                  onClick={async () => {
+                    handleCloseMenu();
+                    await logout();
+                  }}
+                  sx={{ color: 'error.main', gap: 1 }}
+                >
+                  <ArrowRightOnRectangleIcon style={{ width: 16, height: 16 }} />
+                  <Typography variant="body2">Logout</Typography>
+                </MenuItem>
+              </Menu>
+            </Box>
           )}
-        </div>
-      </div>
-    </nav>
+        </Box>
+      </Toolbar>
+    </AppBar>
   );
 }
