@@ -19,12 +19,12 @@ import {
   Tooltip,
 } from "@mui/material";
 import {
-  Copy,
-  RefreshCw,
-  Clock,
-  Sparkles,
-  ShieldCheck,
-} from "lucide-react";
+  ContentCopy as ContentCopyIcon,
+  Refresh as RefreshIcon,
+  History as HistoryIcon,
+  AutoAwesome as AutoAwesomeIcon,
+  Shield as ShieldIcon,
+} from "@mui/icons-material";
 import { generateRandomPassword } from "@/utils/password";
 import { useAI } from "@/app/context/AIContext";
 import toast from "react-hot-toast";
@@ -53,7 +53,7 @@ export default function PasswordGenerator() {
                 </Box>
             ), { 
               duration: 5000, 
-              icon: <ShieldCheck size={20} color="#00F5FF" />,
+              icon: <ShieldIcon sx={{ fontSize: 20, color: "#00F5FF" }} />,
               style: {
                 background: 'rgba(10, 10, 10, 0.95)',
                 backdropFilter: 'blur(25px)',
@@ -157,12 +157,12 @@ export default function PasswordGenerator() {
           <Stack direction="row" spacing={0.5} sx={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)' }}>
             <Tooltip title="Copy">
               <IconButton onClick={handleCopy} size="small" sx={{ color: copied ? '#00F5FF' : 'rgba(255, 255, 255, 0.4)' }}>
-                <Copy size={18} />
+                <ContentCopyIcon sx={{ fontSize: 18 }} />
               </IconButton>
             </Tooltip>
             <Tooltip title="Regenerate">
               <IconButton onClick={handleGenerate} size="small" sx={{ color: 'rgba(255, 255, 255, 0.4)' }}>
-                <RefreshCw size={18} />
+                <RefreshIcon sx={{ fontSize: 18 }} />
               </IconButton>
             </Tooltip>
           </Stack>
@@ -215,7 +215,7 @@ export default function PasswordGenerator() {
             variant="outlined"
             onClick={handleAnalyze}
             disabled={isAnalyzing}
-            startIcon={isAnalyzing ? <CircularProgress size={16} color="inherit" /> : <Sparkles size={16} />}
+            startIcon={isAnalyzing ? <CircularProgress size={16} color="inherit" /> : <AutoAwesomeIcon sx={{ fontSize: 16 }} />}
             sx={{
               borderColor: alpha('#00F5FF', 0.2),
               color: '#00F5FF',
@@ -232,7 +232,7 @@ export default function PasswordGenerator() {
         {showHistory && (
           <Box sx={{ mt: 2, pt: 2, borderTop: '1px solid rgba(255, 255, 255, 0.05)' }}>
             <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1.5 }}>
-              <Clock size={14} color="rgba(255, 255, 255, 0.4)" />
+              <HistoryIcon sx={{ fontSize: 14, color: "rgba(255, 255, 255, 0.4)" }} />
               <Typography variant="caption" sx={{ fontWeight: 700, color: 'rgba(255, 255, 255, 0.4)' }}>RECENT PASSWORDS</Typography>
             </Stack>
             {history.length === 0 ? (
@@ -269,7 +269,7 @@ export default function PasswordGenerator() {
                       }}
                       sx={{ color: 'rgba(255, 255, 255, 0.3)' }}
                     >
-                      <Copy size={14} />
+                      <ContentCopyIcon sx={{ fontSize: 14 }} />
                     </IconButton>
                   </ListItem>
                 ))}

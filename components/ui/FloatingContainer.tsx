@@ -2,7 +2,11 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Box, Paper, Typography, IconButton, alpha } from "@mui/material";
-import { X as CloseIcon, Minus as MinimizeIcon, Maximize2 as MaximizeIcon } from "lucide-react";
+import { 
+  Close as CloseIcon, 
+  Remove as MinimizeIcon, 
+  OpenInFull as MaximizeIcon 
+} from "@mui/icons-material";
 
 interface FloatingContainerProps {
   children: React.ReactNode;
@@ -119,7 +123,7 @@ export function FloatingContainer({
                 '&:hover': { color: 'white', bgcolor: 'rgba(255, 255, 255, 0.05)' }
               }}
             >
-              {isMinimized ? <MaximizeIcon size={14} /> : <MinimizeIcon size={14} />}
+              {isMinimized ? <MaximizeIcon sx={{ fontSize: 14 }} /> : <MinimizeIcon sx={{ fontSize: 14 }} />}
             </IconButton>
             {onClose && (
               <IconButton 
@@ -130,7 +134,7 @@ export function FloatingContainer({
                   '&:hover': { color: '#FF4D4D', bgcolor: alpha('#FF4D4D', 0.1) } 
                 }}
               >
-                <CloseIcon size={14} />
+                <CloseIcon sx={{ fontSize: 14 }} />
               </IconButton>
             )}
           </Box>

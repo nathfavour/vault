@@ -16,7 +16,10 @@ import {
   alpha,
   Stack
 } from "@mui/material";
-import { X, Mail, Lock, KeyRound } from "lucide-react";
+import CloseIcon from "@mui/icons-material/Close";
+import MailIcon from "@mui/icons-material/Mail";
+import LockIcon from "@mui/icons-material/Lock";
+import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import { createPasswordRecovery, updatePasswordRecovery } from "@/lib/appwrite";
 import toast from "react-hot-toast";
 
@@ -99,7 +102,7 @@ export function ResetPasswordModal({ isOpen, onClose }: ResetPasswordModalProps)
           '&:hover': { color: '#fff', bgcolor: 'rgba(255, 255, 255, 0.05)' }
         }}
       >
-        <X size={20} />
+        <CloseIcon sx={{ fontSize: 20 }} />
       </IconButton>
 
       <Box sx={{ p: 4, textAlign: 'center' }}>
@@ -114,7 +117,7 @@ export function ResetPasswordModal({ isOpen, onClose }: ResetPasswordModalProps)
           mx: 'auto',
           mb: 3
         }}>
-          {showResetForm ? <KeyRound size={32} color="#00F5FF" /> : <Mail size={32} color="#00F5FF" />}
+          {showResetForm ? <VpnKeyIcon sx={{ fontSize: 32, color: "#00F5FF" }} /> : <MailIcon sx={{ fontSize: 32, color: "#00F5FF" }} />}
         </Box>
         <Typography variant="h5" sx={{ 
           fontWeight: 900, 

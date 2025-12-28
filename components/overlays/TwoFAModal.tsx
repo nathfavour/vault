@@ -17,13 +17,13 @@ import {
   alpha,
 } from "@mui/material";
 import {
-  Smartphone,
-  Mail,
-  Phone,
-  Key,
-  ChevronLeft,
-  ShieldCheck,
-} from "lucide-react";
+  Smartphone as SmartphoneIcon,
+  Mail as MailIcon,
+  Phone as PhoneIcon,
+  VpnKey as KeyIcon,
+  ChevronLeft as ChevronLeftIcon,
+  VerifiedUser as ShieldCheckIcon,
+} from "@mui/icons-material";
 import {
   listMfaFactors,
   createMfaChallenge,
@@ -135,7 +135,7 @@ export function TwoFAModal({ isOpen, onClose }: TwoFAModalProps) {
           color: '#00F5FF',
           mb: 2
         }}>
-          <ShieldCheck size={32} />
+          <ShieldCheckIcon sx={{ fontSize: 32 }} />
         </Box>
         <Typography variant="h5" sx={{ 
           fontWeight: 900, 
@@ -165,7 +165,7 @@ export function TwoFAModal({ isOpen, onClose }: TwoFAModalProps) {
               <Button
                 fullWidth
                 variant="outlined"
-                startIcon={<Smartphone size={20} />}
+                startIcon={<SmartphoneIcon sx={{ fontSize: 20 }} />}
                 onClick={() => handleCreateChallenge("totp")}
                 disabled={loading}
                 sx={{
@@ -189,7 +189,7 @@ export function TwoFAModal({ isOpen, onClose }: TwoFAModalProps) {
               <Button
                 fullWidth
                 variant="outlined"
-                startIcon={<Mail size={20} />}
+                startIcon={<MailIcon sx={{ fontSize: 20 }} />}
                 onClick={() => handleCreateChallenge("email")}
                 disabled={loading}
                 sx={{
@@ -213,7 +213,7 @@ export function TwoFAModal({ isOpen, onClose }: TwoFAModalProps) {
               <Button
                 fullWidth
                 variant="outlined"
-                startIcon={<Phone size={20} />}
+                startIcon={<PhoneIcon sx={{ fontSize: 20 }} />}
                 onClick={() => handleCreateChallenge("phone")}
                 disabled={loading}
                 sx={{
@@ -248,7 +248,7 @@ export function TwoFAModal({ isOpen, onClose }: TwoFAModalProps) {
                 <Button
                   fullWidth
                   variant="outlined"
-                  startIcon={<Key size={20} />}
+                  startIcon={<KeyIcon sx={{ fontSize: 20 }} />}
                   onClick={() => handleCreateChallenge("recoverycode")}
                   disabled={loading}
                   sx={{
@@ -337,7 +337,7 @@ export function TwoFAModal({ isOpen, onClose }: TwoFAModalProps) {
             <Button
               fullWidth
               variant="text"
-              startIcon={<ChevronLeft size={18} />}
+              startIcon={<ChevronLeftIcon sx={{ fontSize: 18 }} />}
               onClick={resetChallenge}
               sx={{ color: 'rgba(255, 255, 255, 0.5)', '&:hover': { color: 'white' } }}
             >

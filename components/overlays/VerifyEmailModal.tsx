@@ -14,7 +14,13 @@ import {
   Fade,
   alpha,
 } from "@mui/material";
-import { CheckCircle2, AlertCircle, Mail, Home, Settings } from "lucide-react";
+import {
+  CheckCircle as CheckCircleIcon,
+  ErrorOutline as ErrorOutlineIcon,
+  Mail as MailIcon,
+  Home as HomeIcon,
+  Settings as SettingsIcon,
+} from "@mui/icons-material";
 import { completeEmailVerification } from "@/lib/appwrite";
 
 interface VerifyEmailModalProps {
@@ -106,9 +112,9 @@ export function VerifyEmailModal({ isOpen, onClose }: VerifyEmailModalProps) {
           mb: 2
         }}>
           {status === 'verifying' && <CircularProgress size={32} color="inherit" />}
-          {status === 'success' && <CheckCircle2 size={32} />}
-          {(status === 'error' || status === 'missing') && <AlertCircle size={32} />}
-          {status === 'idle' && <Mail size={32} />}
+          {status === 'success' && <CheckCircleIcon sx={{ fontSize: 32 }} />}
+          {(status === 'error' || status === 'missing') && <ErrorOutlineIcon sx={{ fontSize: 32 }} />}
+          {status === 'idle' && <MailIcon sx={{ fontSize: 32 }} />}
         </Box>
         <Typography variant="h5" sx={{ 
           fontWeight: 900, 
@@ -139,7 +145,7 @@ export function VerifyEmailModal({ isOpen, onClose }: VerifyEmailModalProps) {
               <Button
                 fullWidth
                 variant="contained"
-                startIcon={<Home size={18} />}
+                startIcon={<HomeIcon sx={{ fontSize: 18 }} />}
                 onClick={goHome}
                 sx={{
                   py: 1.5,
@@ -166,7 +172,7 @@ export function VerifyEmailModal({ isOpen, onClose }: VerifyEmailModalProps) {
                 <Button
                   fullWidth
                   variant="contained"
-                  startIcon={<Settings size={18} />}
+                  startIcon={<SettingsIcon sx={{ fontSize: 18 }} />}
                   onClick={goToSettings}
                   sx={{
                     py: 1.5,
@@ -182,7 +188,7 @@ export function VerifyEmailModal({ isOpen, onClose }: VerifyEmailModalProps) {
                 <Button
                   fullWidth
                   variant="outlined"
-                  startIcon={<Home size={18} />}
+                  startIcon={<HomeIcon sx={{ fontSize: 18 }} />}
                   onClick={goHome}
                   sx={{
                     py: 1.5,
@@ -210,7 +216,7 @@ export function VerifyEmailModal({ isOpen, onClose }: VerifyEmailModalProps) {
                 <Button
                   fullWidth
                   variant="contained"
-                  startIcon={<Settings size={18} />}
+                  startIcon={<SettingsIcon sx={{ fontSize: 18 }} />}
                   onClick={goToSettings}
                   sx={{
                     py: 1.5,
@@ -225,7 +231,7 @@ export function VerifyEmailModal({ isOpen, onClose }: VerifyEmailModalProps) {
                 <Button
                   fullWidth
                   variant="outlined"
-                  startIcon={<Home size={18} />}
+                  startIcon={<HomeIcon sx={{ fontSize: 18 }} />}
                   onClick={goHome}
                   sx={{
                     py: 1.5,

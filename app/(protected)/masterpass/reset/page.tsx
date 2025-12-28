@@ -79,7 +79,7 @@ export default function MasterpassResetPage() {
             color: step === 'reset' ? '#FF4D4D' : '#00F5FF',
             mb: 3
           }}>
-            {step === 'reset' ? <ShieldAlert size={40} /> : <CheckCircle2 size={40} />}
+            {step === 'reset' ? <SecurityIcon sx={{ fontSize: 40 }} /> : <CheckCircleIcon sx={{ fontSize: 40 }} />}
           </Box>
 
           <Typography variant="h4" sx={{ 
@@ -110,7 +110,7 @@ export default function MasterpassResetPage() {
                 alignItems: 'flex-start',
                 textAlign: 'left'
               }}>
-                <AlertTriangle size={20} color="#FF4D4D" style={{ flexShrink: 0, marginTop: '2px' }} />
+                <WarningAmberIcon sx={{ fontSize: 20, color: "#FF4D4D", flexShrink: 0, mt: '2px' }} />
                 <Typography variant="caption" sx={{ color: '#FF4D4D', fontWeight: 500 }}>
                   WARNING: This will permanently delete all your credentials, notes, and folders. This cannot be undone.
                 </Typography>
@@ -144,7 +144,7 @@ export default function MasterpassResetPage() {
               <Button
                 fullWidth
                 variant="text"
-                startIcon={<ArrowLeft size={18} />}
+                startIcon={<ArrowBackIcon sx={{ fontSize: 18 }} />}
                 onClick={() => router.back()}
                 disabled={loading}
                 sx={{ 

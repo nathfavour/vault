@@ -19,7 +19,13 @@ import {
   useTheme,
   Tooltip
 } from "@mui/material";
-import { Eye, EyeOff, Lock, Shield, LogOut, Fingerprint, AlertCircle } from "lucide-react";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import LockIcon from "@mui/icons-material/Lock";
+import ShieldIcon from "@mui/icons-material/Shield";
+import LogoutIcon from "@mui/icons-material/Logout";
+import FingerprintIcon from "@mui/icons-material/Fingerprint";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { useAppwrite } from "@/app/appwrite-provider";
 import { masterPassCrypto } from "@/app/(protected)/masterpass/logic";
 import { useFinalizeAuth } from "@/lib/finalizeAuth";
@@ -191,7 +197,7 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
           boxShadow: '0 8px 32px rgba(0, 240, 255, 0.3)',
           color: 'black'
         }}>
-          <Lock size={40} />
+          <LockIcon sx={{ fontSize: 40 }} />
         </Paper>
       </Box>
 
@@ -250,14 +256,14 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
                   sx: { borderRadius: '16px', bgcolor: 'rgba(255, 255, 255, 0.05)' },
                   endAdornment: (
                     <IconButton onClick={() => setShowPassword(!showPassword)} edge="end" sx={{ color: 'text.secondary' }}>
-                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      {showPassword ? <VisibilityOffIcon sx={{ fontSize: 18 }} /> : <VisibilityIcon sx={{ fontSize: 18 }} />}
                     </IconButton>
                   )
                 }}
               />
               {capsLock && (
                 <Typography variant="caption" sx={{ color: 'warning.main', mt: 1, display: 'flex', alignItems: 'center', gap: 0.5, ml: 1 }}>
-                  <AlertCircle size={12} /> Caps Lock is ON
+                  <ErrorOutlineIcon sx={{ fontSize: 12 }} /> Caps Lock is ON
                 </Typography>
               )}
             </Box>
@@ -287,14 +293,14 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
                     sx: { borderRadius: '16px', bgcolor: 'rgba(255, 255, 255, 0.05)' },
                     endAdornment: (
                       <IconButton onClick={() => setShowConfirmPassword(!showConfirmPassword)} edge="end" sx={{ color: 'text.secondary' }}>
-                        {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                        {showConfirmPassword ? <VisibilityOffIcon sx={{ fontSize: 18 }} /> : <VisibilityIcon sx={{ fontSize: 18 }} />}
                       </IconButton>
                     )
                   }}
                 />
                 {confirmCapsLock && (
                   <Typography variant="caption" sx={{ color: 'warning.main', mt: 1, display: 'flex', alignItems: 'center', gap: 0.5, ml: 1 }}>
-                    <AlertCircle size={12} /> Caps Lock is ON
+                    <ErrorOutlineIcon sx={{ fontSize: 12 }} /> Caps Lock is ON
                   </Typography>
                 )}
                 {confirmPassword.length > 0 && (
@@ -314,7 +320,7 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
                 display: 'flex',
                 gap: 1.5
               }}>
-                <Shield size={20} color={muiTheme.palette.info.main} style={{ flexShrink: 0 }} />
+                <ShieldIcon sx={{ fontSize: 20, color: muiTheme.palette.info.main, flexShrink: 0 }} />
                 <Typography variant="caption" sx={{ color: 'info.main', fontWeight: 500 }}>
                   <strong>Important:</strong> Your master password encrypts all your data locally. We cannot recover it if you forget it.
                 </Typography>
@@ -341,7 +347,7 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
             fullWidth
             onClick={handlePasskeyUnlock}
             disabled={passkeyLoading || loading}
-            startIcon={passkeyLoading ? <CircularProgress size={18} /> : <Fingerprint size={18} />}
+            startIcon={passkeyLoading ? <CircularProgress size={18} /> : <FingerprintIcon sx={{ fontSize: 18 }} />}
             sx={{ 
               borderRadius: '16px', 
               py: 1.5, 
@@ -362,7 +368,7 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
           variant="text" 
           size="small" 
           onClick={handleLogout}
-          startIcon={<LogOut size={14} />}
+          startIcon={<LogoutIcon sx={{ fontSize: 14 }} />}
           sx={{ color: 'text.secondary', fontWeight: 600 }}
         >
           Logout from Account

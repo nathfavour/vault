@@ -19,7 +19,11 @@ import {
   Chip
 } from "@mui/material";
 import { ImportItem, DeduplicationEngine } from "@/lib/import/deduplication";
-import { Check, X, ArrowRight, Database, Merge } from "lucide-react";
+import CheckIcon from "@mui/icons-material/Check";
+import CloseIcon from "@mui/icons-material/Close";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import StorageIcon from "@mui/icons-material/Storage";
+import MergeIcon from "@mui/icons-material/Merge";
 
 interface ImportPreviewModalProps {
   isOpen: boolean;
@@ -80,7 +84,7 @@ export function ImportPreviewModal({
       <Box sx={{ display: 'flex', flexDirection: 'column', maxHeight: '85vh' }}>
         <Box sx={{ p: 4, borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
-            <Database size={24} color="#00F5FF" />
+            <StorageIcon sx={{ fontSize: 24, color: "#00F5FF" }} />
             <Typography variant="h5" sx={{ fontWeight: 900, fontFamily: 'var(--font-space-grotesk)', color: 'white' }}>
               Import Preview
             </Typography>
@@ -112,7 +116,7 @@ export function ImportPreviewModal({
               >
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                    <X size={18} color="#FF4D4D" />
+                    <CloseIcon sx={{ fontSize: 18, color: "#FF4D4D" }} />
                     <Typography variant="subtitle1" sx={{ fontWeight: 800, color: 'white' }}>
                       Remove Exact Duplicates
                     </Typography>
@@ -128,7 +132,7 @@ export function ImportPreviewModal({
                     alignItems: 'center',
                     justifyContent: 'center'
                   }}>
-                    {removeDuplicates && <Check size={14} color="#000" strokeWidth={3} />}
+                    {removeDuplicates && <CheckIcon sx={{ fontSize: 14, color: "#000", fontWeight: 900 }} />}
                   </Box>
                 </Box>
                 <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.5)', mb: 2 }}>
@@ -161,7 +165,7 @@ export function ImportPreviewModal({
               >
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                    <Merge size={18} color="#00F5FF" />
+                    <MergeIcon sx={{ fontSize: 18, color: "#00F5FF" }} />
                     <Typography variant="subtitle1" sx={{ fontWeight: 800, color: 'white' }}>
                       Smart Merge
                     </Typography>
@@ -177,7 +181,7 @@ export function ImportPreviewModal({
                     alignItems: 'center',
                     justifyContent: 'center'
                   }}>
-                    {mergeSimilar && <Check size={14} color="#000" strokeWidth={3} />}
+                    {mergeSimilar && <CheckIcon sx={{ fontSize: 14, color: "#000", fontWeight: 900 }} />}
                   </Box>
                 </Box>
                 <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.5)', mb: 2 }}>
@@ -212,7 +216,7 @@ export function ImportPreviewModal({
                 Original
               </Typography>
             </Box>
-            <ArrowRight size={24} color="rgba(255, 255, 255, 0.2)" />
+            <ArrowForwardIcon sx={{ fontSize: 24, color: "rgba(255, 255, 255, 0.2)" }} />
             <Box sx={{ textAlign: 'center' }}>
               <Typography variant="h4" sx={{ fontWeight: 900, color: '#00F5FF', fontFamily: 'var(--font-space-grotesk)' }}>
                 {finalItems.length}

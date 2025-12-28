@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { Dialog as MuiDialog, DialogContent, IconButton, Box, alpha } from "@mui/material";
-import { X as CloseIcon } from "lucide-react";
+import { Close as CloseIcon } from "@mui/icons-material";
 
 export function Dialog({
   open,
@@ -53,7 +53,7 @@ export function Dialog({
           }
         }}
       >
-        <CloseIcon size={20} />
+        <CloseIcon sx={{ fontSize: 20 }} />
       </IconButton>
       <DialogContent sx={{ p: 0 }}>
         {children}

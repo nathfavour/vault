@@ -19,7 +19,10 @@ import {
 import { startRegistration } from "@simplewebauthn/browser";
 import { AppwriteService } from "@/lib/appwrite";
 import toast from "react-hot-toast";
-import { Eye, EyeOff, CheckCircle2, Fingerprint } from "lucide-react";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import FingerprintIcon from "@mui/icons-material/Fingerprint";
 import { masterPassCrypto } from "@/app/(protected)/masterpass/logic";
 
 interface PasskeySetupProps {
@@ -256,7 +259,7 @@ export function PasskeySetup({
                   sx: { borderRadius: '16px', bgcolor: 'rgba(255, 255, 255, 0.05)' },
                   endAdornment: (
                     <IconButton onClick={() => setShowPassword(!showPassword)} edge="end" sx={{ color: 'text.secondary' }}>
-                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      {showPassword ? <VisibilityOffIcon sx={{ fontSize: 18 }} /> : <VisibilityIcon sx={{ fontSize: 18 }} />}
                     </IconButton>
                   )
                 }}
@@ -309,7 +312,7 @@ export function PasskeySetup({
                   alignItems: 'center',
                   gap: 1
                 }}>
-                  <Fingerprint size={32} color={muiTheme.palette.primary.main} />
+                  <FingerprintIcon sx={{ fontSize: 32, color: muiTheme.palette.primary.main }} />
                   <Typography variant="caption" sx={{ color: 'primary.main', fontWeight: 600 }}>
                     Face ID • Touch ID • Windows Hello
                   </Typography>
@@ -331,7 +334,7 @@ export function PasskeySetup({
                 mx: 'auto',
                 mb: 1
               }}>
-                <CheckCircle2 size={32} color="#4CAF50" />
+                <CheckCircleIcon sx={{ fontSize: 32, color: "#4CAF50" }} />
               </Box>
               <Box>
                 <Typography variant="h6" sx={{ fontWeight: 800, color: '#4CAF50', mb: 1 }}>
