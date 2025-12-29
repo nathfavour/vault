@@ -123,15 +123,6 @@ export default function DashboardPage() {
   // Remove unused organizationPreview state
   // const [organizationPreview, setOrganizationPreview] = useState<{...} | null>(null);
 
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 900);
-    };
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
   // Fetch all credentials once
   const loadAllCredentials = useCallback(async () => {
     if (!user?.$id) return;

@@ -97,7 +97,7 @@ export function ImportPreviewModal({
         <Box sx={{ flex: 1, overflowY: 'auto', p: 4 }}>
           {/* Controls */}
           <Grid container spacing={3} sx={{ mb: 4 }}>
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <Paper
                 onClick={() => setRemoveDuplicates(!removeDuplicates)}
                 sx={{
@@ -146,7 +146,7 @@ export function ImportPreviewModal({
               </Paper>
             </Grid>
 
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <Paper
                 onClick={() => setMergeSimilar(!mergeSimilar)}
                 sx={{

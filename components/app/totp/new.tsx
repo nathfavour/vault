@@ -213,7 +213,7 @@ export default function NewTotpDialog({
 
           {showAdvanced && (
             <Grid container spacing={2}>
-              <Grid item xs={6}>
+              <Grid size={{ xs: 6 }}>
                 <TextField
                   fullWidth
                   label="Digits"
@@ -230,7 +230,7 @@ export default function NewTotpDialog({
                   }}
                 />
               </Grid>
-              <Grid item xs={6}>
+              <Grid size={{ xs: 6 }}>
                 <TextField
                   fullWidth
                   label="Period (s)"

@@ -219,7 +219,7 @@ export default function CredentialDialog({
 
         <DialogContent sx={{ p: 3, pt: 1 }}>
           <Grid container spacing={2.5}>
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <TextField
                 fullWidth
                 label="Name"
@@ -235,7 +235,7 @@ export default function CredentialDialog({
               />
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <TextField
                 fullWidth
                 label="Username/Email"
@@ -256,7 +256,7 @@ export default function CredentialDialog({
               />
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <Box sx={{ display: 'flex', gap: 1 }}>
                 <TextField
                   fullWidth
@@ -300,7 +300,7 @@ export default function CredentialDialog({
               </Box>
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <TextField
                 fullWidth
                 label="Website URL"
@@ -321,7 +321,7 @@ export default function CredentialDialog({
               />
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <TextField
                 fullWidth
                 label="Tags"
@@ -341,7 +341,7 @@ export default function CredentialDialog({
               />
             </Grid>
 
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <TextField
                 fullWidth
                 label="Notes"
@@ -364,7 +364,7 @@ export default function CredentialDialog({
             </Grid>
 
             {/* Custom Fields */}
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
                 <Typography variant="subtitle2" sx={{ fontWeight: 700, color: 'text.secondary' }}>
                   Custom Fields
