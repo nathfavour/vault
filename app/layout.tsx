@@ -23,7 +23,7 @@ const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   variable: "--font-space-grotesk",
   display: "swap",
-  weight: ["400", "700", "900"],
+  weight: ["400", "500", "700"],
 });
 
 export const metadata: Metadata = {

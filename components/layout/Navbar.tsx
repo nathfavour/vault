@@ -9,19 +9,18 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import LockIcon from "@mui/icons-material/Lock";
 import Link from "next/link";
 import { useAppwrite } from "@/app/appwrite-provider";
-import { 
-  Button, 
-  Box, 
-  AppBar, 
-  Toolbar, 
-  Typography, 
-  IconButton, 
-  Menu, 
-  MenuItem, 
-  Divider, 
-  Tooltip,
-  alpha
-} from "@mui/material";
+import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import IconButton from "@mui/material/IconButton";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import Divider from "@mui/material/Divider";
+import Tooltip from "@mui/material/Tooltip";
+import CircularProgress from "@mui/material/CircularProgress";
+import { alpha } from "@mui/material/styles";
 import { useState } from "react";
 import { DropdownMenu } from "@/components/ui/DropdownMenu";
 import { useAI } from "@/app/context/AIContext";

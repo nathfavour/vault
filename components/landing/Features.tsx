@@ -1,6 +1,11 @@
 "use client";
 
-import { Box, Container, Typography, Grid, Paper, alpha } from "@mui/material";
+import Box from "@mui/material/Box";
+import Container from "@mui/material/Container";
+import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Grid";
+import Paper from "@mui/material/Paper";
+import { alpha } from "@mui/material/styles";
 import ShieldIcon from "@mui/icons-material/Shield";
 import LockIcon from "@mui/icons-material/Lock";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
@@ -60,7 +65,7 @@ export default function Features() {
 
         <Grid container spacing={4}>
           {features.map((feature, i) => (
-            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={i}>
+            <Grid item xs={12} sm={6} md={4} key={i}>
               <Paper sx={{ 
                 p: 4, 
                 height: '100%', 

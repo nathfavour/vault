@@ -12,17 +12,15 @@ import PersonIcon from "@mui/icons-material/Person";
 import SettingsIcon from "@mui/icons-material/Settings";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import {
-  Box,
-  Typography,
-  Button,
-  Container,
-  Grid,
-  Paper,
-  Stack,
-  IconButton,
-  CircularProgress,
-} from "@mui/material";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import Container from "@mui/material/Container";
+import Grid from "@mui/material/Grid";
+import Paper from "@mui/material/Paper";
+import Stack from "@mui/material/Stack";
+import IconButton from "@mui/material/IconButton";
+import CircularProgress from "@mui/material/CircularProgress";
 import { useRef, useEffect } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { useAppwrite } from "@/app/appwrite-provider";
@@ -219,7 +217,7 @@ export default function LandingPage() {
                 { label: 'Recent Activity', val: '3', icon: AccessTimeIcon, color: '#FF9800' },
                 { label: 'Security Alerts', val: '1', icon: WarningIcon, color: '#FF4D4D' },
               ].map((stat, i) => (
-                <Grid size={{ xs: 6, md: 3 }} key={i}>
+                <Grid item xs={6} md={3} key={i}>
                   <Paper sx={{ 
                     p: 2.5, 
                     borderRadius: '20px', 
@@ -240,7 +238,7 @@ export default function LandingPage() {
             </Grid>
 
             <Grid container spacing={3}>
-              <Grid size={{ xs: 12, md: 4 }}>
+              <Grid item xs={12} md={4}>
                 <Paper sx={{ 
                   p: 3, 
                   borderRadius: '24px', 
@@ -257,7 +255,7 @@ export default function LandingPage() {
                   </Stack>
                 </Paper>
               </Grid>
-              <Grid size={{ xs: 12, md: 8 }}>
+              <Grid item xs={12} md={8}>
                 <Paper sx={{ 
                   p: 3, 
                   borderRadius: '24px', 
