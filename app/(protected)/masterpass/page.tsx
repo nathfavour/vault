@@ -47,7 +47,7 @@ export default function MasterPassPage() {
       }}>
         <Container maxWidth="sm">
           <Paper sx={{
-            p: 6,
+            p: 4,
             borderRadius: '32px',
             bgcolor: 'rgba(255, 255, 255, 0.02)',
             backdropFilter: 'blur(20px)',
@@ -56,20 +56,20 @@ export default function MasterPassPage() {
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: 3
+            gap: 2
           }}>
             <Box sx={{ 
-              width: 80, 
-              height: 80, 
-              borderRadius: '24px', 
+              width: 64, 
+              height: 64, 
+              borderRadius: '18px', 
               bgcolor: alpha(theme.palette.primary.main, 0.1),
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               color: 'primary.main',
-              mb: 1
+              mb: 0.5
             }}>
-              <ShieldIcon sx={{ fontSize: 40 }} />
+              <ShieldIcon sx={{ fontSize: 32 }} />
             </Box>
             <Box>
               <Typography variant="h4" sx={{ fontWeight: 900, fontFamily: 'var(--font-space-grotesk)', mb: 1 }}>

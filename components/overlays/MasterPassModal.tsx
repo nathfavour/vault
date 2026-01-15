@@ -185,11 +185,11 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
         }
       }}
     >
-      <Box sx={{ position: 'absolute', top: -40, left: '50%', transform: 'translateX(-50%)' }}>
+      <Box sx={{ position: 'absolute', top: -32, left: '50%', transform: 'translateX(-50%)' }}>
         <Paper sx={{ 
-          width: 80, 
-          height: 80, 
-          borderRadius: '24px', 
+          width: 64, 
+          height: 64, 
+          borderRadius: '18px', 
           bgcolor: 'primary.main', 
           display: 'flex', 
           alignItems: 'center', 
@@ -197,11 +197,11 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
           boxShadow: '0 8px 32px rgba(0, 240, 255, 0.3)',
           color: 'black'
         }}>
-          <LockIcon sx={{ fontSize: 40 }} />
+          <LockIcon sx={{ fontSize: 32 }} />
         </Paper>
       </Box>
 
-      <DialogTitle sx={{ textAlign: 'center', pt: 7, pb: 1 }}>
+      <DialogTitle sx={{ textAlign: 'center', pt: 5, pb: 1 }}>
         {user && (
           <Box sx={{ mb: 2 }}>
             <Typography variant="subtitle1" sx={{ fontWeight: 800, color: 'primary.main' }}>
