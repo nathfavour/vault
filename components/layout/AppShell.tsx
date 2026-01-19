@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState, useMemo } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import ShieldIcon from "@mui/icons-material/Shield";
 import SettingsIcon from "@mui/icons-material/Settings";
@@ -58,6 +58,7 @@ const SIMPLIFIED_LAYOUT_PATHS = [
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const router = useRouter();
   const theme = 'dark' as "light" | "dark" | "system";
   const setTheme = (t: "light" | "dark" | "system") => {};
@@ -65,7 +66,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const { user, loading, logout, refresh } = useAppwrite();
   const [showPasskeySetup, setShowPasskeySetup] = useState(false);
 
-  const isSimplifiedLayout = SIMPLIFIED_LAYOUT_PATHS.includes(pathname);
+  const isEmbedded = useMemo(() => searchParams?.get('is_embedded') === 'true', [searchParams]);
+  const isSimplifiedLayout = SIMPLIFIED_LAYOUT_PATHS.includes(pathname) || isEmbedded;
 
   useEffect(() => {
     if (user && !loading) {
