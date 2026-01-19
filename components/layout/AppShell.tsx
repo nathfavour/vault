@@ -3,17 +3,19 @@
 import { useEffect, useState, useMemo } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import ShieldIcon from "@mui/icons-material/Shield";
-import SettingsIcon from "@mui/icons-material/Settings";
-import LogOutIcon from "@mui/icons-material/Logout";
-import SunIcon from "@mui/icons-material/LightMode";
-import MoonIcon from "@mui/icons-material/DarkMode";
-import MonitorIcon from "@mui/icons-material/SettingsBrightness";
-import HomeIcon from "@mui/icons-material/Home";
-import PlusCircleIcon from "@mui/icons-material/AddCircle";
-import Share2Icon from "@mui/icons-material/Share";
-import UploadIcon from "@mui/icons-material/FileUpload";
-import LockIcon from "@mui/icons-material/Lock";
+import { 
+  Shield, 
+  Settings, 
+  LogOut, 
+  Sun, 
+  Moon, 
+  Monitor, 
+  Home, 
+  PlusCircle, 
+  Share2, 
+  Upload, 
+  Lock 
+} from "lucide-react";
 import { 
   Button, 
   Box, 
@@ -41,12 +43,12 @@ interface ExtendedUser extends Models.User<Models.Preferences> {
 }
 
 const navigation = [
-  { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
-  { name: "Sharing", href: "/sharing", icon: Share2Icon },
-  { name: "New", href: "/credentials/new", icon: PlusCircleIcon, big: true },
-  { name: "TOTP", href: "/totp", icon: ShieldIcon },
-  { name: "Import", href: "/import", icon: UploadIcon },
-  { name: "Settings", href: "/settings", icon: SettingsIcon },
+  { name: "Dashboard", href: "/dashboard", icon: Home },
+  { name: "Sharing", href: "/sharing", icon: Share2 },
+  { name: "New", href: "/credentials/new", icon: PlusCircle, big: true },
+  { name: "TOTP", href: "/totp", icon: Shield },
+  { name: "Import", href: "/import", icon: Upload },
+  { name: "Settings", href: "/settings", icon: Settings },
 ];
 
 const SIMPLIFIED_LAYOUT_PATHS = [
@@ -146,11 +148,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const ThemeIcon = () => {
     switch (theme) {
       case "light":
-        return SunIcon;
+        return <Sun size={18} strokeWidth={1.5} />;
       case "dark":
-        return MoonIcon;
+        return <Moon size={18} strokeWidth={1.5} />;
       default:
-        return MonitorIcon;
+        return <Monitor size={18} strokeWidth={1.5} />;
     }
   };
 
@@ -210,7 +212,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                       }}
                     >
                       <ListItemIcon sx={{ color: 'inherit', minWidth: 44 }}>
-                        <item.icon sx={{ fontSize: item.big ? 24 : 20 }} />
+                        <item.icon size={item.big ? 24 : 20} strokeWidth={1.5} />
                       </ListItemIcon>
                       <ListItemText
                         primary={item.name}
@@ -233,7 +235,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <Button
                 variant="text"
                 fullWidth
-                startIcon={<ThemeSymbol sx={{ fontSize: 18 }} />}
+                startIcon={ThemeSymbol}
                 onClick={() => {
                   const themes: Array<"light" | "dark" | "system"> = ["light", "dark", "system"];
                   const nextTheme = themes[(themes.indexOf(theme) + 1) % themes.length];
@@ -256,7 +258,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <Button
                 variant="text"
                 fullWidth
-                startIcon={<LockIcon sx={{ fontSize: 18 }} />}
+                startIcon={<Lock size={18} strokeWidth={1.5} />}
                 onClick={() => {
                   masterPassCrypto.lockNow();
                   if (!masterPassCrypto.isVaultUnlocked()) {
@@ -281,7 +283,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <Button
                 variant="text"
                 fullWidth
-                startIcon={<LogOutIcon sx={{ fontSize: 18 }} />}
+                startIcon={<LogOut size={18} strokeWidth={1.5} />}
                 onClick={logout}
                 sx={{ 
                   justifyContent: 'flex-start', 
@@ -365,7 +367,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                       '&:active': { transform: 'scale(0.9) translateY(4px)' }
                     }}
                   >
-                    <item.icon sx={{ fontSize: 28 }} />
+                    <item.icon size={28} strokeWidth={1.5} />
                   </Box>
                 </Box>
               );
@@ -388,7 +390,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   transition: 'all 0.2s ease'
                 }}
               >
-                <item.icon sx={{ fontSize: 22 }} />
+                <item.icon size={22} strokeWidth={1.5} />
                 <Typography 
                   variant="caption" 
                   sx={{ 
