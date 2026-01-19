@@ -8,6 +8,24 @@ import { SudoProvider } from "./context/SudoContext";
 import { Toaster } from "react-hot-toast";
 import { ThemeProvider as MuiThemeProvider, CssBaseline } from "@mui/material";
 import { darkTheme } from "@/theme/theme";
+import { EcosystemPortal } from "@/components/common/EcosystemPortal";
+
+function GlobalEcosystemHandler() {
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === ' ') {
+        e.preventDefault();
+        setOpen(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  return <EcosystemPortal open={open} onClose={() => setOpen(false)} />;
+}
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -17,6 +35,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
         <SudoProvider>
           <BackgroundTaskProvider>
             <AIProvider>
+              <GlobalEcosystemHandler />
               {children}
               <Toaster
                 position="bottom-right"
