@@ -33,6 +33,17 @@ export const MeshProtocol = {
     { id: 'connect', type: 'message', subdomain: 'connect', version: '1.0.0', status: 'online', capabilities: ['realtime_comm', 'p2p_relay'] },
   ],
 
+  getPremiumIcon: (nodeId: string) => {
+    switch (nodeId) {
+      case 'id': return 'Fingerprint';
+      case 'note': return 'FileText';
+      case 'keep': return 'Shield';
+      case 'flow': return 'Waypoints';
+      case 'connect': return 'Zap';
+      default: return 'Layers';
+    }
+  },
+
   broadcast: (message: Omit<MeshMessage, 'id' | 'timestamp' | 'sourceNode'>, sourceId: string) => {
     const fullMessage: MeshMessage = {
       ...message,
