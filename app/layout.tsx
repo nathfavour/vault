@@ -3,6 +3,7 @@ import "./globals.css";
 import { Providers } from "./providers";
 import { AppShell } from "@/components/layout/AppShell";
 import { Box } from "@mui/material";
+import { EcosystemClient } from "@/components/ecosystem/EcosystemClient";
 
 export const metadata: Metadata = {
   title: "WhisperrKeep - Premium Password Vault",
@@ -27,6 +28,7 @@ export default function RootLayout({
       </head>
       <body style={{ margin: 0, padding: 0, backgroundColor: '#000' }}>
         <Providers>
+          <EcosystemClient nodeId="keep" />
           <Box sx={{ minHeight: '100vh', width: '100%', bgcolor: '#000' }}>
             <AppShell>{children}</AppShell>
           </Box>
