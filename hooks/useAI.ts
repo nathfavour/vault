@@ -1,6 +1,6 @@
 'use client';
 
-import { useAccountSync } from './use-account-sync';
+import { useAppwrite } from '../app/appwrite-provider';
 
 export interface AIChatMessage {
   role: 'user' | 'assistant';
@@ -8,7 +8,7 @@ export interface AIChatMessage {
 }
 
 export const useAI = () => {
-  const { user } = useAccountSync();
+  const { user } = useAppwrite();
 
   const generate = async (prompt: string, options: { 
     history?: AIChatMessage[], 
