@@ -72,8 +72,6 @@ export const appwriteAccount = getAccount();
 export const appwriteDatabases = getDatabases();
 export const appwriteAvatars = getAvatars();
 
-export { client, account, databases, storage, functions, ID, Query, Permission, Role, OAuthProvider };
-
 // --- USER SESSION ---
 
 export async function getCurrentUser(): Promise<any | null> {
@@ -123,8 +121,6 @@ export async function getCurrentUserFromRequest(req: { headers: { get(k: string)
     return null;
   }
 }
-
-export { ID, Query };
 
 function isFetchNetworkError(error: unknown): boolean {
   const msg = (error instanceof Error ? error.message : String(error)).toLowerCase();
