@@ -4,6 +4,7 @@ import { Providers } from "./providers";
 import { AppShell } from "@/components/layout/AppShell";
 import { Box } from "@mui/material";
 import { EcosystemClient } from "@/components/ecosystem/EcosystemClient";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "WhisperrKeep - Premium Password Vault",
@@ -30,7 +31,11 @@ export default function RootLayout({
         <Providers>
           <EcosystemClient nodeId="keep" />
           <Box sx={{ minHeight: '100vh', width: '100%', bgcolor: '#000' }}>
-            <AppShell>{children}</AppShell>
+            <AppShell>
+              <Suspense fallback={null}>
+                {children}
+              </Suspense>
+            </AppShell>
           </Box>
         </Providers>
       </body>
