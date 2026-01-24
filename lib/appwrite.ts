@@ -9,6 +9,7 @@ import {
   Models,
   Permission,
   Role,
+  Realtime,
 } from "appwrite";
 import type {
   Credentials,
@@ -67,10 +68,18 @@ export const getAvatars = () => {
   return _avatars;
 };
 
+let _realtime: Realtime | null = null;
+export const getRealtime = () => {
+  if (!_realtime) _realtime = new Realtime(getClient());
+  return _realtime;
+};
+
 export const appwriteClient = getClient();
 export const appwriteAccount = getAccount();
 export const appwriteDatabases = getDatabases();
 export const appwriteAvatars = getAvatars();
+export const appwriteRealtime = getRealtime();
+export const tablesDB = appwriteDatabases as any; // Alignment with new terminology
 
 export { ID, Query };
 
