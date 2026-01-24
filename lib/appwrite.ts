@@ -1103,10 +1103,14 @@ export class AppwriteService {
     ipAddress?: string,
     userAgent?: string,
   ): Promise<void> {
+    const extendedDetails = {
+      ...details,
+      ecosystemApp: 'whisperrkeep'
+    };
     await this.createSecurityLog({
       userId,
       eventType,
-      details: details ? JSON.stringify(details) : null,
+      details: JSON.stringify(extendedDetails),
       ipAddress: ipAddress || null,
       userAgent: userAgent || null,
       timestamp: new Date().toISOString(),
