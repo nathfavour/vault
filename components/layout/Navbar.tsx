@@ -3,14 +3,14 @@
 import Link from "next/link";
 import { useAppwrite } from "@/app/appwrite-provider";
 import {
-  Grip,
-  Sparkles,
-  Key,
-  User as UserIcon,
-  Settings,
-  Lock,
-  LogOut,
-} from "lucide-react";
+  GridViewOutlined as GripIcon,
+  AutoAwesomeOutlined as SparklesIcon,
+  VpnKeyOutlined as KeyIcon,
+  PersonOutline as UserIcon,
+  SettingsOutlined as SettingsIcon,
+  LockOutlined as LockIcon,
+  LogoutOutlined as LogOutIcon,
+} from "@mui/icons-material";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import AppBar from "@mui/material/AppBar";
@@ -22,6 +22,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Divider from "@mui/material/Divider";
 import Tooltip from "@mui/material/Tooltip";
 import CircularProgress from "@mui/material/CircularProgress";
+import Stack from "@mui/material/Stack";
 import { alpha } from "@mui/material/styles";
 import { useState, useEffect } from "react";
 import { DropdownMenu } from "@/components/ui/DropdownMenu";
@@ -124,7 +125,7 @@ export function Navbar() {
                 '&:hover': { color: '#00F5FF', bgcolor: 'rgba(255, 255, 255, 0.05)' } 
               }}
             >
-              <Grip size={20} strokeWidth={1.5} />
+              <GripIcon sx={{ fontSize: 22 }} />
             </IconButton>
           </Tooltip>
 
@@ -137,7 +138,7 @@ export function Navbar() {
                   '&:hover': { bgcolor: alpha('#00F5FF', 0.1) } 
                 }}
               >
-                <Sparkles size={20} strokeWidth={1.5} />
+                <SparklesIcon sx={{ fontSize: 22 }} />
               </IconButton>
             </Tooltip>
           )}
@@ -145,7 +146,7 @@ export function Navbar() {
           <DropdownMenu
             trigger={
               <IconButton title="Password Generator" sx={{ color: 'rgba(255, 255, 255, 0.6)', '&:hover': { color: 'white', bgcolor: 'rgba(255, 255, 255, 0.05)' } }}>
-                <Key size={20} strokeWidth={1.5} />
+                <KeyIcon sx={{ fontSize: 22 }} />
               </IconButton>
             }
             width="400px"
@@ -228,7 +229,7 @@ export function Navbar() {
                 </Box>
                 <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.05)' }} />
                 <MenuItem component={Link} href="/settings" onClick={handleCloseMenu} sx={{ py: 1.5, px: 2.5, gap: 1.5 }}>
-                  <Settings size={18} strokeWidth={1.5} color="rgba(255, 255, 255, 0.6)" />
+                  <SettingsIcon sx={{ fontSize: 18, color: "rgba(255, 255, 255, 0.6)" }} />
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>Account Settings</Typography>
                 </MenuItem>
                 <MenuItem
@@ -242,7 +243,7 @@ export function Navbar() {
                     handleCloseMenu();
                   }}
                 >
-                  <Lock size={18} strokeWidth={1.5} color="rgba(255, 255, 255, 0.6)" />
+                  <LockIcon sx={{ fontSize: 18, color: "rgba(255, 255, 255, 0.6)" }} />
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>Lock Vault</Typography>
                 </MenuItem>
                 <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.05)' }} />
@@ -253,7 +254,7 @@ export function Navbar() {
                   }}
                   sx={{ py: 1.5, px: 2.5, gap: 1.5, color: '#FF4D4D' }}
                 >
-                  <LogOut size={18} strokeWidth={1.5} />
+                  <LogOutIcon sx={{ fontSize: 18 }} />
                   <Typography variant="body2" sx={{ fontWeight: 700 }}>Logout</Typography>
                 </MenuItem>
               </Menu>
