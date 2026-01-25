@@ -5,17 +5,23 @@ const CONNECT_DATABASE_ID = 'chat';
 const CONNECT_COLLECTION_ID_USERS = 'users';
 
 const PROFILE_SYNC_KEY = 'whisperr_ecosystem_identity_synced';
+const SESSION_SYNC_KEY = 'whisperr_ecosystem_session_synced';
 
 /**
  * Ensures the user has a record in the global WhisperrConnect Directory.
- * Uses a lightweight "local-first" check to avoid redundant DB calls.
+ * Uses a multi-layered cache check (session + local) to minimize DB calls.
  */
 export async function ensureGlobalIdentity(user: any, force = false) {
     if (!user?.$id) return;
 
     if (typeof window !== 'undefined' && !force) {
+        // Step 1: Session skip
+        if (sessionStorage.getItem(SESSION_SYNC_KEY)) return;
+
+        // Step 2: Global skip
         const lastSync = localStorage.getItem(PROFILE_SYNC_KEY);
         if (lastSync && (Date.now() - parseInt(lastSync)) < 24 * 60 * 60 * 1000) {
+            sessionStorage.setItem(SESSION_SYNC_KEY, '1');
             return;
         }
     }
@@ -71,6 +77,7 @@ export async function ensureGlobalIdentity(user: any, force = false) {
 
         if (typeof window !== 'undefined') {
             localStorage.setItem(PROFILE_SYNC_KEY, Date.now().toString());
+            sessionStorage.setItem(SESSION_SYNC_KEY, '1');
         }
     } catch (error) {
         console.warn('[Identity] Global identity sync failed:', error);
