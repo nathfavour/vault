@@ -49,7 +49,7 @@ export async function ensureGlobalIdentity(user: any, force = false) {
                         createdAt: new Date().toISOString(),
                         updatedAt: new Date().toISOString(),
                         bio: user.prefs?.bio || '',
-                        profilePicId: user.prefs?.profilePicId || null,
+                        avatarFileId: user.prefs?.profilePicId || null,
                         privacySettings: JSON.stringify({ public: true, searchable: true })
                     },
                     [
@@ -109,7 +109,7 @@ export async function searchGlobalUsers(query: string, limit = 10) {
             title: doc.displayName || doc.username,
             subtitle: `@${doc.username}`,
             avatar: null,
-            profilePicId: doc.profilePicId,
+            avatarFileId: doc.avatarFileId,
             apps: doc.appsActive || []
         }));
     } catch (error) {
