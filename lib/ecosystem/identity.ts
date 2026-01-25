@@ -48,9 +48,9 @@ export async function ensureGlobalIdentity(user: any, force = false) {
                         appsActive: ['keep'],
                         createdAt: new Date().toISOString(),
                         updatedAt: new Date().toISOString(),
-                        bio: '',
-                        avatarUrl: user.prefs?.avatarUrl || null,
-                        privacySettings: JSON.stringify({ public: true })
+                        bio: user.prefs?.bio || '',
+                        profilePicId: user.prefs?.profilePicId || null,
+                        privacySettings: JSON.stringify({ public: true, searchable: true })
                     },
                     [
                         'read("any")',
@@ -63,6 +63,7 @@ export async function ensureGlobalIdentity(user: any, force = false) {
             }
         }
 
+        // Add 'keep' to appsActive if not present
         if (profile && Array.isArray(profile.appsActive) && !profile.appsActive.includes('keep')) {
             await appwriteDatabases.updateDocument(
                 CONNECT_DATABASE_ID,
@@ -97,7 +98,7 @@ export async function searchGlobalUsers(query: string, limit = 10) {
             [
                 Query.or([
                     Query.startsWith('username', query.toLowerCase()),
-                    Query.search('displayName', query)
+                    Query.startsWith('displayName', query)
                 ]),
                 Query.limit(limit)
             ]
@@ -107,8 +108,8 @@ export async function searchGlobalUsers(query: string, limit = 10) {
             id: doc.$id,
             title: doc.displayName || doc.username,
             subtitle: `@${doc.username}`,
-            avatar: doc.avatarUrl,
-            profilePicId: doc.avatarFileId || doc.profilePicId,
+            avatar: null,
+            profilePicId: doc.profilePicId,
             apps: doc.appsActive || []
         }));
     } catch (error) {
