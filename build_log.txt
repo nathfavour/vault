@@ -1,0 +1,45 @@
+
+> auth@0.1.0 build
+> next build
+
+   ▲ Next.js 15.4.7
+   - Environments: .env
+   - Experiments (use with caution):
+     ✓ reactCompiler
+     · optimizePackageImports
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 5.0s
+   Skipping validation of types
+   Skipping linting
+   Collecting page data ...
+   Generating static pages (0/15) ...
+   Generating static pages (3/15) 
+   Generating static pages (7/15) 
+   Generating static pages (11/15) 
+ ✓ Generating static pages (15/15)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                 Size  First Load JS
+┌ ○ /                                    7.58 kB         237 kB
+├ ○ /_not-found                            133 B         101 kB
+├ ƒ /api/ai/generate                       133 B         101 kB
+├ ○ /credentials/new                     6.78 kB         211 kB
+├ ○ /dashboard                           26.3 kB         259 kB
+├ ○ /import                              13.2 kB         212 kB
+├ ○ /masterpass                          10.1 kB         212 kB
+├ ○ /masterpass/reset                    2.87 kB         176 kB
+├ ○ /overview                            5.63 kB         180 kB
+├ ○ /settings                            13.2 kB         228 kB
+├ ○ /sharing                             2.58 kB         163 kB
+└ ○ /totp                                 142 kB         360 kB
++ First Load JS shared by all             101 kB
+  ├ chunks/4bd1b696-610fe0a72ecef554.js  54.1 kB
+  ├ chunks/5326-c9fa9305f4da7e65.js      44.2 kB
+  └ other shared chunks (total)          2.26 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
