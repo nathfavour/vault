@@ -122,7 +122,7 @@ export async function getCurrentUserFromRequest(req: { headers: { get(k: string)
     if (!req) return null;
     const cookieHeader = req.headers.get('cookie') || req.headers.get('Cookie');
     if (!cookieHeader) return null;
-    
+
     const endpoint = normalizeEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT);
     const projectId = process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID;
 
@@ -384,7 +384,6 @@ export const COLLECTION_SCHEMAS = {
         "twofaSecret",
         "backupCodes",
         "isPasskey",
-        "counter",
         "sessionFingerprint",
         "lastLoginAt",
         "lastPasswordChangeAt",
@@ -560,7 +559,7 @@ export class AppwriteService {
         Permission.delete(Role.user(data.userId)),
       ]
     );
-    return doc as SecurityLogs;
+    return doc as unknown as SecurityLogs;
   }
 
   static async createKeychainEntry(
@@ -624,7 +623,7 @@ export class AppwriteService {
         Permission.delete(Role.user(data.userId)),
       ]
     );
-    return doc as User;
+    return doc as unknown as User;
   }
 
   /**
@@ -1123,6 +1122,15 @@ export class AppwriteService {
     return { total: res.total, documents: res.documents };
   }
 
+  static async listFlowNotes(userId: string, queries: string[] = []): Promise<{ total: number; documents: any[] }> {
+    const res = await appwriteDatabases.listDocuments(
+      NOTE_DATABASE_ID,
+      NOTE_COLLECTION_ID,
+      [Query.equal("userId", userId), Query.limit(100), Query.orderDesc("$createdAt"), ...queries]
+    );
+    return { total: res.total, documents: res.documents };
+  }
+
   // --- Security Event Logging ---
   static async logSecurityEvent(
     userId: string,
@@ -1142,13 +1150,8 @@ export class AppwriteService {
       ipAddress: ipAddress || null,
       userAgent: userAgent || null,
       timestamp: new Date().toISOString(),
-      $sequence: 0,
-      $collectionId: "",
-      $databaseId: "",
-      $createdAt: new Date().toISOString(),
-      $updatedAt: new Date().toISOString(),
       $permissions: [],
-    });
+    } as any);
   }
 
   // --- Sanitization Helpers ---
