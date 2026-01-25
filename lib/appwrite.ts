@@ -209,6 +209,15 @@ export const APPWRITE_COLLECTION_USER_ID =
 export const APPWRITE_COLLECTION_KEYCHAIN_ID =
   process.env.APPWRITE_COLLECTION_KEYCHAIN_ID || "keychain";
 
+// Ecosystem: WhisperrFlow
+export const FLOW_DATABASE_ID = "whisperrflow";
+export const FLOW_COLLECTION_ID_TASKS = "tasks";
+export const FLOW_COLLECTION_ID_EVENTS = "events";
+
+// Ecosystem: WhisperrNote
+export const NOTE_DATABASE_ID = "67ff05a9000296822396";
+export const NOTE_COLLECTION_ID = "67ff05f3002502ef239e";
+
 // --- Collection Structure & Field Mappings ---
 // Dynamically derive encrypted/plaintext fields from the types
 // These fields receive CLIENT-SIDE end-to-end encryption (on top of Appwrite's database encryption)
@@ -1093,6 +1102,25 @@ export class AppwriteService {
       APPWRITE_COLLECTION_USER_ID,
       id,
     );
+  }
+
+  // --- Ecosystem: Flow ---
+  static async listFlowTasks(userId: string, queries: string[] = []): Promise<{ total: number; documents: any[] }> {
+    const res = await appwriteDatabases.listDocuments(
+      FLOW_DATABASE_ID,
+      FLOW_COLLECTION_ID_TASKS,
+      [Query.equal("userId", userId), Query.limit(100), Query.orderDesc("$createdAt"), ...queries]
+    );
+    return { total: res.total, documents: res.documents };
+  }
+
+  static async listFlowEvents(userId: string, queries: string[] = []): Promise<{ total: number; documents: any[] }> {
+    const res = await appwriteDatabases.listDocuments(
+      FLOW_DATABASE_ID,
+      FLOW_COLLECTION_ID_EVENTS,
+      [Query.equal("userId", userId), Query.limit(100), Query.orderDesc("startTime"), ...queries]
+    );
+    return { total: res.total, documents: res.documents };
   }
 
   // --- Security Event Logging ---
