@@ -21,6 +21,7 @@ import {
     SpeedOutlined as FlowIcon,
     ChatBubbleOutline as ConnectIcon,
     ShieldOutlined as IDIcon,
+    MonitorHeartOutlined as ActivityIcon,
 } from '@mui/icons-material';
 import { ECOSYSTEM_APPS, getEcosystemUrl } from '../../lib/constants';
 import { EcosystemWidgets } from '../../ecosystem/integration/Widgets';
@@ -97,7 +98,7 @@ export default function EcosystemPortal({ open, onClose }: EcosystemPortalProps)
                 {/* Header / Search */}
                 <Box sx={{ p: 3, borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
-                        <PulseIcon sx={{ color: '#00F0FF', fontSize: 24 }} />
+                        <PulseIcon sx={{ color: '#00F5FF', fontSize: 24 }} />
                         <Typography variant="h6" sx={{ fontWeight: 900, fontFamily: 'var(--font-space-grotesk)', letterSpacing: '-0.02em', color: 'white' }}>
                             WHISPERR <Box component="span" sx={{ color: 'rgba(255, 255, 255, 0.4)' }}>PORTAL</Box>
                         </Typography>
@@ -153,6 +154,42 @@ export default function EcosystemPortal({ open, onClose }: EcosystemPortalProps)
 
                 {/* Grid of Apps */}
                 <Box sx={{ p: 3, maxHeight: '60vh', overflow: 'auto' }}>
+                    <Box sx={{ mb: 4 }}>
+                        <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.3)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', mb: 2, display: 'block' }}>
+                            System Utilities
+                        </Typography>
+                        <Box 
+                            component="button"
+                            onClick={() => {
+                                // For now just close, kernel monitor is only in Note
+                                onClose();
+                            }}
+                            sx={{
+                                width: '100%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 2,
+                                p: 1.5,
+                                borderRadius: '16px',
+                                bgcolor: 'rgba(0, 240, 255, 0.03)',
+                                border: '1px solid rgba(0, 240, 255, 0.1)',
+                                color: 'white',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s',
+                                '&:hover': {
+                                    bgcolor: 'rgba(0, 240, 255, 0.08)',
+                                    borderColor: 'rgba(0, 240, 255, 0.3)'
+                                }
+                            }}
+                        >
+                            <ActivityIcon sx={{ fontSize: 20, color: "#00F0FF" }} />
+                            <Box sx={{ textAlign: 'left' }}>
+                                <Typography variant="subtitle2" sx={{ fontWeight: 800 }}>Kernel Monitor</Typography>
+                                <Typography variant="caption" sx={{ color: 'rgba(0, 240, 255, 0.5)' }}>Real-time ecosystem telemetry</Typography>
+                            </Box>
+                        </Box>
+                    </Box>
+
                     <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.3)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', mb: 2, display: 'block' }}>
                         Available Gateways
                     </Typography>
