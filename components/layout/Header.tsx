@@ -23,11 +23,18 @@ import {
 } from "@mui/material";
 import AppsIcon from "@mui/icons-material/Apps";
 import { useAI } from "@/app/context/AIContext";
+import { useNotifications } from "@/app/context/NotificationContext";
 import { useState, useEffect } from "react";
 import EcosystemPortal from "../common/EcosystemPortal";
 import { fetchProfilePreview, getCachedProfilePreview } from "@/lib/profile-preview";
 import { getUserProfilePicId } from "@/lib/user-utils";
 import Avatar from "@mui/material/Avatar";
+import { 
+  Bell as BellIcon,
+  CheckCircle as CheckCircleIcon,
+  XCircle as XCircleIcon,
+  Clock as ClockIcon
+} from "lucide-react";
 
 // Pages that should use the simplified layout (no sidebar/header)
 const SIMPLIFIED_LAYOUT_PATHS = ["/"];
@@ -40,8 +47,10 @@ interface HeaderProps {
 export function Header({ onMenuClick }: HeaderProps) {
   const { user, logout } = useAppwrite();
   const { openAIModal } = useAI();
+  const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
   const pathname = usePathname();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [anchorElNotifications, setAnchorElNotifications] = useState<null | HTMLElement>(null);
   const [isEcosystemPortalOpen, setIsEcosystemPortalOpen] = useState(false);
   const [profileUrl, setProfileUrl] = useState<string | null>(null);
 
@@ -150,6 +159,40 @@ export function Header({ onMenuClick }: HeaderProps) {
         </Box>
 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Tooltip title="Notifications">
+            <IconButton
+              onClick={(e) => setAnchorElNotifications(e.currentTarget)}
+              sx={{ 
+                color: unreadCount > 0 ? '#00F5FF' : 'rgba(255, 255, 255, 0.6)',
+                bgcolor: unreadCount > 0 ? alpha('#00F5FF', 0.05) : 'transparent',
+                '&:hover': { bgcolor: alpha('#00F5FF', 0.1), color: '#00F5FF' },
+                position: 'relative'
+              }}
+            >
+              <BellIcon size={20} />
+              {unreadCount > 0 && (
+                <Box sx={{
+                  position: 'absolute',
+                  top: 2,
+                  right: 2,
+                  bgcolor: '#FF4D4D',
+                  color: 'white',
+                  fontSize: '0.6rem',
+                  fontWeight: 900,
+                  width: 16,
+                  height: 16,
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: '2px solid #0A0A0A',
+                }}>
+                  {unreadCount > 9 ? '9+' : unreadCount}
+                </Box>
+              )}
+            </IconButton>
+          </Tooltip>
+
           <Tooltip title="AI Assistant">
             <IconButton
               onClick={openAIModal}
@@ -262,6 +305,103 @@ export function Header({ onMenuClick }: HeaderProps) {
               >
                 <LogoutIcon sx={{ fontSize: 18 }} />
                 <Typography variant="body2" sx={{ fontWeight: 700 }}>Logout</Typography>
+              </MenuItem>
+            </Menu>
+
+            {/* Notifications Menu */}
+            <Menu
+              anchorEl={anchorElNotifications}
+              open={Boolean(anchorElNotifications)}
+              onClose={() => setAnchorElNotifications(null)}
+              PaperProps={{
+                sx: {
+                  mt: 1.5,
+                  width: 320,
+                  bgcolor: 'rgba(10, 10, 10, 0.95)',
+                  backdropFilter: 'blur(25px) saturate(180%)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  borderRadius: '20px',
+                  boxShadow: '0 20px 40px rgba(0,0,0,0.6)',
+                  backgroundImage: 'none',
+                  color: 'white'
+                }
+              }}
+              transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+              anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+            >
+              <Box sx={{ px: 2.5, py: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 800, color: 'white' }}>
+                  Intelligence Feed
+                </Typography>
+                {unreadCount > 0 && (
+                  <Typography 
+                    variant="caption" 
+                    onClick={() => { markAllAsRead(); setAnchorElNotifications(null); }}
+                    sx={{ cursor: 'pointer', fontWeight: 800, color: '#00F5FF', '&:hover': { textDecoration: 'underline' } }}
+                  >
+                    MARK ALL READ
+                  </Typography>
+                )}
+              </Box>
+              <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.05)' }} />
+              <Box sx={{ maxHeight: 360, overflowY: 'auto' }}>
+                {notifications.length === 0 ? (
+                  <Box sx={{ p: 4, textAlign: 'center' }}>
+                    <ClockIcon size={24} color="rgba(255, 255, 255, 0.1)" style={{ marginBottom: 12, marginLeft: 'auto', marginRight: 'auto' }} />
+                    <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.4)', fontWeight: 600, display: 'block' }}>
+                      No recent activity detected
+                    </Typography>
+                  </Box>
+                ) : (
+                  notifications.slice(0, 10).map((notif) => {
+                    const isRead = !!localStorage.getItem(`read_notif_${notif.$id}`);
+                    return (
+                      <MenuItem 
+                        key={notif.$id} 
+                        onClick={() => { markAsRead(notif.$id); setAnchorElNotifications(null); }}
+                        sx={{ 
+                          py: 1.5, 
+                          px: 2.5, 
+                          gap: 2,
+                          borderLeft: isRead ? 'none' : '3px solid #00F5FF',
+                          bgcolor: isRead ? 'transparent' : alpha('#00F5FF', 0.03),
+                          '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.05)' } 
+                        }}
+                      >
+                        <Box sx={{ 
+                          width: 32, 
+                          height: 32, 
+                          borderRadius: '8px', 
+                          bgcolor: 'rgba(255, 255, 255, 0.03)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          flexShrink: 0
+                        }}>
+                          {notif.action.toLowerCase().includes('delete') ? (
+                            <XCircleIcon size={16} color="#FF4D4D" />
+                          ) : (
+                            <CheckCircleIcon size={16} color="#00F5FF" />
+                          )}
+                        </Box>
+                        <Box sx={{ minWidth: 0 }}>
+                          <Typography variant="caption" sx={{ fontWeight: 800, color: 'white', display: 'block', lineHeight: 1.2 }}>
+                            {notif.action.toUpperCase()}
+                          </Typography>
+                          <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.5)', fontSize: '0.7rem', display: 'block', noWrap: true, overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {notif.targetType}: {notif.details || notif.targetId}
+                          </Typography>
+                        </Box>
+                      </MenuItem>
+                    );
+                  })
+                )}
+              </Box>
+              <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.05)' }} />
+              <MenuItem sx={{ py: 1.5, justifyContent: 'center' }}>
+                <Typography variant="caption" sx={{ fontWeight: 800, color: 'rgba(255, 255, 255, 0.4)', letterSpacing: '0.05em' }}>
+                  VIEW ALL ACTIVITY
+                </Typography>
               </MenuItem>
             </Menu>
           </Box>
