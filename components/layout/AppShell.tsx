@@ -145,19 +145,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     }
   }, [user, isSimplifiedLayout, pathname, router]);
 
-  const ThemeIcon = () => {
-    switch (theme) {
-      case "light":
-        return <Sun size={18} strokeWidth={1.5} />;
-      case "dark":
-        return <Moon size={18} strokeWidth={1.5} />;
-      default:
-        return <Monitor size={18} strokeWidth={1.5} />;
-    }
-  };
-
-  const ThemeSymbol = ThemeIcon();
-
   if (isSimplifiedLayout) {
     return <Box sx={{ minHeight: '100vh', bgcolor: '#000' }}>{children}</Box>;
   }
@@ -180,12 +167,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             top: 72,
             height: 'calc(100vh - 72px)',
             width: 280,
-            bgcolor: 'rgba(10, 10, 10, 0.95)',
-            backdropFilter: 'blur(25px) saturate(180%)',
-            borderRight: '1px solid rgba(255, 255, 255, 0.1)',
+            bgcolor: 'rgba(8, 8, 8, 0.9)',
+            backdropFilter: 'blur(32px) saturate(180%)',
+            borderRight: '1px solid rgba(255, 255, 255, 0.05)',
             overflowY: 'auto',
             zIndex: 30,
-            p: 2
+            p: 3
           }}
           aria-label="Primary sidebar navigation"
         >
@@ -199,20 +186,20 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                       component={Link}
                       href={item.href}
                       sx={{
-                        borderRadius: '16px',
-                        bgcolor: isActive ? alpha('#00F5FF', 0.1) : 'transparent',
-                        color: isActive ? '#00F5FF' : 'rgba(255, 255, 255, 0.6)',
-                        border: isActive ? '1px solid rgba(0, 245, 255, 0.2)' : '1px solid transparent',
+                        borderRadius: '14px',
+                        bgcolor: isActive ? 'rgba(255, 255, 255, 0.03)' : 'transparent',
+                        color: isActive ? '#00F5FF' : 'rgba(255, 255, 255, 0.5)',
+                        border: isActive ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid transparent',
                         '&:hover': {
-                          bgcolor: isActive ? alpha('#00F5FF', 0.15) : 'rgba(255, 255, 255, 0.05)',
+                          bgcolor: 'rgba(255, 255, 255, 0.05)',
                           color: 'white'
                         },
-                        py: item.big ? 2 : 1.5,
-                        transition: 'all 0.2s ease'
+                        py: item.big ? 2 : 1.2,
+                        transition: 'all 0.25s cubic-bezier(0.4, 0, 0.2, 1)'
                       }}
                     >
-                      <ListItemIcon sx={{ color: 'inherit', minWidth: 44 }}>
-                        <item.icon size={item.big ? 24 : 20} strokeWidth={1.5} />
+                      <ListItemIcon sx={{ color: 'inherit', minWidth: 40 }}>
+                        <item.icon size={item.big ? 22 : 18} strokeWidth={1.5} />
                       </ListItemIcon>
                       <ListItemText
                         primary={item.name}
@@ -220,7 +207,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                           variant: 'body2',
                           fontWeight: isActive ? 800 : 600,
                           fontFamily: 'var(--font-space-grotesk)',
-                          letterSpacing: '0.02em'
+                          letterSpacing: '0.01em',
+                          fontSize: '0.85rem'
                         }}
                       />
                     </ListItemButton>
@@ -230,35 +218,49 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </List>
             
             <Box sx={{ mt: 'auto', pt: 2, display: 'flex', flexDirection: 'column', gap: 1 }}>
-              <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.05)', mb: 2 }} />
+              <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.03)', mb: 3 }} />
               
-              <Button
-                variant="text"
-                fullWidth
-                startIcon={ThemeSymbol}
-                onClick={() => {
-                  const themes: Array<"light" | "dark" | "system"> = ["light", "dark", "system"];
-                  const nextTheme = themes[(themes.indexOf(theme) + 1) % themes.length];
-                  setTheme(nextTheme);
-                }}
+              {/* Ecosystem Pulse Bridge */}
+              <Box 
                 sx={{ 
-                  justifyContent: 'flex-start', 
-                  color: 'rgba(255, 255, 255, 0.5)',
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: 2, 
+                  px: 2, 
+                  py: 1.5,
+                  mb: 1,
                   borderRadius: '12px',
-                  px: 2,
-                  py: 1,
-                  textTransform: 'none',
-                  fontWeight: 600,
-                  '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.05)', color: 'white' }
+                  bgcolor: 'rgba(255, 255, 255, 0.02)',
+                  border: '1px solid rgba(255, 255, 255, 0.05)'
                 }}
               >
-                {`${theme.charAt(0).toUpperCase() + theme.slice(1)} Mode`}
-              </Button>
+                <Box
+                  sx={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: '50%',
+                    bgcolor: '#10b981',
+                    boxShadow: '0 0 12px #10b981',
+                    animation: 'pulse 2s infinite'
+                  }}
+                />
+                <Typography 
+                  sx={{ 
+                    fontSize: '0.75rem', 
+                    fontWeight: 900, 
+                    color: 'white', 
+                    letterSpacing: '0.1em',
+                    fontFamily: 'var(--font-space-grotesk)'
+                  }}
+                >
+                  VAULT ACTIVE
+                </Typography>
+              </Box>
 
               <Button
                 variant="text"
                 fullWidth
-                startIcon={<Lock size={18} strokeWidth={1.5} />}
+                startIcon={<Lock size={16} strokeWidth={1.5} />}
                 onClick={() => {
                   masterPassCrypto.lockNow();
                   if (!masterPassCrypto.isVaultUnlocked()) {
@@ -268,10 +270,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 }}
                 sx={{ 
                   justifyContent: 'flex-start', 
-                  color: 'rgba(255, 255, 255, 0.5)',
-                  borderRadius: '12px',
+                  color: 'rgba(255, 255, 255, 0.4)',
+                  borderRadius: '10px',
                   px: 2,
                   py: 1,
+                  fontSize: '0.8rem',
                   textTransform: 'none',
                   fontWeight: 600,
                   '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.05)', color: 'white' }
@@ -283,17 +286,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <Button
                 variant="text"
                 fullWidth
-                startIcon={<LogOut size={18} strokeWidth={1.5} />}
+                startIcon={<LogOut size={16} strokeWidth={1.5} />}
                 onClick={logout}
                 sx={{ 
                   justifyContent: 'flex-start', 
-                  color: '#FF4D4D',
-                  borderRadius: '12px',
+                  color: 'rgba(255, 77, 77, 0.6)',
+                  borderRadius: '10px',
                   px: 2,
                   py: 1,
+                  fontSize: '0.8rem',
                   textTransform: 'none',
                   fontWeight: 700,
-                  '&:hover': { bgcolor: alpha('#FF4D4D', 0.1) }
+                  '&:hover': { bgcolor: alpha('#FF4D4D', 0.05), color: '#FF4D4D' }
                 }}
               >
                 Logout
@@ -303,31 +307,31 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </Box>
 
         <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, overflowX: 'hidden', ml: { lg: '280px' } }}>
-          <Box component="main" sx={{ flex: 1, px: { xs: 2, sm: 4, md: 6 }, py: 6, pb: { xs: 12, lg: 6 }, overflowX: 'hidden', maxWidth: '100%' }}>
+          <Box component="main" sx={{ flex: 1, px: { xs: 2, sm: 4, md: 8 }, py: 6, pb: { xs: 12, lg: 6 }, overflowX: 'hidden', maxWidth: '100%' }}>
             {children}
           </Box>
         </Box>
       </Box>
 
-      {/* Mobile Bottom Navigation */}
+      {/* Mobile Bottom Navigation - Floating Whisperr Style */}
       <Paper
         component="nav"
         elevation={0}
         sx={{
           position: 'fixed',
-          bottom: 20,
-          left: 20,
-          right: 20,
+          bottom: 24,
+          left: 24,
+          right: 24,
           zIndex: 50,
-          bgcolor: 'rgba(10, 10, 10, 0.9)',
-          backdropFilter: 'blur(25px) saturate(180%)',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
+          bgcolor: 'rgba(10, 10, 10, 0.85)',
+          backdropFilter: 'blur(24px) saturate(180%)',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
           borderRadius: '24px',
           display: { xs: 'flex', lg: 'none' },
           justifyContent: 'space-around',
           alignItems: 'center',
           height: 72,
-          boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+          boxShadow: '0 12px 40px rgba(0,0,0,0.6)',
           overflow: 'visible'
         }}
       >
