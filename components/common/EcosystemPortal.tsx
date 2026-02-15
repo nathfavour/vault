@@ -34,7 +34,7 @@ interface EcosystemPortalProps {
 const AppIcon = ({ id, sx }: { id: string, sx?: any }) => {
     switch (id) {
         case 'note': return <NoteIcon sx={sx} />;
-        case 'keep': return <KeepIcon sx={sx} />;
+        case 'vault': return <KeepIcon sx={sx} />;
         case 'flow': return <FlowIcon sx={sx} />;
         case 'connect': return <ConnectIcon sx={sx} />;
         case 'id': return <IDIcon sx={sx} />;
@@ -45,7 +45,7 @@ const AppIcon = ({ id, sx }: { id: string, sx?: any }) => {
 export default function EcosystemPortal({ open, onClose }: EcosystemPortalProps) {
     const [search, setSearch] = useState('');
 
-    const FLAGSHIP_APPS = ['note', 'keep', 'flow', 'connect'];
+    const FLAGSHIP_APPS = ['note', 'vault', 'flow', 'connect'];
     const filteredApps = ECOSYSTEM_APPS.filter(app =>
         FLAGSHIP_APPS.includes(app.id) && (
             app.label.toLowerCase().includes(search.toLowerCase()) ||

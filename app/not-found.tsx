@@ -34,7 +34,7 @@ export default function NotFound() {
             fontWeight: 500
           }}
         >
-          The page you are looking for does not exist within the Whisperr Vault.
+          The page you are looking for does not exist within the Kylrix Vault.
         </Typography>
         <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
           <Button

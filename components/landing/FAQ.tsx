@@ -5,24 +5,24 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 const faqs = [
   {
-    question: "Is Whisperrkeep really secure?",
+    question: "Is Kylrix Vault really secure?",
     answer:
-      "Yes, Whisperrkeep uses private encryption, meaning your data is encrypted before it leaves your device. We never have access to your master password or any of your stored credentials.",
+      "Yes, Kylrix Vault uses private encryption, meaning your data is encrypted before it leaves your device. We never have access to your master password or any of your stored credentials.",
   },
   {
     question: "What happens if I forget my master password?",
     answer:
-      "For security reasons, we cannot recover your master password. However, Whisperrkeep offers emergency recovery options that you can set up in advance.",
+      "For security reasons, we cannot recover your master password. However, Kylrix Vault offers emergency recovery options that you can set up in advance.",
   },
   {
-    question: "Can I use Whisperrkeep on all my devices?",
+    question: "Can I use Kylrix Vault on all my devices?",
     answer:
-      "Yes, Whisperrkeep is available on Windows, macOS, Linux, iOS, and Android. Your data syncs automatically across all your devices.",
+      "Yes, Kylrix Vault is available on Windows, macOS, Linux, iOS, and Android. Your data syncs automatically across all your devices.",
   },
   {
-    question: "Is Whisperrkeep free to use?",
+    question: "Is Kylrix Vault free to use?",
     answer:
-      "Whisperrkeep offers a free tier with essential features. Premium plans with advanced features start at $2.99/month.",
+      "Kylrix Vault offers a free tier with essential features. Premium plans with advanced features start at $2.99/month.",
   },
 ];
 
@@ -35,7 +35,7 @@ export default function FAQ() {
             Frequently Asked Questions
           </Typography>
           <Typography variant="body1" sx={{ color: 'rgba(255, 255, 255, 0.5)' }}>
-            Everything you need to know about Whisperrkeep
+            Everything you need to know about Kylrix Vault
           </Typography>
         </Box>
 

@@ -192,7 +192,7 @@ export default function LandingPage() {
               }}>
                 W
               </Box>
-              <Typography variant="subtitle1" sx={{ fontWeight: 800, letterSpacing: '-0.02em' }}>Whisperrkeep</Typography>
+              <Typography variant="subtitle1" sx={{ fontWeight: 800, letterSpacing: '-0.02em' }}>Kylrix Vault</Typography>
             </Stack>
             <Stack direction="row" spacing={1}>
               {[SearchIcon, PersonIcon, SettingsIcon].map((Icon, i) => (

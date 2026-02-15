@@ -25,7 +25,7 @@ export const QuickNote = () => {
         setTimeout(() => {
             setNote('');
             setIsSaving(false);
-            alert('Note saved to WhisperrNote!');
+            alert('Note saved to Kylrix Note!');
         }, 800);
     };
 

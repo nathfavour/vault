@@ -6,7 +6,7 @@ import StarIcon from "@mui/icons-material/Star";
 const testimonials = [
   {
     quote:
-      "Whisperrkeep app has completely transformed how I manage my online security. I finally feel safe online.",
+      "Kylrix Vault app has completely transformed how I manage my online security. I finally feel safe online.",
     name: "Sarah Johnson",
     role: "Software Developer",
     stars: 5,
@@ -20,7 +20,7 @@ const testimonials = [
   },
   {
     quote:
-      "I was hesitant to use a password manager, but Whisperrkeep made it so easy. Now I can't imagine life without it.",
+      "I was hesitant to use a password manager, but Kylrix Vault made it so easy. Now I can't imagine life without it.",
     name: "Elena Rodriguez",
     role: "Digital Marketer",
     stars: 5,
@@ -36,7 +36,7 @@ export default function Testimonials() {
             Trusted by Thousands
           </Typography>
           <Typography variant="h6" sx={{ color: 'rgba(255, 255, 255, 0.5)' }}>
-            See what our users have to say about Whisperrkeep.
+            See what our users have to say about Kylrix Vault.
           </Typography>
         </Box>
 

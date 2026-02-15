@@ -64,9 +64,9 @@ export default function ImportPage() {
           ...c,
           _status: 'new'
         }));
-      } else if (importType === "whisperrkeep") {
+      } else if (importType === "kylrixvault") {
         const data = JSON.parse(text);
-        if (!data.version && !data.credentials) throw new Error("Invalid WhisperrKeep format");
+        if (!data.version && !data.credentials) throw new Error("Invalid Kylrix Vault format");
         items = (data.credentials || []).map((c: unknown) => ({
           ...(c as Partial<ImportItem>),
           _status: 'new'
@@ -121,15 +121,15 @@ export default function ImportPage() {
       folders: [],
       totpSecrets: []
     });
-    startImport("whisperrkeep", processedPayload, user!.$id);
+    startImport("kylrixvault", processedPayload, user!.$id);
   };
 
   const isFileValid =
     file &&
     ((importType === "bitwarden" && file.name.endsWith(".json")) ||
-      (importType === "whisperrkeep" && file.name.endsWith(".json")) ||
+      (importType === "kylrixvault" && file.name.endsWith(".json")) ||
       (importType === "json" && file.name.endsWith(".json")) ||
-      (!["bitwarden", "json", "whisperrkeep"].includes(importType) &&
+      (!["bitwarden", "json", "kylrixvault"].includes(importType) &&
         file.name.endsWith(".csv")));
 
   return (
@@ -188,7 +188,7 @@ export default function ImportPage() {
                     }}
                   >
                     <ToggleButton value="bitwarden">Bitwarden</ToggleButton>
-                    <ToggleButton value="whisperrkeep">WhisperrNote</ToggleButton>
+                    <ToggleButton value="kylrixvault">Kylrix Note</ToggleButton>
                     <ToggleButton value="zoho" disabled>Zoho Vault</ToggleButton>
                     <ToggleButton value="proton" disabled>Proton Pass</ToggleButton>
                   </ToggleButtonGroup>
@@ -203,14 +203,14 @@ export default function ImportPage() {
                   <Stack direction="row" spacing={2} alignItems="flex-start" sx={{ mb: 2 }}>
                     <InfoIcon sx={{ fontSize: 20, color: "#00F5FF" }} />
                     <Typography variant="subtitle2" sx={{ fontWeight: 800 }}>
-                      {importType === "bitwarden" ? "How to export from Bitwarden" : "Restoring from WhisperrNote"}
+                      {importType === "bitwarden" ? "How to export from Bitwarden" : "Restoring from Kylrix Note"}
                     </Typography>
                   </Stack>
                   <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.6)', lineHeight: 1.6 }}>
                     {importType === "bitwarden" ? (
                       "Log into your Bitwarden web vault, go to Tools → Export Vault, select JSON format, and download the file."
                     ) : (
-                      "Upload a JSON backup file previously exported from WhisperrNote or WhisperrKeep."
+                      "Upload a JSON backup file previously exported from Kylrix Note or Kylrix Vault."
                     )}
                   </Typography>
                 </Box>

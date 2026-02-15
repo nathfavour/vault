@@ -268,7 +268,7 @@ export class ImportService {
     }
   }
 
-  async importWhisperrKeepData(
+  async importKylrix VaultData(
     jsonData: string,
     userId: string
   ): Promise<ImportResult> {
@@ -292,7 +292,7 @@ export class ImportService {
         stage: "parsing",
         currentStep: 1,
         totalSteps: 4,
-        message: "Parsing WhisperrKeep data...",
+        message: "Parsing Kylrix Vault data...",
         itemsProcessed: 0,
         itemsTotal: 0,
         errors: [],
@@ -302,7 +302,7 @@ export class ImportService {
 
       // Basic validation
       if (!parsedData.version && (!parsedData.credentials && !parsedData.folders && !parsedData.totpSecrets)) {
-        throw new Error("Invalid WhisperrKeep export format");
+        throw new Error("Invalid Kylrix Vault export format");
       }
 
       const folders = parsedData.folders || [];
@@ -390,7 +390,7 @@ export class ImportService {
       }
 
 
-      console.log("[ImportService] Parsed WhisperrKeep data:", {
+      console.log("[ImportService] Parsed Kylrix Vault data:", {
         foldersCount: folders.length,
         credentialsCount: credentials.length,
         totpSecretsCount: totpSecrets.length,

@@ -209,12 +209,12 @@ export const APPWRITE_COLLECTION_USER_ID =
 export const APPWRITE_COLLECTION_KEYCHAIN_ID =
   process.env.APPWRITE_COLLECTION_KEYCHAIN_ID || "keychain";
 
-// Ecosystem: WhisperrFlow
-export const FLOW_DATABASE_ID = "whisperrflow";
+// Ecosystem: Kylrix Flow
+export const FLOW_DATABASE_ID = "kylrixflow";
 export const FLOW_COLLECTION_ID_TASKS = "tasks";
 export const FLOW_COLLECTION_ID_EVENTS = "events";
 
-// Ecosystem: WhisperrNote
+// Ecosystem: Kylrix Note
 export const NOTE_DATABASE_ID = "67ff05a9000296822396";
 export const NOTE_COLLECTION_ID = "67ff05f3002502ef239e";
 
@@ -1141,7 +1141,7 @@ export class AppwriteService {
   ): Promise<void> {
     const extendedDetails = {
       ...details,
-      ecosystemApp: 'whisperrkeep'
+      ecosystemApp: 'kylrixvault'
     };
     await this.createSecurityLog({
       userId,
@@ -1368,7 +1368,7 @@ export class AppwriteService {
   static async cloudBackup(userId: string): Promise<Models.File> {
     const data = await this.exportUserData(userId);
     const blob = new Blob([JSON.stringify(data)], { type: "application/json" });
-    const file = new File([blob], `whisperrkeep-backup-${new Date().getTime()}.json`, { type: "application/json" });
+    const file = new File([blob], `kylrixvault-backup-${new Date().getTime()}.json`, { type: "application/json" });
 
     return await appwriteStorage.createFile(
       APPWRITE_BUCKET_BACKUPS_ID,

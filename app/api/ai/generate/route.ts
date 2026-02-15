@@ -37,7 +37,7 @@ export async function POST(req: Request) {
     
     const model = genAI.getGenerativeModel({ 
       model: modelName,
-      systemInstruction: systemInstruction || "You are Whisperrbot, an intelligent assistant for Whisperrkeep, a premium secure vault and password manager. You represent 'Quiet Power' and 'The Glass Monolith' aesthetic. Be concise, professional, and helpful. Prioritize security advice."
+      systemInstruction: systemInstruction || "You are Kylrixbot, an intelligent assistant for Kylrix Vault, a premium secure vault and password manager. You represent 'Quiet Power' and 'The Glass Monolith' aesthetic. Be concise, professional, and helpful. Prioritize security advice."
     });
 
     // 3. Handle Chat vs Single Prompt

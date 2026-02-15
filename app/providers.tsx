@@ -14,7 +14,7 @@ import { useEcosystemNode } from "@/hooks/useEcosystemNode";
 
 function GlobalEcosystemHandler() {
   const [open, setOpen] = useState(false);
-  useEcosystemNode('keep');
+  useEcosystemNode('vault');
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {

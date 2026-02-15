@@ -15,7 +15,7 @@ export default function Trust() {
               Your Security Is Our Priority
             </Typography>
             <Typography variant="body1" sx={{ color: 'rgba(255, 255, 255, 0.6)', mb: 4, lineHeight: 1.8 }}>
-              With industry-leading encryption and rigorous security practices, Whisperrkeep ensures your digital life remains private and protected.
+              With industry-leading encryption and rigorous security practices, Kylrix Vault ensures your digital life remains private and protected.
             </Typography>
             <Stack spacing={3}>
               {[

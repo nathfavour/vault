@@ -1,13 +1,13 @@
-# 🔐 Whisperrkeep
+# 🔐 Kylrix Vault
 
- Welcome to **Whisperrkeep** – your next-generation, AI powered, zero-knowledge password, 2fa factor, and wallet keys manager built with security, privacy, and usability at its core! 🚀
+ Welcome to **Kylrix Vault** – your next-generation, AI powered, zero-knowledge password, 2fa factor, and wallet keys manager built with security, privacy, and usability at its core! 🚀
 
- Whisperrkeep solves the privacy challenges of Web3 by keeping wallet phrases, credentials, secret keys, and 2FA material encrypted locally, while offering AI-powered tools to organize them and automate recovery flows. It prevents over-reliance on third parties, maintains zero-knowledge guarantees, and keeps builders and users compliant in privacy- and zero-knowledge-focused environments without sacrificing workflow efficiency.
+ Kylrix Vault solves the privacy challenges of Web3 by keeping wallet phrases, credentials, secret keys, and 2FA material encrypted locally, while offering AI-powered tools to organize them and automate recovery flows. It prevents over-reliance on third parties, maintains zero-knowledge guarantees, and keeps builders and users compliant in privacy- and zero-knowledge-focused environments without sacrificing workflow efficiency.
 
 ---
 
 ## Socials:
-X(twitter): https://x.com/whisperrnote
+X(twitter): https://x.com/kylrixnote
 
 ## ✨ Features
 
@@ -28,8 +28,8 @@ X(twitter): https://x.com/whisperrnote
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/whisperrnote.git
-cd whisperrnote/auth
+git clone https://github.com/yourusername/kylrixnote.git
+cd kylrixnote/auth
 ```
 
 ### 2. Install Dependencies

@@ -4,11 +4,11 @@ import { Query } from 'appwrite';
 const CONNECT_DATABASE_ID = 'chat';
 const CONNECT_COLLECTION_ID_USERS = 'users';
 
-const PROFILE_SYNC_KEY = 'whisperr_ecosystem_identity_synced';
-const SESSION_SYNC_KEY = 'whisperr_ecosystem_session_synced';
+const PROFILE_SYNC_KEY = 'kylrix_ecosystem_identity_synced';
+const SESSION_SYNC_KEY = 'kylrix_ecosystem_session_synced';
 
 /**
- * Ensures the user has a record in the global WhisperrConnect Directory.
+ * Ensures the user has a record in the global Kylrix Connect Directory.
  * Uses a multi-layered cache check (session + local) to minimize DB calls.
  */
 export async function ensureGlobalIdentity(user: any, force = false) {
@@ -42,7 +42,7 @@ export async function ensureGlobalIdentity(user: any, force = false) {
                 const baseData = {
                     username,
                     displayName: user.name || username,
-                    appsActive: ['keep'],
+                    appsActive: ['vault'],
                     createdAt: new Date().toISOString(),
                     updatedAt: new Date().toISOString(),
                     bio: user.prefs?.bio || '',
@@ -85,7 +85,7 @@ export async function ensureGlobalIdentity(user: any, force = false) {
         }
 
         // Add 'keep' to appsActive if not present
-        if (profile && Array.isArray(profile.appsActive) && !profile.appsActive.includes('keep')) {
+        if (profile && Array.isArray(profile.appsActive) && !profile.appsActive.includes('vault')) {
             await appwriteDatabases.updateDocument(
                 CONNECT_DATABASE_ID,
                 CONNECT_COLLECTION_ID_USERS,

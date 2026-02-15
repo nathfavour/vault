@@ -44,10 +44,10 @@ export function BackgroundTaskProvider({ children }: { children: ReactNode }) {
       let result: ImportResult;
       if (type === "bitwarden") {
         result = await service.importBitwardenData(data, userId);
-      } else if (type === "whisperrkeep") {
-        console.log("[BackgroundTask] Calling importWhisperrKeepData...");
-        result = await service.importWhisperrKeepData(data, userId);
-        console.log("[BackgroundTask] importWhisperrKeepData returned:", result.summary);
+      } else if (type === "kylrixvault") {
+        console.log("[BackgroundTask] Calling importKylrix VaultData...");
+        result = await service.importKylrix VaultData(data, userId);
+        console.log("[BackgroundTask] importKylrix VaultData returned:", result.summary);
       } else {
         throw new Error("Unsupported import type");
       }

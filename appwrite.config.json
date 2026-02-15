@@ -1,7 +1,7 @@
 {
     "projectId": "67fe9627001d97e37ef3",
     "endpoint": "https://fra.cloud.appwrite.io/v1",
-    "projectName": "whisperrnote",
+    "projectName": "kylrixnote",
     "settings": {
         "services": {
             "account": true,
@@ -42,7 +42,7 @@
     "tablesDB": [
         {
             "$id": "67ff05a9000296822396",
-            "name": "whisperrnote",
+            "name": "kylrixnote",
             "enabled": true
         },
         {

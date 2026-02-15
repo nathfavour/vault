@@ -28,7 +28,7 @@ export default function CTA() {
           Ready to secure your digital life?
         </Typography>
         <Typography variant="body1" sx={{ color: 'rgba(255, 255, 255, 0.6)', mb: 6 }}>
-          Join thousands of users who trust Whisperrkeep with their passwords.
+          Join thousands of users who trust Kylrix Vault with their passwords.
         </Typography>
         <Button
           variant="contained"

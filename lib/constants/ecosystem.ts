@@ -12,23 +12,23 @@ export interface EcosystemApp {
 export const ECOSYSTEM_APPS: EcosystemApp[] = [
     {
         id: 'note',
-        label: 'WhisperrNote',
+        label: 'Kylrix Note',
         description: 'Advanced knowledge base & research',
         subdomain: 'note',
         icon: '📝',
         color: '#00F0FF'
     },
     {
-        id: 'keep',
-        label: 'WhisperrKeep',
+        id: 'vault',
+        label: 'Kylrix Vault',
         description: 'Military-grade vault & credentials',
-        subdomain: 'keep',
+        subdomain: 'vault',
         icon: '🛡️',
         color: '#FACC15'
     },
     {
         id: 'flow',
-        label: 'WhisperrFlow',
+        label: 'Kylrix Flow',
         description: 'Task orchestration & orchestration',
         subdomain: 'flow',
         icon: '🌊',
@@ -36,7 +36,7 @@ export const ECOSYSTEM_APPS: EcosystemApp[] = [
     },
     {
         id: 'connect',
-        label: 'WhisperrConnect',
+        label: 'Kylrix Connect',
         description: 'High-fidelity communication',
         subdomain: 'connect',
         icon: '📡',
@@ -44,7 +44,7 @@ export const ECOSYSTEM_APPS: EcosystemApp[] = [
     },
     {
         id: 'id',
-        label: 'WhisperrID',
+        label: 'KylrixID',
         description: 'Unified identity & security',
         subdomain: 'id',
         icon: '🆔',
@@ -56,12 +56,12 @@ export const getEcosystemUrl = (subdomain: string) => {
     if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
         const ports: Record<string, number> = {
             'note': 3000,
-            'keep': 3001,
+            'vault': 3001,
             'flow': 3002,
             'connect': 3003,
             'id': 3004
         };
         return `http://localhost:${ports[subdomain]}`;
     }
-    return `https://${subdomain}.whisperrnote.space`;
+    return `https://${subdomain}.kylrixnote.space`;
 };

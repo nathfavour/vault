@@ -7,7 +7,7 @@ import { EcosystemClient } from "@/components/ecosystem/EcosystemClient";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
-  title: "WhisperrKeep - Premium Password Vault",
+  title: "Kylrix Vault - Premium Password Vault",
   description: "Secure, simple password management for individuals and teams. Your digital life, protected.",
 };
 
@@ -29,7 +29,7 @@ export default function RootLayout({
       </head>
       <body style={{ margin: 0, padding: 0, backgroundColor: '#000' }}>
         <Providers>
-          <EcosystemClient nodeId="keep" />
+          <EcosystemClient nodeId="vault" />
           <Box sx={{ minHeight: '100vh', width: '100%', bgcolor: '#000' }}>
             <Suspense fallback={null}>
               <AppShell>

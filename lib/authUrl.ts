@@ -4,7 +4,7 @@
  */
 export function getAuthURL(): string {
   const authSubdomain = process.env.NEXT_PUBLIC_AUTH_SUBDOMAIN || "accounts";
-  const appSubdomain = process.env.NEXT_PUBLIC_DOMAIN || "whisperrnote.space";
+  const appSubdomain = process.env.NEXT_PUBLIC_DOMAIN || "kylrixnote.space";
 
   if (!appSubdomain) {
     throw new Error(
@@ -39,7 +39,7 @@ export function getSourceURL(): string {
   }
 
   // Server-side fallback
-  const appSubdomain = process.env.NEXT_PUBLIC_DOMAIN || "whisperrnote.space";
+  const appSubdomain = process.env.NEXT_PUBLIC_DOMAIN || "kylrixnote.space";
   const protocol = process.env.NODE_ENV === "development" ? "http:" : "https:";
   return `${protocol}//${appSubdomain}/masterpass`;
 }
@@ -76,7 +76,7 @@ export function openAuthPopup(): Window | null {
   );
 
   if (!popup) {
-    console.warn("Popup blocked, falling back to redirect in whisperrkeep");
+    console.warn("Popup blocked, falling back to redirect in kylrixvault");
     window.location.assign(fullUrl);
     return null;
   }

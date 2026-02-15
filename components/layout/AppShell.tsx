@@ -313,7 +313,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </Box>
       </Box>
 
-      {/* Mobile Bottom Navigation - Floating Whisperr Style */}
+      {/* Mobile Bottom Navigation - Floating Kylrix Style */}
       <Paper
         component="nav"
         elevation={0}
