@@ -23,6 +23,8 @@ import type {
 import { AuthenticatorType } from "appwrite";
 import { sanitizeString } from "@/lib/validation";
 
+import { APPWRITE_CONFIG } from "./appwrite/config";
+
 // --- Appwrite Client Setup ---
 function normalizeEndpoint(ep?: string): string {
   const raw = (ep || "").trim();
@@ -35,8 +37,8 @@ function normalizeEndpoint(ep?: string): string {
 // Client is initialized lazily or with a safe check
 const getAppwriteClient = () => {
   const client = new Client();
-  const endpoint = normalizeEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT);
-  const project = process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID;
+  const endpoint = APPWRITE_CONFIG.ENDPOINT;
+  const project = APPWRITE_CONFIG.PROJECT_ID;
 
   if (endpoint) client.setEndpoint(endpoint);
   if (project) client.setProject(project);
@@ -193,30 +195,23 @@ async function listDocumentsWithRetry(
   }
 }
 
-// --- Database & Collection IDs (from database.md & .env) ---
-export const APPWRITE_DATABASE_ID =
-  process.env.APPWRITE_DATABASE_ID || "passwordManagerDb";
-export const APPWRITE_COLLECTION_CREDENTIALS_ID =
-  process.env.APPWRITE_COLLECTION_CREDENTIALS_ID || "credentials";
-export const APPWRITE_COLLECTION_TOTPSECRETS_ID =
-  process.env.APPWRITE_COLLECTION_TOTPSECRETS_ID || "totpSecrets";
-export const APPWRITE_COLLECTION_FOLDERS_ID =
-  process.env.APPWRITE_COLLECTION_FOLDERS_ID || "folders";
-export const APPWRITE_COLLECTION_SECURITYLOGS_ID =
-  process.env.APPWRITE_COLLECTION_SECURITYLOGS_ID || "securityLogs";
-export const APPWRITE_COLLECTION_USER_ID =
-  process.env.APPWRITE_COLLECTION_USER_ID || "user";
-export const APPWRITE_COLLECTION_KEYCHAIN_ID =
-  process.env.APPWRITE_COLLECTION_KEYCHAIN_ID || "keychain";
+// --- Database & Collection IDs (from constants) ---
+export const APPWRITE_DATABASE_ID = APPWRITE_CONFIG.DATABASES.VAULT;
+export const APPWRITE_COLLECTION_CREDENTIALS_ID = APPWRITE_CONFIG.TABLES.VAULT.CREDENTIALS;
+export const APPWRITE_COLLECTION_TOTPSECRETS_ID = APPWRITE_CONFIG.TABLES.VAULT.TOTP_SECRETS;
+export const APPWRITE_COLLECTION_FOLDERS_ID = APPWRITE_CONFIG.TABLES.VAULT.FOLDERS;
+export const APPWRITE_COLLECTION_SECURITYLOGS_ID = APPWRITE_CONFIG.TABLES.VAULT.SECURITY_LOGS;
+export const APPWRITE_COLLECTION_USER_ID = APPWRITE_CONFIG.TABLES.VAULT.USER;
+export const APPWRITE_COLLECTION_KEYCHAIN_ID = APPWRITE_CONFIG.TABLES.VAULT.KEYCHAIN;
 
 // Ecosystem: Kylrix Flow
-export const FLOW_DATABASE_ID = "kylrixflow";
-export const FLOW_COLLECTION_ID_TASKS = "tasks";
-export const FLOW_COLLECTION_ID_EVENTS = "events";
+export const FLOW_DATABASE_ID = APPWRITE_CONFIG.DATABASES.FLOW;
+export const FLOW_COLLECTION_ID_TASKS = APPWRITE_CONFIG.TABLES.FLOW.TASKS;
+export const FLOW_COLLECTION_ID_EVENTS = APPWRITE_CONFIG.TABLES.FLOW.EVENTS;
 
 // Ecosystem: Kylrix Note
-export const NOTE_DATABASE_ID = "67ff05a9000296822396";
-export const NOTE_COLLECTION_ID = "67ff05f3002502ef239e";
+export const NOTE_DATABASE_ID = APPWRITE_CONFIG.DATABASES.NOTE;
+export const NOTE_COLLECTION_ID = APPWRITE_CONFIG.TABLES.NOTE.NOTES;
 
 // --- Collection Structure & Field Mappings ---
 // Dynamically derive encrypted/plaintext fields from the types
@@ -1141,7 +1136,7 @@ export class AppwriteService {
   ): Promise<void> {
     const extendedDetails = {
       ...details,
-      ecosystemApp: 'kylrixvault'
+      ecosystemApp: APPWRITE_CONFIG.DATABASES.VAULT
     };
     await this.createSecurityLog({
       userId,
@@ -1368,7 +1363,7 @@ export class AppwriteService {
   static async cloudBackup(userId: string): Promise<Models.File> {
     const data = await this.exportUserData(userId);
     const blob = new Blob([JSON.stringify(data)], { type: "application/json" });
-    const file = new File([blob], `kylrixvault-backup-${new Date().getTime()}.json`, { type: "application/json" });
+    const file = new File([blob], `${APPWRITE_CONFIG.SYSTEM.RP_NAME}-backup-${new Date().getTime()}.json`, { type: "application/json" });
 
     return await appwriteStorage.createFile(
       APPWRITE_BUCKET_BACKUPS_ID,
