@@ -16,6 +16,7 @@ import {
   hasMasterpass,
   logoutAppwrite,
 } from "@/lib/appwrite";
+import { APPWRITE_CONFIG } from "@/lib/appwrite/config";
 import { getAuthOrigin, openAuthPopup } from "@/lib/authUrl";
 import { masterPassCrypto } from "./(protected)/masterpass/logic";
 import { logDebug, logWarn } from "@/lib/logger";
@@ -129,8 +130,8 @@ export function AppwriteProvider({ children }: { children: ReactNode }) {
   const attemptSilentAuth = useCallback(async () => {
     if (typeof window === "undefined") return;
 
-    const authSubdomain = process.env.NEXT_PUBLIC_AUTH_SUBDOMAIN;
-    const domain = process.env.NEXT_PUBLIC_DOMAIN;
+    const authSubdomain = APPWRITE_CONFIG.SYSTEM.AUTH_SUBDOMAIN;
+    const domain = APPWRITE_CONFIG.SYSTEM.DOMAIN;
     if (!authSubdomain || !domain) return;
 
     return new Promise<void>((resolve) => {

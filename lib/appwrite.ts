@@ -125,8 +125,8 @@ export async function getCurrentUserFromRequest(req: { headers: { get(k: string)
     const cookieHeader = req.headers.get('cookie') || req.headers.get('Cookie');
     if (!cookieHeader) return null;
 
-    const endpoint = normalizeEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT);
-    const projectId = process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID;
+    const endpoint = APPWRITE_CONFIG.ENDPOINT;
+    const projectId = APPWRITE_CONFIG.PROJECT_ID;
 
     const res = await fetch(`${endpoint}/account`, {
       method: 'GET',
@@ -172,7 +172,7 @@ async function listDocumentsWithRetry(
 
     // Try to normalize endpoint then retry once
     try {
-      const envEp = normalizeEndpoint(process.env.NEXT_PUBLIC_APPWRITE_ENDPOINT);
+      const envEp = APPWRITE_CONFIG.ENDPOINT;
       if (envEp) {
         appwriteClient.setEndpoint(envEp);
       } else if (typeof window !== "undefined") {

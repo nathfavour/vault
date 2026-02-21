@@ -1,14 +1,16 @@
+import { APPWRITE_CONFIG } from "./appwrite/config";
+
 /**
  * Generate the auth/accounts IDM subdomain URL
  * Handles both http and https protocols
  */
 export function getAuthURL(): string {
-  const authSubdomain = process.env.NEXT_PUBLIC_AUTH_SUBDOMAIN || "accounts";
-  const appSubdomain = process.env.NEXT_PUBLIC_DOMAIN || "kylrixnote.space";
+  const authSubdomain = APPWRITE_CONFIG.SYSTEM.AUTH_SUBDOMAIN || "accounts";
+  const appSubdomain = APPWRITE_CONFIG.SYSTEM.DOMAIN || "kylrixnote.space";
 
   if (!appSubdomain) {
     throw new Error(
-      "APP_SUBDOMAIN environment variable is required for auth URL generation",
+      "APPWRITE_CONFIG.SYSTEM.DOMAIN is required for auth URL generation",
     );
   }
 
@@ -39,7 +41,7 @@ export function getSourceURL(): string {
   }
 
   // Server-side fallback
-  const appSubdomain = process.env.NEXT_PUBLIC_DOMAIN || "kylrixnote.space";
+  const appSubdomain = APPWRITE_CONFIG.SYSTEM.DOMAIN || "kylrixnote.space";
   const protocol = process.env.NODE_ENV === "development" ? "http:" : "https:";
   return `${protocol}//${appSubdomain}/masterpass`;
 }
@@ -49,7 +51,7 @@ export function getSourceURL(): string {
  */
 export function openAuthPopup(): Window | null {
   const authURL = getAuthURL();
-  const loginPath = process.env.NEXT_PUBLIC_AUTH_LOGIN_PATH || "/login";
+  const loginPath = "/login";
   const normalizedLoginPath = loginPath.startsWith("/")
     ? loginPath
     : `/${loginPath}`;
