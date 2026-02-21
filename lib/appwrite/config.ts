@@ -49,9 +49,9 @@ export const APPWRITE_CONFIG = {
         TEMP_UPLOADS: 'temp_uploads'
     },
     SYSTEM: {
-        DOMAIN: 'kylrixnote.space',
+        DOMAIN: 'kylrix.space',
         AUTH_SUBDOMAIN: 'accounts',
         RP_NAME: 'kylrixnote',
-        RP_ID: 'kylrixnote.space'
+        RP_ID: 'kylrix.space'
     }
 };

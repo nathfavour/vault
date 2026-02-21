@@ -6,7 +6,7 @@ import { APPWRITE_CONFIG } from "./appwrite/config";
  */
 export function getAuthURL(): string {
   const authSubdomain = APPWRITE_CONFIG.SYSTEM.AUTH_SUBDOMAIN || "accounts";
-  const appSubdomain = APPWRITE_CONFIG.SYSTEM.DOMAIN || "kylrixnote.space";
+  const appSubdomain = APPWRITE_CONFIG.SYSTEM.DOMAIN || "kylrix.space";
 
   if (!appSubdomain) {
     throw new Error(
@@ -41,7 +41,7 @@ export function getSourceURL(): string {
   }
 
   // Server-side fallback
-  const appSubdomain = APPWRITE_CONFIG.SYSTEM.DOMAIN || "kylrixnote.space";
+  const appSubdomain = APPWRITE_CONFIG.SYSTEM.DOMAIN || "kylrix.space";
   const protocol = process.env.NODE_ENV === "development" ? "http:" : "https:";
   return `${protocol}//${appSubdomain}/masterpass`;
 }

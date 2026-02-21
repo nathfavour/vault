@@ -63,5 +63,5 @@ export const getEcosystemUrl = (subdomain: string) => {
         };
         return `http://localhost:${ports[subdomain]}`;
     }
-    return `https://${subdomain}.kylrixnote.space`;
+    return `https://${subdomain}.kylrix.space`;
 };
