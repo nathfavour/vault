@@ -73,23 +73,8 @@ export const MeshProtocol = {
     seenMessages.add(msgId);
 
     if (typeof window !== 'undefined') {
-      // 1. Unified Broadcaster
+      // 1. Unified Broadcaster (Same-Origin Only)
       getChannel()?.postMessage(fullMessage);
-
-      // 2. Optimized Cross-Origin Relay
-      const parent = window.parent !== window ? window.parent : null;
-      if (parent) {
-        parent.postMessage(fullMessage, '*');
-      }
-
-      // 3. Selective Frame Discovery (exclude common non-app iframes)
-      const frames = document.getElementsByTagName('iframe');
-      for (let i = 0; i < frames.length; i++) {
-        const frame = frames[i];
-        if (frame.src.includes('.kylrix.app') || frame.src.includes('localhost')) {
-          frame.contentWindow?.postMessage(fullMessage, '*');
-        }
-      }
     }
 
     return fullMessage;
