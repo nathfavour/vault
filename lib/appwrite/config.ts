@@ -51,7 +51,7 @@ export const APPWRITE_CONFIG = {
     SYSTEM: {
         DOMAIN: 'kylrix.space',
         AUTH_SUBDOMAIN: 'accounts',
-        RP_NAME: 'kylrixnote',
+        RP_NAME: 'kylrix',
         RP_ID: 'kylrix.space'
     }
 };
