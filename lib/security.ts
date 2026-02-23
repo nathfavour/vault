@@ -37,16 +37,19 @@ export function generateRandomSalt(size: number = 32): Uint8Array {
 
 /**
  * Securely compare two strings in constant time
- * Prevents timing attacks
+ * Prevents timing attacks (CVE-KYL-2026-003)
  */
 export function constantTimeCompare(a: string, b: string): boolean {
-  if (a.length !== b.length) {
-    return false;
-  }
-
-  let result = 0;
-  for (let i = 0; i < a.length; i++) {
-    result |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  let result = a.length ^ b.length;
+  
+  // Iterate through a fixed length to prevent timing leaks about secret length
+  // 512 characters is sufficient for all Kylrix ecosystem keys and tokens
+  const maxCompareLen = 512;
+  
+  for (let i = 0; i < maxCompareLen; i++) {
+    const charA = i < a.length ? a.charCodeAt(i) : 0;
+    const charB = i < b.length ? b.charCodeAt(i) : 0;
+    result |= charA ^ charB;
   }
 
   return result === 0;
