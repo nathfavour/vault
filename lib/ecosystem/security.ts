@@ -299,12 +299,12 @@ export class EcosystemSecurity {
       {
         name: "PBKDF2",
         salt: salt,
-        iterations: 5000, // Faster for ephemeral usage
+        iterations: 100000, // Balanced for speed (<200ms) and security
         hash: "SHA-256",
       },
       keyMaterial,
       { name: "AES-GCM", length: 256 },
-      false,
+      false, // SECURITY: Non-extractable. Key cannot be exported by XSS.
       ["encrypt", "decrypt"]
     );
   }
