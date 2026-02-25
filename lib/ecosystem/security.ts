@@ -13,6 +13,10 @@ export class EcosystemSecurity {
   private nodeId: string = 'unknown';
   // SECURITY: Tab-specific secret (RAM-only) to protect against XSS (CVE-KYL-2026-005)
   private tabSessionSecret: Uint8Array | null = null;
+  
+  // Asymmetric keys for node identity (CVE-KYL-2026-006: Mesh Spoofing Mitigation)
+  private signingKey: CryptoKeyPair | null = null;
+  private nodeKeyRegistry: Map<string, CryptoKey> = new Map();
 
   // Constants aligned with Kylrix Vault for backward compatibility
   private static readonly PBKDF2_ITERATIONS = 600000;
@@ -35,9 +39,100 @@ export class EcosystemSecurity {
   /**
    * Initialize security for a specific node
    */
-  init(nodeId: string) {
+  async init(nodeId: string) {
     this.nodeId = nodeId;
     this.listenForMeshDirectives();
+    await this.getOrCreateNodeKeys();
+  }
+
+  /**
+   * Get or create this node's asymmetric identity keys
+   */
+  private async getOrCreateNodeKeys(): Promise<CryptoKeyPair> {
+    if (this.signingKey) return this.signingKey;
+
+    // In a production environment, these should be stored in IndexedDB for better security
+    // and marked as non-extractable. For this prototype, we'll generate and store the 
+    // public key in localStorage and keep the private key in memory (or derive it).
+    // To survive refreshes, we'll store the pair if possible.
+    
+    // Check if we already have keys in storage (simplified for prototype)
+    const storedPubKey = localStorage.getItem(`kylrix_node_pubkey_${this.nodeId}`);
+    
+    // For now, we generate a new pair per session if not found
+    this.signingKey = await crypto.subtle.generateKey(
+      {
+        name: "ECDSA",
+        namedCurve: "P-256",
+      },
+      false, // non-extractable private key
+      ["sign", "verify"]
+    );
+
+    // Export and share public key (mocking the distribution)
+    const pubKeyBuffer = await crypto.subtle.exportKey("spki", this.signingKey.publicKey);
+    const pubKeyBase64 = btoa(String.fromCharCode(...new Uint8Array(pubKeyBuffer)));
+    localStorage.setItem(`kylrix_node_pubkey_${this.nodeId}`, pubKeyBase64);
+    
+    return this.signingKey;
+  }
+
+  /**
+   * Sign a mesh message to prevent spoofing
+   */
+  async signMessage(payload: any, timestamp: number, msgId: string): Promise<string> {
+    if (!this.signingKey) await this.getOrCreateNodeKeys();
+    
+    const dataToSign = new TextEncoder().encode(JSON.stringify(payload) + timestamp + msgId + this.nodeId);
+    const signature = await crypto.subtle.sign(
+      { name: "ECDSA", hash: { name: "SHA-256" } },
+      this.signingKey!.privateKey,
+      dataToSign
+    );
+
+    return btoa(String.fromCharCode(...new Uint8Array(signature)));
+  }
+
+  /**
+   * Verify a mesh message signature
+   */
+  async verifyMessage(msg: any): Promise<boolean> {
+    try {
+      if (!msg.signature || !msg.sourceNode) return false;
+
+      // 1. Get the sender's public key
+      let pubKey = this.nodeKeyRegistry.get(msg.sourceNode);
+      
+      if (!pubKey) {
+        // Mock: Try to fetch from shared storage (in reality, would be a secure ID node registry)
+        const stored = localStorage.getItem(`kylrix_node_pubkey_${msg.sourceNode}`);
+        if (!stored) return false; // Unknown node
+
+        const pubKeyBuffer = new Uint8Array(atob(stored).split("").map(c => c.charCodeAt(0)));
+        pubKey = await crypto.subtle.importKey(
+          "spki",
+          pubKeyBuffer,
+          { name: "ECDSA", namedCurve: "P-256" },
+          true,
+          ["verify"]
+        );
+        this.nodeKeyRegistry.set(msg.sourceNode, pubKey);
+      }
+
+      // 2. Verify signature
+      const dataToVerify = new TextEncoder().encode(JSON.stringify(msg.payload) + msg.timestamp + msg.id + msg.sourceNode);
+      const sigBuffer = new Uint8Array(atob(msg.signature).split("").map(c => c.charCodeAt(0)));
+      
+      return await crypto.subtle.verify(
+        { name: "ECDSA", hash: { name: "SHA-256" } },
+        pubKey,
+        sigBuffer,
+        dataToVerify
+      );
+    } catch (e) {
+      console.error("[Security] Signature verification failed", e);
+      return false;
+    }
   }
 
   private listenForMeshDirectives() {

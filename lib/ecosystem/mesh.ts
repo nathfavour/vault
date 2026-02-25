@@ -61,13 +61,25 @@ export const MeshProtocol = {
     }
   },
 
-  broadcast: (message: Omit<MeshMessage, 'id' | 'timestamp' | 'sourceNode'>, sourceId: string) => {
+  broadcast: async (message: Omit<MeshMessage, 'id' | 'timestamp' | 'sourceNode'>, sourceId: string) => {
     const msgId = crypto.randomUUID();
+    const timestamp = Date.now();
+    
+    // Sign message if security protocol is available
+    let signature: string | undefined;
+    try {
+      const { ecosystemSecurity } = await import('./security');
+      signature = await ecosystemSecurity.signMessage(message.payload, timestamp, msgId);
+    } catch (e) {
+      console.warn("[Mesh] Broadcast signing failed, sending unsigned", e);
+    }
+
     const fullMessage: MeshMessage = {
       ...message,
       id: msgId,
       sourceNode: sourceId,
-      timestamp: Date.now()
+      timestamp,
+      signature
     };
 
     seenMessages.add(msgId);
@@ -84,13 +96,34 @@ export const MeshProtocol = {
     if (typeof window === 'undefined') return () => { };
 
     const bc = getChannel();
-    const handleIncoming = (msg: MeshMessage) => {
+    const handleIncoming = async (msg: MeshMessage) => {
       if (!msg.id || seenMessages.has(msg.id)) return;
+
+      // SECURITY: Verify cryptographic signature (CVE-KYL-2026-006)
+      if (msg.signature) {
+        try {
+          const { ecosystemSecurity } = await import('./security');
+          const isValid = await ecosystemSecurity.verifyMessage(msg);
+          if (!isValid) {
+            console.error(`[Mesh] SECURE DISCARD: Invalid signature from ${msg.sourceNode}`, msg.id);
+            return;
+          }
+        } catch (e) {
+          console.warn("[Mesh] Verification system unavailable, processing with caution");
+        }
+      } else if (msg.type === 'COMMAND') {
+        // High-risk messages MUST be signed
+        console.warn(`[Mesh] SECURITY ALERT: Unsigned COMMAND received from ${msg.sourceNode}. Blocking for safety.`);
+        return;
+      }
+
       seenMessages.add(msg.id);
       handler(msg);
     };
 
-    const bcHandler = (e: MessageEvent) => handleIncoming(e.data);
+    const bcHandler = (e: MessageEvent) => {
+      handleIncoming(e.data);
+    };
     bc?.addEventListener('message', bcHandler);
 
     // SECURITY: Validate message origin to prevent XSS spoofing (CVE-KYL-2026-001)
