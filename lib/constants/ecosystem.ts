@@ -1,5 +1,3 @@
-import React from 'react';
-
 export interface EcosystemApp {
     id: string;
     label: string;
@@ -8,6 +6,10 @@ export interface EcosystemApp {
     icon: string;
     color: string;
 }
+
+export const KYLRIX_DOMAIN = 'kylrix.space';
+export const KYLRIX_AUTH_SUBDOMAIN = 'accounts';
+export const KYLRIX_AUTH_URI = `https://${KYLRIX_AUTH_SUBDOMAIN}.${KYLRIX_DOMAIN}`;
 
 export const ECOSYSTEM_APPS: EcosystemApp[] = [
     {
@@ -44,24 +46,25 @@ export const ECOSYSTEM_APPS: EcosystemApp[] = [
     },
     {
         id: 'id',
-        label: 'KylrixID',
+        label: 'Accounts',
         description: 'Unified identity & security',
-        subdomain: 'id',
+        subdomain: KYLRIX_AUTH_SUBDOMAIN,
         icon: '🆔',
         color: '#8B5CF6'
     }
 ];
 
 export const getEcosystemUrl = (subdomain: string) => {
-    if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+    if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
         const ports: Record<string, number> = {
-            'note': 3000,
-            'vault': 3001,
-            'flow': 3002,
-            'connect': 3003,
-            'id': 3004
+            accounts: 3000,
+            note: 3001,
+            vault: 3002,
+            flow: 3003,
+            connect: 3004
         };
-        return `http://localhost:${ports[subdomain]}`;
+        const appId = subdomain === 'id' ? 'accounts' : subdomain;
+        return `http://localhost:${ports[appId] || 3000}`;
     }
-    return `https://${subdomain}.kylrix.space`;
+    return `https://${subdomain}.${KYLRIX_DOMAIN}`;
 };
