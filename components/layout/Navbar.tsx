@@ -30,6 +30,7 @@ import { useAI } from "@/app/context/AIContext";
 import { usePathname } from "next/navigation";
 import dynamic from "next/dynamic";
 import EcosystemPortal from "../common/EcosystemPortal";
+import Logo from "../common/Logo";
 
 const PasswordGenerator = dynamic(() => import("@/components/ui/PasswordGenerator"), { 
   loading: () => <Box sx={{ p: 2, display: 'flex', justifyContent: 'center' }}><CircularProgress size={24} /></Box>,
@@ -84,36 +85,16 @@ export function Navbar() {
       }}
     >
       <Toolbar sx={{ justifyContent: 'space-between', minHeight: 72 }}>
-        <Box component={Link} href="/" sx={{ display: 'flex', alignItems: 'center', gap: 1.5, textDecoration: 'none', color: 'inherit' }}>
-          <Box
-            sx={{ 
-              width: 32, 
-              height: 32, 
-              bgcolor: '#00F5FF', 
-              borderRadius: '8px', 
-              display: 'flex', 
-              alignItems: 'center', 
-              justifyContent: 'center',
-              color: '#000',
-              fontWeight: 900,
-              fontSize: '1.2rem'
-            }}
-          >
-            W
-          </Box>
-          <Typography
-            variant="h6"
-            sx={{
-              fontWeight: 900,
-              display: { xs: 'none', sm: 'inline' },
-              fontFamily: 'var(--font-space-grotesk)',
-              letterSpacing: '-0.02em',
-              color: 'white'
-            }}
-          >
-            Kylrix Vault
-          </Typography>
-        </Box>
+        <Logo 
+          size={32} 
+          app="vault" 
+          component={Link} 
+          href="/" 
+          sx={{ 
+            color: 'inherit',
+            '&:hover': { opacity: 0.8 }
+          }} 
+        />
 
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <Tooltip title="Kylrix Portal (Ctrl+Space)">
