@@ -2,10 +2,10 @@
   <defs>
     <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stopColor="#00F5FF" />
-      <stop offset="100%" stopColor="#222222" />
+      <stop offset="100%" stopColor="#3B82F6" />
     </linearGradient>
   </defs>
   <rect x="25" y="15" width="12" height="70" rx="4" fill="url(#grad)" />
-  <path d="M75 15L45 50L75 85" stroke="url(#grad)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" opacity="0.6" />
-  <path d="M85 25L55 50L85 75" stroke="url(#grad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M75 15L45 50L75 85" stroke="#3B82F6" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" opacity="0.6" />
+  <path d="M85 25L55 50L85 75" stroke="#00F5FF" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
 </svg>
