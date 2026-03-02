@@ -31,6 +31,21 @@ function GlobalEcosystemHandler() {
 }
 
 export function Providers({ children }: { children: React.ReactNode }) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <MuiThemeProvider theme={darkTheme}>
+        <CssBaseline />
+        <div style={{ visibility: 'hidden' }}>{children}</div>
+      </MuiThemeProvider>
+    );
+  }
+
   return (
     <MuiThemeProvider theme={darkTheme}>
       <CssBaseline />
