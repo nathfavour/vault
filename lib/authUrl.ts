@@ -60,7 +60,7 @@ export function openAuthPopup(): Window | null {
   }
 
   const popup = window.open(
-    fullUrl.split('?')[0], // Don't pass source to popup to avoid inner redirect
+    fullUrl,
     "auth_popup",
     "width=500,height=700,resizable=yes,scrollbars=yes",
   );
