@@ -38,6 +38,7 @@ import {
 import { checkRateLimit, getBlockedDuration } from "@/lib/rate-limiter";
 import toast from "react-hot-toast";
 import { unlockWithPasskey } from "@/lib/passkey";
+import { PasskeySetup } from "./passkeySetup";
 
 interface MasterPassModalProps {
   isOpen: boolean;
@@ -56,18 +57,26 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
   const [confirmCapsLock, setConfirmCapsLock] = useState(false);
   const [hasPasskey, setHasPasskey] = useState(false);
   const [passkeyLoading, setPasskeyLoading] = useState(false);
+  const [showPasskeyIncentive, setShowPasskeyIncentive] = useState(false);
 
   const { user } = useAppwrite();
   const { finalizeAuth } = useFinalizeAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!user) return;
+    if (!user || !isOpen) return;
     setLoading(true);
+    
+    // Check for passkeys and auto-trigger if they exist
     Promise.all([hasMasterpass(user.$id), AppwriteService.hasPasskey(user.$id)])
       .then(([masterpassPresent, passkeyPresent]) => {
         setIsFirstTime(!masterpassPresent);
         setHasPasskey(passkeyPresent);
+        
+        // Auto-start passkey auth ONLY if modal is open, not first time, and passkey exists
+        if (isOpen && masterpassPresent && passkeyPresent) {
+          handlePasskeyUnlock();
+        }
       })
       .catch(() => {
         setIsFirstTime(true);
@@ -76,7 +85,7 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
       .finally(() => {
         setLoading(false);
       });
-  }, [user]);
+  }, [user, isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -115,8 +124,12 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
           if (user) {
             await setMasterpassFlag(user.$id, user.email);
           }
-          onClose();
-          await finalizeAuth({ redirect: true, fallback: "/masterpass" });
+          if (!hasPasskey) {
+            setShowPasskeyIncentive(true);
+          } else {
+            onClose();
+            await finalizeAuth({ redirect: true, fallback: "/masterpass" });
+          }
         } else {
           toast.error("Failed to set master password");
         }
@@ -128,8 +141,12 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
         );
 
         if (success) {
-          onClose();
-          await finalizeAuth({ redirect: true, fallback: "/masterpass" });
+          if (!hasPasskey) {
+            setShowPasskeyIncentive(true);
+          } else {
+            onClose();
+            await finalizeAuth({ redirect: true, fallback: "/masterpass" });
+          }
         } else {
           toast.error("Incorrect master password. Please try again.");
         }
@@ -158,15 +175,40 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
   };
 
   const handlePasskeyUnlock = async () => {
-    if (!user?.$id) return;
+    if (!user?.$id || !isOpen) return;
     setPasskeyLoading(true);
-    const success = await unlockWithPasskey(user.$id);
-    if (success) {
-      onClose();
-      await finalizeAuth({ redirect: true, fallback: "/masterpass" });
+    try {
+      const success = await unlockWithPasskey(user.$id);
+      if (success && isOpen) {
+        onClose();
+        await finalizeAuth({ redirect: true, fallback: "/masterpass" });
+      }
+    } catch (e) {
+      console.error("Passkey unlock failed or cancelled", e);
+    } finally {
+      setPasskeyLoading(false);
     }
-    setPasskeyLoading(false);
   };
+
+  if (showPasskeyIncentive && user) {
+    return (
+      <PasskeySetup 
+        isOpen={true} 
+        onClose={async () => {
+          setShowPasskeyIncentive(false);
+          onClose();
+          await finalizeAuth({ redirect: true, fallback: "/masterpass" });
+        }} 
+        userId={user.$id} 
+        onSuccess={async () => {
+          setShowPasskeyIncentive(false);
+          onClose();
+          await finalizeAuth({ redirect: true, fallback: "/masterpass" });
+        }}
+        trustUnlocked={true}
+      />
+    );
+  }
 
   return (
     <Dialog 

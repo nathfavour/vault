@@ -21,11 +21,9 @@ import FingerprintIcon from "@mui/icons-material/Fingerprint";
 import CloseIcon from "@mui/icons-material/Close";
 import ShieldIcon from "@mui/icons-material/Shield";
 import AppsIcon from "@mui/icons-material/Apps";
-import { masterPassCrypto } from "@/app/(protected)/masterpass/logic";
-import { unlockWithPasskey } from "@/lib/passkey";
-import { useAppwrite } from "@/app/appwrite-provider";
 import { AppwriteService } from "@/lib/appwrite";
 import { ecosystemSecurity } from "@/lib/ecosystem/security";
+import { PasskeySetup } from "./passkeySetup";
 import toast from "react-hot-toast";
 
 interface SudoModalProps {
@@ -47,35 +45,34 @@ export default function SudoModal({
     const [hasPasskey, setHasPasskey] = useState(false);
     const [hasPin, setHasPin] = useState(false);
     const [mode, setMode] = useState<"passkey" | "password" | "pin">("password");
+    const [showPasskeyIncentive, setShowPasskeyIncentive] = useState(false);
 
     // Check if user has passkey and PIN set up
     useEffect(() => {
         if (isOpen && user?.$id) {
-            AppwriteService.hasPasskey(user.$id).then(setHasPasskey);
             const pinSet = ecosystemSecurity.isPinSet();
             setHasPin(pinSet);
+
+            AppwriteService.hasPasskey(user.$id).then(passkeyPresent => {
+                setHasPasskey(passkeyPresent);
+                
+                if (passkeyPresent) {
+                    setMode("passkey");
+                    handlePasskeyVerify();
+                } else if (pinSet) {
+                    setMode("pin");
+                } else {
+                    setMode("password");
+                }
+            });
             
             // Reset state on open
             setPassword("");
             setPin("");
             setLoading(false);
             setPasskeyLoading(false);
-            
-            // Priority: PIN > Passkey > Password
-            if (pinSet) {
-                setMode("pin");
-            } else {
-                setMode("password");
-            }
         }
     }, [isOpen, user]);
-
-    // Auto-trigger passkey if available (and no PIN)
-    useEffect(() => {
-        if (isOpen && hasPasskey && !hasPin) {
-            setMode("passkey");
-        }
-    }, [isOpen, hasPasskey, hasPin]);
 
     const handlePasswordVerify = async (e?: React.FormEvent) => {
         e?.preventDefault();
@@ -86,14 +83,12 @@ export default function SudoModal({
         try {
             const isValid = await masterPassCrypto.unlock(password, user.$id);
             if (isValid) {
-                // If password correct and PIN is set, piggyback session for next time
-                if (hasPin) {
-                    // We'd need the PIN to piggyback, so we can't do it here 
-                    // unless we prompt for it or have it. 
-                    // But we can mark that we need to setup piggyback.
+                if (!hasPasskey) {
+                    setShowPasskeyIncentive(true);
+                } else {
+                    toast.success("Verified");
+                    onSuccess();
                 }
-                toast.success("Verified");
-                onSuccess();
             } else {
                 toast.error("Incorrect master password");
             }
@@ -112,8 +107,12 @@ export default function SudoModal({
         try {
             const success = await ecosystemSecurity.unlockWithPin(pinValue);
             if (success) {
-                toast.success("Verified via PIN");
-                onSuccess();
+                if (!hasPasskey) {
+                    setShowPasskeyIncentive(true);
+                } else {
+                    toast.success("Verified via PIN");
+                    onSuccess();
+                }
             } else {
                 toast.error("Incorrect PIN");
                 setPin("");
@@ -135,19 +134,38 @@ export default function SudoModal({
     };
 
     const handlePasskeyVerify = async () => {
-        if (!user?.$id) return;
+        if (!user?.$id || !isOpen) return;
         setPasskeyLoading(true);
         try {
             const success = await unlockWithPasskey(user.$id);
-            if (success) {
+            if (success && isOpen) {
+                toast.success("Verified via Passkey");
                 onSuccess();
             }
         } catch (error: unknown) {
-            console.error(error);
+            console.error("Passkey verification failed or cancelled", error);
         } finally {
             setPasskeyLoading(false);
         }
     };
+
+    if (showPasskeyIncentive && user) {
+        return (
+            <PasskeySetup 
+                isOpen={true} 
+                onClose={() => {
+                    setShowPasskeyIncentive(false);
+                    onSuccess();
+                }} 
+                userId={user.$id} 
+                onSuccess={() => {
+                    setShowPasskeyIncentive(false);
+                    onSuccess();
+                }}
+                trustUnlocked={true}
+            />
+        );
+    }
 
     return (
         <Dialog
