@@ -89,6 +89,7 @@ export default function SettingsPage() {
   };
 
   const handleRemovePasskey = async (id: string) => {
+    if (!window.confirm("Are you sure you want to remove this passkey? This cannot be undone.")) return;
     try {
         await AppwriteService.deleteKeychainEntry(id);
         toast.success("Passkey removed");
