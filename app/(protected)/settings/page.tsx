@@ -14,7 +14,12 @@ import {
   Alert,
   CircularProgress,
   alpha,
-  useTheme
+  useTheme,
+  IconButton,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemIcon
 } from "@mui/material";
 import { 
   Lock, 
@@ -24,12 +29,16 @@ import {
   Fingerprint,
   RefreshCw,
   Trash2,
-  AlertTriangle
+  AlertTriangle,
+  Info,
+  CheckCircle
 } from "lucide-react";
 import { useAppwrite } from "@/app/appwrite-provider";
 import { ecosystemSecurity } from "@/lib/ecosystem/security";
 import { MasterPassModal } from "@/components/overlays/MasterPassModal";
+import { PasskeySetup } from "@/components/overlays/passkeySetup";
 import { masterPassCrypto } from "@/app/(protected)/masterpass/logic";
+import { AppwriteService } from "@/lib/appwrite";
 import toast from "react-hot-toast";
 
 export default function SettingsPage() {
@@ -37,12 +46,18 @@ export default function SettingsPage() {
   const { user } = useAppwrite();
   const [isUnlocked, setIsUnlocked] = useState(masterPassCrypto.isVaultUnlocked());
   const [unlockModalOpen, setUnlockModalOpen] = useState(false);
+  const [passkeySetupOpen, setPasskeySetupOpen] = useState(false);
   const [oldPin, setOldPin] = useState("");
   const [pin, setPin] = useState("");
   const [confirmPin, setConfirmPin] = useState("");
   const [isPinSet, setIsPinSet] = useState(false);
   const [loading, setLoading] = useState(false);
   const [pendingAction, setPendingAction] = useState<'setup' | 'wipe' | null>(null);
+  
+  // Passkey state
+  const [passkeyEntries, setPasskeyEntries] = useState<any[]>([]);
+  const [loadingPasskeys, setLoadingPasskeys] = useState(true);
+  const [hasStalePasskeys, setHasStalePasskeys] = useState(false);
 
   useEffect(() => {
     setIsPinSet(ecosystemSecurity.isPinSet());
@@ -53,8 +68,48 @@ export default function SettingsPage() {
         setIsUnlocked(currentUnlocked);
       }
     }, 1000);
+    
+    if (user?.$id) {
+        loadPasskeys();
+    }
+
     return () => clearInterval(interval);
-  }, [isUnlocked]);
+  }, [isUnlocked, user]);
+
+  const loadPasskeys = async () => {
+    if (!user?.$id) return;
+    try {
+        const entries = await AppwriteService.listKeychainEntries(user.$id);
+        const pkEntries = entries.filter(e => e.type === 'passkey').map(e => ({
+            ...e,
+            params: typeof e.params === 'string' ? JSON.parse(e.params) : e.params
+        }));
+        
+        setPasskeyEntries(pkEntries);
+        
+        // Detect stale passkeys (those not for current domain)
+        const stale = pkEntries.some(e => {
+            // If we don't have rpId stored yet, or it's from old domain
+            // For now, any that doesn't match current hostname or is missing rpId in params
+            return !e.params?.rpId || e.params.rpId !== window.location.hostname;
+        });
+        setHasStalePasskeys(stale);
+    } catch (e) {
+        console.error("Failed to load passkeys", e);
+    } finally {
+        setLoadingPasskeys(false);
+    }
+  };
+
+  const handleRemovePasskey = async (id: string) => {
+    try {
+        await AppwriteService.deleteKeychainEntry(id);
+        toast.success("Passkey removed");
+        loadPasskeys();
+    } catch (e) {
+        toast.error("Failed to remove passkey");
+    }
+  };
 
   const handleSetPin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -172,6 +227,99 @@ export default function SettingsPage() {
                 >
                   {isUnlocked ? "Lock Vault" : "Unlock Vault"}
                 </Button>
+              </Box>
+
+              <Divider sx={{ opacity: 0.05 }} />
+
+              {/* Passkey Management */}
+              <Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                    <Box>
+                        <Typography variant="h6" sx={{ fontWeight: 800, fontFamily: 'var(--font-space-grotesk)', mb: 1 }}>Passkeys</Typography>
+                        <Typography variant="body2" sx={{ opacity: 0.6 }}>
+                            Use your device biometric or hardware security key to unlock your vault.
+                        </Typography>
+                    </Box>
+                    <Button 
+                        variant="contained" 
+                        size="small" 
+                        startIcon={<Fingerprint size={16} />}
+                        onClick={() => setPasskeySetupOpen(true)}
+                        sx={{ borderRadius: '10px' }}
+                    >
+                        Add Passkey
+                    </Button>
+                </Box>
+
+                {hasStalePasskeys && (
+                    <Alert 
+                        severity="warning" 
+                        icon={<AlertTriangle size={20} />}
+                        sx={{ 
+                            mb: 3, 
+                            borderRadius: '16px', 
+                            bgcolor: alpha(muiTheme.palette.warning.main, 0.05),
+                            border: `1px solid ${alpha(muiTheme.palette.warning.main, 0.1)}`,
+                            '& .MuiAlert-message': { width: '100%' }
+                        }}
+                    >
+                        <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>Stale Passkeys Detected</Typography>
+                        <Typography variant="body2" sx={{ opacity: 0.8, mb: 1 }}>
+                            Some passkeys were registered on a different domain (likely before the rebrand to kylrix.space) and are no longer active.
+                        </Typography>
+                        <Button 
+                            size="small" 
+                            color="warning" 
+                            onClick={() => {
+                                const staleIds = passkeyEntries.filter(e => !e.params?.rpId || e.params.rpId !== window.location.hostname).map(e => e.$id);
+                                Promise.all(staleIds.map(id => AppwriteService.deleteKeychainEntry(id))).then(() => {
+                                    toast.success("Stale passkeys cleared");
+                                    loadPasskeys();
+                                });
+                            }}
+                            sx={{ fontWeight: 700, textTransform: 'none' }}
+                        >
+                            Clear Stale Passkeys
+                        </Button>
+                    </Alert>
+                )}
+
+                <List sx={{ bgcolor: 'rgba(255, 255, 255, 0.03)', borderRadius: '16px', p: 0, overflow: 'hidden' }}>
+                    {passkeyEntries.length === 0 ? (
+                        <Box sx={{ p: 3, textAlign: 'center', opacity: 0.5 }}>
+                            <Typography variant="body2">No passkeys registered yet.</Typography>
+                        </Box>
+                    ) : (
+                        passkeyEntries.map((pk, idx) => (
+                            <React.Fragment key={pk.$id}>
+                                <ListItem 
+                                    secondaryAction={
+                                        <IconButton edge="end" color="error" onClick={() => handleRemovePasskey(pk.$id)}>
+                                            <Trash2 size={18} />
+                                        </IconButton>
+                                    }
+                                >
+                                    <ListItemIcon>
+                                        <Fingerprint size={20} color={pk.params?.rpId === window.location.hostname ? muiTheme.palette.primary.main : "#666"} />
+                                    </ListItemIcon>
+                                    <ListItemText 
+                                        primary={pk.params?.name || `Passkey ${idx + 1}`}
+                                        secondary={
+                                            pk.params?.rpId !== window.location.hostname 
+                                                ? "Inactive (Registered on old domain)" 
+                                                : `Added on ${new Date(pk.$createdAt).toLocaleDateString()}`
+                                        }
+                                        primaryTypographyProps={{ fontWeight: 700 }}
+                                        secondaryTypographyProps={{ 
+                                            sx: { color: pk.params?.rpId !== window.location.hostname ? 'error.main' : 'inherit' }
+                                        }}
+                                    />
+                                </ListItem>
+                                {idx < passkeyEntries.length - 1 && <Divider sx={{ opacity: 0.05 }} />}
+                            </React.Fragment>
+                        ))
+                    )}
+                </List>
               </Box>
 
               <Divider sx={{ opacity: 0.05 }} />
@@ -328,6 +476,17 @@ export default function SettingsPage() {
           setUnlockModalOpen(false);
           setPendingAction(null);
         }}
+      />
+
+      <PasskeySetup 
+        isOpen={passkeySetupOpen}
+        onClose={() => setPasskeySetupOpen(false)}
+        userId={user?.$id || ""}
+        onSuccess={() => {
+            setPasskeySetupOpen(false);
+            loadPasskeys();
+        }}
+        trustUnlocked={true}
       />
     </Box>
   );

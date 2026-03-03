@@ -180,6 +180,27 @@ export class EcosystemSecurity {
     );
   }
 
+  // Import a raw key and set it as the master key
+  async importMasterKey(keyBytes: ArrayBuffer): Promise<boolean> {
+    try {
+      this.masterKey = await crypto.subtle.importKey(
+        "raw",
+        keyBytes,
+        { name: "AES-GCM", length: 256 },
+        true, // Make it extractable
+        ["encrypt", "decrypt", "wrapKey", "unwrapKey"],
+      );
+      this.isUnlocked = true;
+      if (typeof sessionStorage !== "undefined") {
+        sessionStorage.setItem("kylrix_vault_unlocked", "true");
+      }
+      return true;
+    } catch (e) {
+      console.error("[Security] Failed to import master key", e);
+      return false;
+    }
+  }
+
   async setupPin(pin: string): Promise<boolean> {
     if (!this.masterKey || typeof window === "undefined") return false;
 

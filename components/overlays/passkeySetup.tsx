@@ -177,6 +177,7 @@ export function PasskeySetup({
           counter: 0,
           transports: regResp.response.transports || [],
           created: new Date().toISOString(),
+          rpId: window.location.hostname,
         }),
         isBackup: false
       });
