@@ -37,11 +37,12 @@ export default function SettingsPage() {
   const { user } = useAppwrite();
   const [isUnlocked, setIsUnlocked] = useState(masterPassCrypto.isVaultUnlocked());
   const [unlockModalOpen, setUnlockModalOpen] = useState(false);
+  const [oldPin, setOldPin] = useState("");
   const [pin, setPin] = useState("");
   const [confirmPin, setConfirmPin] = useState("");
   const [isPinSet, setIsPinSet] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+  const [pendingAction, setPendingAction] = useState<'setup' | 'wipe' | null>(null);
 
   useEffect(() => {
     setIsPinSet(ecosystemSecurity.isPinSet());
@@ -62,28 +63,37 @@ export default function SettingsPage() {
       return;
     }
     if (pin !== confirmPin) {
-      toast.error("PINs do not match");
+      toast.error("New PINs do not match");
       return;
     }
 
+    if (isPinSet) {
+        const verified = await ecosystemSecurity.verifyPin(oldPin);
+        if (!verified) {
+            toast.error("Current PIN is incorrect");
+            return;
+        }
+    }
+
     if (!masterPassCrypto.isVaultUnlocked()) {
+      setPendingAction('setup');
       setUnlockModalOpen(true);
       return;
     }
 
+    await executePinSetup();
+  };
+
+  const executePinSetup = async () => {
     setLoading(true);
-    setMessage(null);
     try {
-      // Ensure ecosystemSecurity is synced with masterPassCrypto's key if needed
-      // Actually, both should be using the same underlying logic, but we need to make sure 
-      // ecosystemSecurity has the masterKey loaded.
-      
       const success = await ecosystemSecurity.setupPin(pin);
       if (success) {
-        toast.success("Quick Unlock PIN set successfully!");
+        toast.success(isPinSet ? "PIN updated successfully!" : "Quick Unlock PIN set successfully!");
         setIsPinSet(true);
         setPin("");
         setConfirmPin("");
+        setOldPin("");
       } else {
         toast.error("Failed to setup PIN. Please ensure vault is unlocked.");
       }
@@ -91,7 +101,24 @@ export default function SettingsPage() {
       toast.error("An unexpected error occurred.");
     } finally {
       setLoading(false);
+      setPendingAction(null);
     }
+  };
+
+  const handleWipePin = () => {
+    if (!masterPassCrypto.isVaultUnlocked()) {
+      setPendingAction('wipe');
+      setUnlockModalOpen(true);
+      return;
+    }
+    
+    ecosystemSecurity.wipePin();
+    setIsPinSet(false);
+    setOldPin("");
+    setPin("");
+    setConfirmPin("");
+    toast.success("PIN reset successful. You can now set a new one.");
+    setPendingAction(null);
   };
 
   const handleLock = () => {
@@ -152,16 +179,31 @@ export default function SettingsPage() {
               <Box>
                 <Typography variant="h6" sx={{ fontWeight: 800, fontFamily: 'var(--font-space-grotesk)', mb: 1 }}>Quick Unlock (PIN)</Typography>
                 <Typography variant="body2" sx={{ opacity: 0.6, mb: 4 }}>
-                  Enable a 4-digit PIN for instant access between sessions. PINs are stored only on this device and wrapped by your Master Encryption Key.
+                  {isPinSet 
+                    ? "Your PIN is active. Use the form below to update it or reset if forgotten."
+                    : "Enable a 4-digit PIN for instant access between sessions. PINs are wrapped by your Master Encryption Key."
+                  }
                 </Typography>
 
                 <Box component="form" onSubmit={handleSetPin} sx={{ maxWidth: 360 }}>
                   <Stack spacing={2}>
+                    {isPinSet && (
+                        <TextField
+                            fullWidth
+                            type="password"
+                            placeholder="Current PIN"
+                            value={oldPin}
+                            onChange={(e) => setOldPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                            variant="filled"
+                            inputProps={{ maxLength: 4, inputMode: 'numeric', style: { textAlign: 'center', fontWeight: 800, letterSpacing: '0.5em' } }}
+                            InputProps={{ disableUnderline: true, sx: { borderRadius: '16px', bgcolor: 'rgba(255, 255, 255, 0.05)' } }}
+                        />
+                    )}
                     <Box sx={{ display: 'flex', gap: 2 }}>
                       <TextField
                         fullWidth
                         type="password"
-                        placeholder="New PIN"
+                        placeholder={isPinSet ? "New PIN" : "Set PIN"}
                         value={pin}
                         onChange={(e) => setPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
                         variant="filled"
@@ -183,7 +225,7 @@ export default function SettingsPage() {
                       fullWidth
                       variant="contained" 
                       type="submit"
-                      disabled={loading || pin.length !== 4 || pin !== confirmPin}
+                      disabled={loading || pin.length !== 4 || pin !== confirmPin || (isPinSet && oldPin.length !== 4)}
                       sx={{ 
                         borderRadius: '16px', 
                         py: 1.8, 
@@ -196,6 +238,19 @@ export default function SettingsPage() {
                     >
                       {loading ? <CircularProgress size={24} color="inherit" /> : (isPinSet ? "Update Quick Unlock PIN" : "Setup Quick Unlock PIN")}
                     </Button>
+
+                    {isPinSet && (
+                        <Button 
+                            fullWidth
+                            variant="text"
+                            color="error"
+                            onClick={handleWipePin}
+                            startIcon={<Trash2 size={16} />}
+                            sx={{ textTransform: 'none', fontWeight: 700, mt: 1 }}
+                        >
+                            Forgot PIN? Reset with Password
+                        </Button>
+                    )}
                   </Stack>
                 </Box>
               </Box>
@@ -271,7 +326,7 @@ export default function SettingsPage() {
         isOpen={unlockModalOpen}
         onClose={() => {
           setUnlockModalOpen(false);
-          setIsUnlocked(masterPassCrypto.isVaultUnlocked());
+          setPendingAction(null);
         }}
       />
     </Box>
