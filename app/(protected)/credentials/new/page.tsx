@@ -221,7 +221,7 @@ export default function NewCredentialPage() {
     return (
       <VaultGuard>
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 10 }}>
-          <CircularProgress sx={{ color: '#00F5FF' }} />
+          <CircularProgress sx={{ color: '#6366F1' }} />
         </Box>
       </VaultGuard>
     );
@@ -284,10 +284,10 @@ export default function NewCredentialPage() {
                     color: 'rgba(255, 255, 255, 0.5)',
                     fontWeight: 700,
                     '&.Mui-selected': {
-                      bgcolor: 'rgba(0, 245, 255, 0.1)',
-                      color: '#00F5FF',
-                      borderColor: '#00F5FF',
-                      '&:hover': { bgcolor: 'rgba(0, 245, 255, 0.15)' }
+                      bgcolor: 'rgba(99, 102, 241, 0.1)',
+                      color: '#6366F1',
+                      borderColor: '#6366F1',
+                      '&:hover': { bgcolor: 'rgba(99, 102, 241, 0.15)' }
                     }
                   }
                 }}
@@ -458,7 +458,7 @@ export default function NewCredentialPage() {
                       size="small" 
                       startIcon={<AddIcon sx={{ fontSize: 16 }} />} 
                       onClick={addCustomField}
-                      sx={{ color: '#00F5FF', fontWeight: 700 }}
+                      sx={{ color: '#6366F1', fontWeight: 700 }}
                     >
                       Add Field
                     </Button>
@@ -533,10 +533,10 @@ export default function NewCredentialPage() {
                   px: 6, 
                   py: 1.5, 
                   fontWeight: 800,
-                  bgcolor: '#00F5FF',
+                  bgcolor: '#6366F1',
                   color: '#000',
                   '&:hover': { bgcolor: '#00D1DA' },
-                  '&.Mui-disabled': { bgcolor: 'rgba(0, 245, 255, 0.3)' }
+                  '&.Mui-disabled': { bgcolor: 'rgba(99, 102, 241, 0.3)' }
                 }}
               >
                 {loading ? <CircularProgress size={24} color="inherit" /> : (formData.type === "credential" ? "Save Credential" : "Save Folder")}

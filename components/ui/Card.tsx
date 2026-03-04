@@ -15,7 +15,7 @@ const Card = forwardRef<HTMLDivElement, PaperProps>(
         overflow: 'hidden',
         '&:hover': {
           transform: 'translateY(-4px)',
-          borderColor: 'rgba(0, 245, 255, 0.3)',
+          borderColor: 'rgba(99, 102, 241, 0.3)',
           boxShadow: '0 20px 40px rgba(0,0,0,0.4)'
         },
         ...sx

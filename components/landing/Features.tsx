@@ -76,7 +76,7 @@ export default function Features() {
                 transition: 'all 0.3s ease',
                 '&:hover': {
                   transform: 'translateY(-8px)',
-                  borderColor: alpha('#00F5FF', 0.3),
+                  borderColor: alpha('#6366F1', 0.3),
                   bgcolor: 'rgba(255, 255, 255, 0.04)'
                 }
               }}>
@@ -84,8 +84,8 @@ export default function Features() {
                   width: 56, 
                   height: 56, 
                   borderRadius: '16px', 
-                  bgcolor: alpha('#00F5FF', 0.1), 
-                  color: '#00F5FF', 
+                  bgcolor: alpha('#6366F1', 0.1), 
+                  color: '#6366F1', 
                   display: 'flex', 
                   alignItems: 'center', 
                   justifyContent: 'center',

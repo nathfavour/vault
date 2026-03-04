@@ -18,7 +18,7 @@ export default function CTA() {
         transform: 'translateX(-50%)',
         width: '100%',
         height: '100%',
-        background: 'radial-gradient(circle at bottom, rgba(0, 245, 255, 0.1) 0%, transparent 70%)',
+        background: 'radial-gradient(circle at bottom, rgba(99, 102, 241, 0.1) 0%, transparent 70%)',
         zIndex: 0,
         pointerEvents: 'none'
       }} />
@@ -46,7 +46,7 @@ export default function CTA() {
             }
           }}
           sx={{
-            bgcolor: '#00F5FF',
+            bgcolor: '#6366F1',
             color: '#000',
             px: 6,
             py: 2.5,
@@ -56,7 +56,7 @@ export default function CTA() {
             '&:hover': {
               bgcolor: '#00D1DA',
               transform: 'scale(1.05)',
-              boxShadow: '0 20px 40px rgba(0, 245, 255, 0.4)'
+              boxShadow: '0 20px 40px rgba(99, 102, 241, 0.4)'
             },
             transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
           }}

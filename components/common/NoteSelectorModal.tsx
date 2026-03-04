@@ -55,7 +55,7 @@ export function NoteSelectorModal({ isOpen, onClose, onSelect }: NoteSelectorMod
     return (
         <Dialog open={isOpen} onClose={onClose}>
             <Box sx={{ p: 4 }}>
-                <Typography variant="h5" sx={{ fontWeight: 900, color: '#00F5FF', mb: 3, fontFamily: 'var(--font-space-grotesk)' }}>
+                <Typography variant="h5" sx={{ fontWeight: 900, color: '#6366F1', mb: 3, fontFamily: 'var(--font-space-grotesk)' }}>
                     ATTACH NOTE
                 </Typography>
 
@@ -72,8 +72,8 @@ export function NoteSelectorModal({ isOpen, onClose, onSelect }: NoteSelectorMod
                             bgcolor: 'rgba(255, 255, 255, 0.03)',
                             borderRadius: '12px',
                             '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.1)' },
-                            '&:hover fieldset': { borderColor: 'rgba(0, 245, 255, 0.3)' },
-                            '&.Mui-focused fieldset': { borderColor: '#00F5FF' },
+                            '&:hover fieldset': { borderColor: 'rgba(99, 102, 241, 0.3)' },
+                            '&.Mui-focused fieldset': { borderColor: '#6366F1' },
                         }
                     }}
                     InputProps={{
@@ -87,7 +87,7 @@ export function NoteSelectorModal({ isOpen, onClose, onSelect }: NoteSelectorMod
 
                 {loading ? (
                     <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-                        <CircularProgress size={32} sx={{ color: '#00F5FF' }} />
+                        <CircularProgress size={32} sx={{ color: '#6366F1' }} />
                     </Box>
                 ) : filtered.length === 0 ? (
                     <Typography variant="body2" sx={{ textAlign: 'center', opacity: 0.5, py: 4 }}>No notes found</Typography>
@@ -102,12 +102,12 @@ export function NoteSelectorModal({ isOpen, onClose, onSelect }: NoteSelectorMod
                                     mb: 1,
                                     border: '1px solid rgba(255, 255, 255, 0.05)',
                                     '&:hover': {
-                                        bgcolor: 'rgba(0, 245, 255, 0.05)',
-                                        borderColor: 'rgba(0, 245, 255, 0.2)',
+                                        bgcolor: 'rgba(99, 102, 241, 0.05)',
+                                        borderColor: 'rgba(99, 102, 241, 0.2)',
                                     }
                                 }}
                             >
-                                <Box sx={{ mr: 2, display: 'flex', color: '#00F5FF' }}>
+                                <Box sx={{ mr: 2, display: 'flex', color: '#6366F1' }}>
                                     <NoteIcon fontSize="small" />
                                 </Box>
                                 <ListItemText

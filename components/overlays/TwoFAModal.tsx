@@ -131,8 +131,8 @@ export function TwoFAModal({ isOpen, onClose }: TwoFAModalProps) {
           display: 'inline-flex', 
           p: 1.5, 
           borderRadius: '16px', 
-          bgcolor: alpha('#00F5FF', 0.1),
-          color: '#00F5FF',
+          bgcolor: alpha('#6366F1', 0.1),
+          color: '#6366F1',
           mb: 2
         }}>
           <ShieldCheckIcon sx={{ fontSize: 32 }} />
@@ -153,7 +153,7 @@ export function TwoFAModal({ isOpen, onClose }: TwoFAModalProps) {
       <DialogContent sx={{ pb: 4 }}>
         {!factors ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
-            <CircularProgress size={32} sx={{ color: '#00F5FF' }} />
+            <CircularProgress size={32} sx={{ color: '#6366F1' }} />
           </Box>
         ) : !challengeId ? (
           <Stack spacing={2} sx={{ mt: 2 }}>
@@ -176,8 +176,8 @@ export function TwoFAModal({ isOpen, onClose }: TwoFAModalProps) {
                   borderColor: 'rgba(255, 255, 255, 0.1)',
                   color: 'white',
                   '&:hover': {
-                    borderColor: '#00F5FF',
-                    bgcolor: alpha('#00F5FF', 0.05)
+                    borderColor: '#6366F1',
+                    bgcolor: alpha('#6366F1', 0.05)
                   }
                 }}
               >
@@ -200,8 +200,8 @@ export function TwoFAModal({ isOpen, onClose }: TwoFAModalProps) {
                   borderColor: 'rgba(255, 255, 255, 0.1)',
                   color: 'white',
                   '&:hover': {
-                    borderColor: '#00F5FF',
-                    bgcolor: alpha('#00F5FF', 0.05)
+                    borderColor: '#6366F1',
+                    bgcolor: alpha('#6366F1', 0.05)
                   }
                 }}
               >
@@ -224,8 +224,8 @@ export function TwoFAModal({ isOpen, onClose }: TwoFAModalProps) {
                   borderColor: 'rgba(255, 255, 255, 0.1)',
                   color: 'white',
                   '&:hover': {
-                    borderColor: '#00F5FF',
-                    bgcolor: alpha('#00F5FF', 0.05)
+                    borderColor: '#6366F1',
+                    bgcolor: alpha('#6366F1', 0.05)
                   }
                 }}
               >
@@ -260,8 +260,8 @@ export function TwoFAModal({ isOpen, onClose }: TwoFAModalProps) {
                     borderColor: 'rgba(255, 255, 255, 0.1)',
                     color: 'white',
                     '&:hover': {
-                      borderColor: '#00F5FF',
-                      bgcolor: alpha('#00F5FF', 0.05)
+                      borderColor: '#6366F1',
+                      bgcolor: alpha('#6366F1', 0.05)
                     }
                   }}
                 >
@@ -301,7 +301,7 @@ export function TwoFAModal({ isOpen, onClose }: TwoFAModalProps) {
                     bgcolor: 'rgba(255, 255, 255, 0.03)',
                     '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.1)' },
                     '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.2)' },
-                    '&.Mui-focused fieldset': { borderColor: '#00F5FF' },
+                    '&.Mui-focused fieldset': { borderColor: '#6366F1' },
                   },
                   '& .MuiInputBase-input': { color: 'white' }
                 }}
@@ -316,16 +316,16 @@ export function TwoFAModal({ isOpen, onClose }: TwoFAModalProps) {
               sx={{
                 py: 1.5,
                 borderRadius: '14px',
-                bgcolor: '#00F5FF',
+                bgcolor: '#6366F1',
                 color: '#000',
                 fontWeight: 700,
                 '&:hover': {
                   bgcolor: '#00D1DA',
                   transform: 'translateY(-1px)',
-                  boxShadow: '0 8px 20px rgba(0, 245, 255, 0.3)'
+                  boxShadow: '0 8px 20px rgba(99, 102, 241, 0.3)'
                 },
                 '&.Mui-disabled': {
-                  bgcolor: 'rgba(0, 245, 255, 0.1)',
+                  bgcolor: 'rgba(99, 102, 241, 0.1)',
                   color: 'rgba(0, 0, 0, 0.3)'
                 },
                 transition: 'all 0.2s ease'

@@ -188,7 +188,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                       sx={{
                         borderRadius: '14px',
                         bgcolor: isActive ? 'rgba(255, 255, 255, 0.03)' : 'transparent',
-                        color: isActive ? '#00F5FF' : 'rgba(255, 255, 255, 0.5)',
+                        color: isActive ? '#6366F1' : 'rgba(255, 255, 255, 0.5)',
                         border: isActive ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid transparent',
                         '&:hover': {
                           bgcolor: 'rgba(255, 255, 255, 0.05)',
@@ -364,9 +364,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      bgcolor: '#00F5FF',
+                      bgcolor: '#6366F1',
                       color: '#000',
-                      boxShadow: '0 0 20px rgba(0, 245, 255, 0.4)',
+                      boxShadow: '0 0 20px rgba(99, 102, 241, 0.4)',
                       transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                       '&:active': { transform: 'scale(0.9) translateY(4px)' }
                     }}
@@ -390,7 +390,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   p: 1,
                   minWidth: 64,
                   textDecoration: 'none',
-                  color: isActive ? '#00F5FF' : 'rgba(255, 255, 255, 0.4)',
+                  color: isActive ? '#6366F1' : 'rgba(255, 255, 255, 0.4)',
                   transition: 'all 0.2s ease'
                 }}
               >

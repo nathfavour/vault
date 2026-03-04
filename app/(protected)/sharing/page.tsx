@@ -32,13 +32,13 @@ export default function SharingPage() {
               width: 80, 
               height: 80, 
               borderRadius: '24px', 
-              bgcolor: alpha('#00F5FF', 0.1), 
+              bgcolor: alpha('#6366F1', 0.1), 
               display: 'flex', 
               alignItems: 'center', 
               justifyContent: 'center',
               mb: 2
             }}>
-              <EngineeringIcon sx={{ fontSize: 40, color: "#00F5FF" }} />
+              <EngineeringIcon sx={{ fontSize: 40, color: "#6366F1" }} />
             </Box>
             <Typography variant="h4" sx={{ 
               fontWeight: 900, 

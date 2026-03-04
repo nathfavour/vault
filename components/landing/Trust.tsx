@@ -50,7 +50,7 @@ export default function Trust() {
                 right: '-10%',
                 width: '120%',
                 height: '120%',
-                background: 'radial-gradient(circle, rgba(0, 245, 255, 0.05) 0%, transparent 70%)',
+                background: 'radial-gradient(circle, rgba(99, 102, 241, 0.05) 0%, transparent 70%)',
                 zIndex: 0
               }
             }}>

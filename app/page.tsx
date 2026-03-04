@@ -66,7 +66,7 @@ export default function LandingPage() {
           transform: 'translateX(-50%)',
           width: '80%',
           height: '60%',
-          background: 'radial-gradient(circle, rgba(0, 245, 255, 0.08) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(99, 102, 241, 0.08) 0%, transparent 70%)',
           zIndex: 0,
           pointerEvents: 'none'
         }} />
@@ -80,7 +80,7 @@ export default function LandingPage() {
             maxWidth: '900px',
             lineHeight: 1.1
           }}>
-            Your Passwords. <Box component="span" sx={{ color: '#00F5FF' }}>Protected</Box>. Everywhere.
+            Your Passwords. <Box component="span" sx={{ color: '#6366F1' }}>Protected</Box>. Everywhere.
           </Typography>
 
           <Typography variant="h6" sx={{ 
@@ -111,7 +111,7 @@ export default function LandingPage() {
                 }
               }}
               sx={{
-                bgcolor: '#00F5FF',
+                bgcolor: '#6366F1',
                 color: '#000',
                 px: 4,
                 py: 2,
@@ -121,7 +121,7 @@ export default function LandingPage() {
                 '&:hover': {
                   bgcolor: '#00D1DA',
                   transform: 'translateY(-2px)',
-                  boxShadow: '0 12px 30px rgba(0, 245, 255, 0.3)'
+                  boxShadow: '0 12px 30px rgba(99, 102, 241, 0.3)'
                 },
                 transition: 'all 0.3s ease'
               }}
@@ -182,7 +182,7 @@ export default function LandingPage() {
               <Box sx={{ 
                 width: 36, 
                 height: 36, 
-                bgcolor: '#00F5FF', 
+                bgcolor: '#6366F1', 
                 borderRadius: '10px', 
                 display: 'flex', 
                 alignItems: 'center', 
@@ -212,7 +212,7 @@ export default function LandingPage() {
 
             <Grid container spacing={3} sx={{ mb: 4 }}>
               {[
-                { label: 'Total Credentials', val: '24', icon: VpnKeyIcon, color: '#00F5FF' },
+                { label: 'Total Credentials', val: '24', icon: VpnKeyIcon, color: '#6366F1' },
                 { label: 'TOTP Codes', val: '8', icon: ShieldIcon, color: '#4CAF50' },
                 { label: 'Recent Activity', val: '3', icon: AccessTimeIcon, color: '#FF9800' },
                 { label: 'Security Alerts', val: '1', icon: WarningIcon, color: '#FF4D4D' },
@@ -249,7 +249,7 @@ export default function LandingPage() {
                 }}>
                   <Typography variant="subtitle2" sx={{ fontWeight: 800, mb: 2 }}>Quick Actions</Typography>
                   <Stack spacing={1.5}>
-                    <Button fullWidth variant="contained" startIcon={<AddIcon sx={{ fontSize: 16 }} />} sx={{ bgcolor: '#00F5FF', color: '#000', borderRadius: '12px', fontWeight: 700, textTransform: 'none' }}>Add Credential</Button>
+                    <Button fullWidth variant="contained" startIcon={<AddIcon sx={{ fontSize: 16 }} />} sx={{ bgcolor: '#6366F1', color: '#000', borderRadius: '12px', fontWeight: 700, textTransform: 'none' }}>Add Credential</Button>
                     <Button fullWidth variant="outlined" startIcon={<DownloadIcon sx={{ fontSize: 16 }} />} sx={{ borderColor: 'rgba(255, 255, 255, 0.1)', color: 'white', borderRadius: '12px', fontWeight: 600, textTransform: 'none' }}>Backup</Button>
                     <Button fullWidth variant="outlined" startIcon={<DescriptionIcon sx={{ fontSize: 16 }} />} sx={{ borderColor: 'rgba(255, 255, 255, 0.1)', color: 'white', borderRadius: '12px', fontWeight: 600, textTransform: 'none' }}>Logs</Button>
                   </Stack>

@@ -54,7 +54,7 @@ export default function Testimonials() {
               }}>
                 <Stack direction="row" spacing={0.5} sx={{ mb: 3 }}>
                   {[...Array(t.stars)].map((_, j) => (
-                    <StarIcon key={j} sx={{ fontSize: 18, color: "#00F5FF" }} />
+                    <StarIcon key={j} sx={{ fontSize: 18, color: "#6366F1" }} />
                   ))}
                 </Stack>
                 <Typography variant="body1" sx={{ fontStyle: 'italic', mb: 4, color: 'rgba(255, 255, 255, 0.8)', lineHeight: 1.7 }}>

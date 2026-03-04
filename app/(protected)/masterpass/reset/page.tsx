@@ -75,8 +75,8 @@ export default function MasterpassResetPage() {
             display: 'inline-flex', 
             p: 2, 
             borderRadius: '20px', 
-            bgcolor: alpha(step === 'reset' ? '#FF4D4D' : '#00F5FF', 0.1),
-            color: step === 'reset' ? '#FF4D4D' : '#00F5FF',
+            bgcolor: alpha(step === 'reset' ? '#FF4D4D' : '#6366F1', 0.1),
+            color: step === 'reset' ? '#FF4D4D' : '#6366F1',
             mb: 3
           }}>
             {step === 'reset' ? <SecurityIcon sx={{ fontSize: 40 }} /> : <CheckCircleIcon sx={{ fontSize: 40 }} />}
@@ -166,13 +166,13 @@ export default function MasterpassResetPage() {
                 sx={{
                   py: 1.8,
                   borderRadius: '14px',
-                  bgcolor: '#00F5FF',
+                  bgcolor: '#6366F1',
                   color: '#000',
                   fontWeight: 700,
                   '&:hover': {
                     bgcolor: '#00D1DA',
                     transform: 'translateY(-1px)',
-                    boxShadow: '0 8px 20px rgba(0, 245, 255, 0.3)'
+                    boxShadow: '0 8px 20px rgba(99, 102, 241, 0.3)'
                   }
                 }}
               >

@@ -204,7 +204,7 @@ export default function NewTotpDialog({
                 onChange={(e) => setShowAdvanced(e.target.checked)}
                 sx={{ 
                   color: 'rgba(255, 255, 255, 0.2)', 
-                  '&.Mui-checked': { color: '#00F5FF' } 
+                  '&.Mui-checked': { color: '#6366F1' } 
                 }}
               />
             }
@@ -273,10 +273,10 @@ export default function NewTotpDialog({
               borderRadius: '16px', 
               py: 1.5, 
               fontWeight: 800,
-              bgcolor: '#00F5FF',
+              bgcolor: '#6366F1',
               color: '#000',
               '&:hover': { bgcolor: '#00D1DA' },
-              '&.Mui-disabled': { bgcolor: 'rgba(0, 245, 255, 0.3)' }
+              '&.Mui-disabled': { bgcolor: 'rgba(99, 102, 241, 0.3)' }
             }}
           >
             {loading ? <CircularProgress size={24} color="inherit" /> : (initialData ? "Save Changes" : "Add TOTP")}

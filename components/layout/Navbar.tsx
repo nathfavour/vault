@@ -108,7 +108,7 @@ export function Navbar() {
                 bgcolor: 'rgba(255, 255, 255, 0.03)',
                 borderRadius: '12px',
                 border: '1px solid rgba(255, 255, 255, 0.08)',
-                '&:hover': { color: '#00F5FF', bgcolor: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(0, 245, 255, 0.2)' } 
+                '&:hover': { color: '#6366F1', bgcolor: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(99, 102, 241, 0.2)' } 
               }}
             >
               <GripIcon sx={{ fontSize: 20 }} />
@@ -120,11 +120,11 @@ export function Navbar() {
               <IconButton
                 onClick={openAIModal}
                 sx={{ 
-                  color: '#00F5FF', 
-                  bgcolor: 'rgba(0, 245, 255, 0.05)',
+                  color: '#6366F1', 
+                  bgcolor: 'rgba(99, 102, 241, 0.05)',
                   borderRadius: '12px',
-                  border: '1px solid rgba(0, 245, 255, 0.1)',
-                  '&:hover': { bgcolor: alpha('#00F5FF', 0.1), border: '1px solid rgba(0, 245, 255, 0.3)' } 
+                  border: '1px solid rgba(99, 102, 241, 0.1)',
+                  '&:hover': { bgcolor: alpha('#6366F1', 0.1), border: '1px solid rgba(99, 102, 241, 0.3)' } 
                 }}
               >
                 <SparklesIcon sx={{ fontSize: 20 }} />
@@ -160,7 +160,7 @@ export function Navbar() {
                 window.location.href = `https://accounts.kylrix.space/login?source=${encodeURIComponent(window.location.origin)}`;
               }}
               sx={{ 
-                background: 'linear-gradient(135deg, #00F5FF 0%, #00D1DA 100%)',
+                background: 'linear-gradient(135deg, #6366F1 0%, #00D1DA 100%)',
                 color: '#000',
                 fontWeight: 800,
                 fontFamily: 'var(--font-satoshi)',
@@ -168,7 +168,7 @@ export function Navbar() {
                 textTransform: 'none',
                 px: 4,
                 py: 1,
-                boxShadow: '0 8px 20px rgba(0, 245, 255, 0.15)',
+                boxShadow: '0 8px 20px rgba(99, 102, 241, 0.15)',
                 '&:hover': { background: 'linear-gradient(135deg, #00E5FF 0%, #00C1CA 100%)', transform: 'translateY(-1px)' }
               }}
             >

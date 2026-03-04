@@ -140,7 +140,7 @@ export function BackgroundTaskProvider({ children }: { children: ReactNode }) {
                   </>
                 ) : (
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                    <CircularProgress size={16} sx={{ color: '#00F5FF' }} />
+                    <CircularProgress size={16} sx={{ color: '#6366F1' }} />
                     <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.5)' }}>Initializing import...</Typography>
                   </Box>
                 )}
@@ -154,10 +154,10 @@ export function BackgroundTaskProvider({ children }: { children: ReactNode }) {
                   gap: 1.5, 
                   p: 2, 
                   borderRadius: '12px',
-                  bgcolor: importResult.success ? alpha('#00F5FF', 0.1) : alpha('#FF4D4D', 0.1),
+                  bgcolor: importResult.success ? alpha('#6366F1', 0.1) : alpha('#FF4D4D', 0.1),
                   border: '1px solid',
-                  borderColor: importResult.success ? alpha('#00F5FF', 0.2) : alpha('#FF4D4D', 0.2),
-                  color: importResult.success ? '#00F5FF' : '#FF4D4D'
+                  borderColor: importResult.success ? alpha('#6366F1', 0.2) : alpha('#FF4D4D', 0.2),
+                  color: importResult.success ? '#6366F1' : '#FF4D4D'
                 }}>
                     {importResult.success ? <CheckCircleIcon sx={{ fontSize: 20 }} /> : <WarningIcon sx={{ fontSize: 20 }} />}
                     <Typography variant="body2" sx={{ fontWeight: 700 }}>
@@ -200,7 +200,7 @@ export function BackgroundTaskProvider({ children }: { children: ReactNode }) {
                   sx={{ 
                     borderRadius: '10px', 
                     fontWeight: 700,
-                    bgcolor: '#00F5FF',
+                    bgcolor: '#6366F1',
                     color: '#000',
                     '&:hover': { bgcolor: '#00D1DA' }
                   }}

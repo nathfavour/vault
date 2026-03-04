@@ -6,7 +6,7 @@ const getDesignTokens = (): ThemeOptions => ({
   palette: {
     mode: 'dark',
     primary: {
-      main: '#00F5FF', // Electric Teal
+      main: '#6366F1', // Electric Teal
       contrastText: '#000000',
     },
     secondary: {
@@ -119,13 +119,13 @@ const getDesignTokens = (): ThemeOptions => ({
           },
         },
         containedPrimary: {
-          backgroundColor: '#00F5FF',
+          backgroundColor: '#6366F1',
           color: '#000000',
           border: 'none',
           fontWeight: 800,
           '&:hover': {
             backgroundColor: '#00D1DA',
-            boxShadow: '0 0 20px rgba(0, 245, 255, 0.4)',
+            boxShadow: '0 0 20px rgba(99, 102, 241, 0.4)',
           },
         },
       },
@@ -140,7 +140,7 @@ const getDesignTokens = (): ThemeOptions => ({
           backgroundImage: 'none',
           transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
           '&:hover': {
-            borderColor: 'rgba(0, 245, 255, 0.3)',
+            borderColor: 'rgba(99, 102, 241, 0.3)',
             transform: 'translateY(-4px)',
             boxShadow: '0 20px 40px rgba(0,0,0,0.4)'
           },

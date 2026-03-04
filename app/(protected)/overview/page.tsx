@@ -236,7 +236,7 @@ export default function OverviewPage() {
                 px: 3, 
                 py: 1.2, 
                 fontWeight: 800,
-                bgcolor: '#00F5FF',
+                bgcolor: '#6366F1',
                 color: '#000',
                 '&:hover': { bgcolor: '#00D1DA' }
               }}
@@ -342,7 +342,7 @@ export default function OverviewPage() {
               <Stack spacing={1.5}>
                 {loading ? (
                   <Box sx={{ py: 4, textAlign: 'center' }}>
-                    <CircularProgress size={32} sx={{ color: '#00F5FF' }} />
+                    <CircularProgress size={32} sx={{ color: '#6366F1' }} />
                   </Box>
                 ) : recent.length === 0 ? (
                   <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.3)', py: 4, textAlign: 'center' }}>
@@ -380,7 +380,7 @@ export default function OverviewPage() {
                           bgcolor: 'rgba(255, 255, 255, 0.05)',
                           fontSize: '1rem',
                           fontWeight: 800,
-                          color: '#00F5FF'
+                          color: '#6366F1'
                         }}>
                           {item.name?.[0]?.toUpperCase() ?? "?"}
                         </Avatar>
@@ -419,8 +419,8 @@ export default function OverviewPage() {
                   px: 1.5, 
                   py: 0.5, 
                   borderRadius: '10px', 
-                  bgcolor: alpha('#00F5FF', 0.1),
-                  color: '#00F5FF',
+                  bgcolor: alpha('#6366F1', 0.1),
+                  color: '#6366F1',
                   fontSize: '0.75rem',
                   fontWeight: 800
                 }}>
@@ -431,7 +431,7 @@ export default function OverviewPage() {
               <Stack spacing={2}>
                 {loading ? (
                   <Box sx={{ py: 4, textAlign: 'center' }}>
-                    <CircularProgress size={32} sx={{ color: '#00F5FF' }} />
+                    <CircularProgress size={32} sx={{ color: '#6366F1' }} />
                   </Box>
                 ) : dupGroups.length === 0 ? (
                   <Box sx={{ textAlign: 'center', py: 4 }}>
@@ -452,7 +452,7 @@ export default function OverviewPage() {
                         <Typography variant="body2" sx={{ fontWeight: 800 }}>
                           Group #{idx + 1}
                         </Typography>
-                        <Typography variant="caption" sx={{ color: '#00F5FF', fontWeight: 700 }}>
+                        <Typography variant="caption" sx={{ color: '#6366F1', fontWeight: 700 }}>
                           {g.count} matches
                         </Typography>
                       </Stack>

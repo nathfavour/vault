@@ -101,7 +101,7 @@ export default function EcosystemPortal({ open, onClose }: EcosystemPortalProps)
                 {/* Header / Search */}
                 <Box sx={{ p: 3, borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
-                        <PulseIcon sx={{ color: '#00F5FF', fontSize: 24 }} />
+                        <PulseIcon sx={{ color: '#6366F1', fontSize: 24 }} />
                         <Typography variant="h6" sx={{ fontWeight: 900, fontFamily: 'var(--font-space-grotesk)', letterSpacing: '-0.02em', color: 'white' }}>
                             KYLRIX <Box component="span" sx={{ color: 'rgba(255, 255, 255, 0.4)' }}>PORTAL</Box>
                         </Typography>

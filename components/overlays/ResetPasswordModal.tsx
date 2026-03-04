@@ -110,14 +110,14 @@ export function ResetPasswordModal({ isOpen, onClose }: ResetPasswordModalProps)
           width: 64, 
           height: 64, 
           borderRadius: '20px', 
-          bgcolor: alpha('#00F5FF', 0.1), 
+          bgcolor: alpha('#6366F1', 0.1), 
           display: 'flex', 
           alignItems: 'center', 
           justifyContent: 'center',
           mx: 'auto',
           mb: 3
         }}>
-          {showResetForm ? <VpnKeyIcon sx={{ fontSize: 32, color: "#00F5FF" }} /> : <MailIcon sx={{ fontSize: 32, color: "#00F5FF" }} />}
+          {showResetForm ? <VpnKeyIcon sx={{ fontSize: 32, color: "#6366F1" }} /> : <MailIcon sx={{ fontSize: 32, color: "#6366F1" }} />}
         </Box>
         <Typography variant="h5" sx={{ 
           fontWeight: 900, 
@@ -198,11 +198,11 @@ export function ResetPasswordModal({ isOpen, onClose }: ResetPasswordModalProps)
                 borderRadius: '16px', 
                 py: 1.8, 
                 fontWeight: 800,
-                bgcolor: '#00F5FF',
+                bgcolor: '#6366F1',
                 color: '#000',
                 mt: 1,
                 '&:hover': { bgcolor: '#00D1DA' },
-                '&.Mui-disabled': { bgcolor: 'rgba(0, 245, 255, 0.3)' }
+                '&.Mui-disabled': { bgcolor: 'rgba(99, 102, 241, 0.3)' }
               }}
             >
               {loading ? <CircularProgress size={24} color="inherit" /> : (showResetForm ? "Update Password" : "Send Reset Link")}

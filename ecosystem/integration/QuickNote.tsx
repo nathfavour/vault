@@ -44,8 +44,8 @@ export const QuickNote = () => {
                 <Box sx={{ 
                     p: 1, 
                     borderRadius: '10px', 
-                    bgcolor: alpha('#00F5FF', 0.1),
-                    color: '#00F5FF'
+                    bgcolor: alpha('#6366F1', 0.1),
+                    color: '#6366F1'
                 }}>
                     <NoteIcon sx={{ fontSize: 20 }} />
                 </Box>
@@ -69,7 +69,7 @@ export const QuickNote = () => {
             />
 
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 1 }}>
-                <IconButton onClick={handleSave} disabled={!note.trim()} size="small" sx={{ color: '#00F5FF' }}>
+                <IconButton onClick={handleSave} disabled={!note.trim()} size="small" sx={{ color: '#6366F1' }}>
                     <SendIcon sx={{ fontSize: 16 }} />
                 </IconButton>
             </Box>

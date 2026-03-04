@@ -84,7 +84,7 @@ export function ImportPreviewModal({
       <Box sx={{ display: 'flex', flexDirection: 'column', maxHeight: '85vh' }}>
         <Box sx={{ p: 4, borderBottom: '1px solid rgba(255, 255, 255, 0.1)' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
-            <StorageIcon sx={{ fontSize: 24, color: "#00F5FF" }} />
+            <StorageIcon sx={{ fontSize: 24, color: "#6366F1" }} />
             <Typography variant="h5" sx={{ fontWeight: 900, fontFamily: 'var(--font-space-grotesk)', color: 'white' }}>
               Import Preview
             </Typography>
@@ -103,14 +103,14 @@ export function ImportPreviewModal({
                 sx={{
                   p: 3,
                   cursor: 'pointer',
-                  bgcolor: removeDuplicates ? alpha('#00F5FF', 0.05) : 'rgba(255, 255, 255, 0.02)',
+                  bgcolor: removeDuplicates ? alpha('#6366F1', 0.05) : 'rgba(255, 255, 255, 0.02)',
                   border: '1px solid',
-                  borderColor: removeDuplicates ? alpha('#00F5FF', 0.3) : 'rgba(255, 255, 255, 0.1)',
+                  borderColor: removeDuplicates ? alpha('#6366F1', 0.3) : 'rgba(255, 255, 255, 0.1)',
                   borderRadius: '20px',
                   transition: 'all 0.2s ease',
                   '&:hover': {
-                    bgcolor: removeDuplicates ? alpha('#00F5FF', 0.08) : 'rgba(255, 255, 255, 0.05)',
-                    borderColor: removeDuplicates ? '#00F5FF' : 'rgba(255, 255, 255, 0.2)'
+                    bgcolor: removeDuplicates ? alpha('#6366F1', 0.08) : 'rgba(255, 255, 255, 0.05)',
+                    borderColor: removeDuplicates ? '#6366F1' : 'rgba(255, 255, 255, 0.2)'
                   }
                 }}
               >
@@ -126,8 +126,8 @@ export function ImportPreviewModal({
                     height: 24, 
                     borderRadius: '6px', 
                     border: '2px solid',
-                    borderColor: removeDuplicates ? '#00F5FF' : 'rgba(255, 255, 255, 0.2)',
-                    bgcolor: removeDuplicates ? '#00F5FF' : 'transparent',
+                    borderColor: removeDuplicates ? '#6366F1' : 'rgba(255, 255, 255, 0.2)',
+                    bgcolor: removeDuplicates ? '#6366F1' : 'transparent',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center'
@@ -152,20 +152,20 @@ export function ImportPreviewModal({
                 sx={{
                   p: 3,
                   cursor: 'pointer',
-                  bgcolor: mergeSimilar ? alpha('#00F5FF', 0.05) : 'rgba(255, 255, 255, 0.02)',
+                  bgcolor: mergeSimilar ? alpha('#6366F1', 0.05) : 'rgba(255, 255, 255, 0.02)',
                   border: '1px solid',
-                  borderColor: mergeSimilar ? alpha('#00F5FF', 0.3) : 'rgba(255, 255, 255, 0.1)',
+                  borderColor: mergeSimilar ? alpha('#6366F1', 0.3) : 'rgba(255, 255, 255, 0.1)',
                   borderRadius: '20px',
                   transition: 'all 0.2s ease',
                   '&:hover': {
-                    bgcolor: mergeSimilar ? alpha('#00F5FF', 0.08) : 'rgba(255, 255, 255, 0.05)',
-                    borderColor: mergeSimilar ? '#00F5FF' : 'rgba(255, 255, 255, 0.2)'
+                    bgcolor: mergeSimilar ? alpha('#6366F1', 0.08) : 'rgba(255, 255, 255, 0.05)',
+                    borderColor: mergeSimilar ? '#6366F1' : 'rgba(255, 255, 255, 0.2)'
                   }
                 }}
               >
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                    <MergeIcon sx={{ fontSize: 18, color: "#00F5FF" }} />
+                    <MergeIcon sx={{ fontSize: 18, color: "#6366F1" }} />
                     <Typography variant="subtitle1" sx={{ fontWeight: 800, color: 'white' }}>
                       Smart Merge
                     </Typography>
@@ -175,8 +175,8 @@ export function ImportPreviewModal({
                     height: 24, 
                     borderRadius: '6px', 
                     border: '2px solid',
-                    borderColor: mergeSimilar ? '#00F5FF' : 'rgba(255, 255, 255, 0.2)',
-                    bgcolor: mergeSimilar ? '#00F5FF' : 'transparent',
+                    borderColor: mergeSimilar ? '#6366F1' : 'rgba(255, 255, 255, 0.2)',
+                    bgcolor: mergeSimilar ? '#6366F1' : 'transparent',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center'
@@ -188,7 +188,7 @@ export function ImportPreviewModal({
                   Merges items with same domain and credentials into a single robust entry. Combines notes.
                 </Typography>
                 {mergeSimilar && (
-                  <Typography variant="caption" sx={{ fontWeight: 800, color: '#00F5FF' }}>
+                  <Typography variant="caption" sx={{ fontWeight: 800, color: '#6366F1' }}>
                     -{mergeCount} items merged
                   </Typography>
                 )}
@@ -218,10 +218,10 @@ export function ImportPreviewModal({
             </Box>
             <ArrowForwardIcon sx={{ fontSize: 24, color: "rgba(255, 255, 255, 0.2)" }} />
             <Box sx={{ textAlign: 'center' }}>
-              <Typography variant="h4" sx={{ fontWeight: 900, color: '#00F5FF', fontFamily: 'var(--font-space-grotesk)' }}>
+              <Typography variant="h4" sx={{ fontWeight: 900, color: '#6366F1', fontFamily: 'var(--font-space-grotesk)' }}>
                 {finalItems.length}
               </Typography>
-              <Typography variant="caption" sx={{ color: '#00F5FF', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', opacity: 0.8 }}>
+              <Typography variant="caption" sx={{ color: '#6366F1', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', opacity: 0.8 }}>
                 Final Count
               </Typography>
             </Box>
@@ -249,10 +249,10 @@ export function ImportPreviewModal({
                   <TableRow key={i} sx={{ '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.03)' } }}>
                     <TableCell sx={{ color: 'white', fontWeight: 600, borderBottom: '1px solid rgba(255, 255, 255, 0.05)', py: 1.5 }}>{item.name || "Untitled"}</TableCell>
                     <TableCell sx={{ color: 'rgba(255, 255, 255, 0.6)', borderBottom: '1px solid rgba(255, 255, 255, 0.05)', py: 1.5 }}>{item.username}</TableCell>
-                    <TableCell sx={{ color: '#00F5FF', opacity: 0.8, borderBottom: '1px solid rgba(255, 255, 255, 0.05)', py: 1.5 }}>{item.url}</TableCell>
+                    <TableCell sx={{ color: '#6366F1', opacity: 0.8, borderBottom: '1px solid rgba(255, 255, 255, 0.05)', py: 1.5 }}>{item.url}</TableCell>
                     <TableCell align="right" sx={{ borderBottom: '1px solid rgba(255, 255, 255, 0.05)', py: 1.5 }}>
                       {item._status === 'merged' && (
-                        <Chip label="Merged" size="small" sx={{ bgcolor: alpha('#00F5FF', 0.1), color: '#00F5FF', fontWeight: 800, fontSize: '0.65rem' }} />
+                        <Chip label="Merged" size="small" sx={{ bgcolor: alpha('#6366F1', 0.1), color: '#6366F1', fontWeight: 800, fontSize: '0.65rem' }} />
                       )}
                       {item._status === 'new' && (
                         <Chip label="New" size="small" sx={{ bgcolor: alpha('#4CAF50', 0.1), color: '#4CAF50', fontWeight: 800, fontSize: '0.65rem' }} />
@@ -293,7 +293,7 @@ export function ImportPreviewModal({
             onClick={handleConfirm} 
             disabled={isProcessing}
             sx={{ 
-              bgcolor: '#00F5FF', 
+              bgcolor: '#6366F1', 
               color: '#000', 
               fontWeight: 900,
               px: 4,

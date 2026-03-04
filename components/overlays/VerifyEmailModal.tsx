@@ -103,12 +103,12 @@ export function VerifyEmailModal({ isOpen, onClose }: VerifyEmailModalProps) {
           p: 1.5, 
           borderRadius: '16px', 
           bgcolor: alpha(
-            status === 'success' ? '#00F5FF' : 
-            status === 'error' || status === 'missing' ? '#FF4D4D' : '#00F5FF', 
+            status === 'success' ? '#6366F1' : 
+            status === 'error' || status === 'missing' ? '#FF4D4D' : '#6366F1', 
             0.1
           ),
-          color: status === 'success' ? '#00F5FF' : 
-                 status === 'error' || status === 'missing' ? '#FF4D4D' : '#00F5FF',
+          color: status === 'success' ? '#6366F1' : 
+                 status === 'error' || status === 'missing' ? '#FF4D4D' : '#6366F1',
           mb: 2
         }}>
           {status === 'verifying' && <CircularProgress size={32} color="inherit" />}
@@ -162,7 +162,7 @@ export function VerifyEmailModal({ isOpen, onClose }: VerifyEmailModalProps) {
 
           {status === "success" && (
             <Box>
-              <Typography variant="body2" sx={{ color: '#00F5FF', mb: 1, fontWeight: 600 }}>
+              <Typography variant="body2" sx={{ color: '#6366F1', mb: 1, fontWeight: 600 }}>
                 {message}
               </Typography>
               <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.4)', display: 'block', mb: 3 }}>
@@ -177,7 +177,7 @@ export function VerifyEmailModal({ isOpen, onClose }: VerifyEmailModalProps) {
                   sx={{
                     py: 1.5,
                     borderRadius: '14px',
-                    bgcolor: '#00F5FF',
+                    bgcolor: '#6366F1',
                     color: '#000',
                     fontWeight: 700,
                     '&:hover': { bgcolor: '#00D1DA' }

@@ -17,7 +17,7 @@ export const ECOSYSTEM_APPS: EcosystemApp[] = [
   { id: 'vault', label: 'Vault', subdomain: 'vault', type: 'app', icon: '🔐', color: '#A855F7', description: 'Passwords, 2FA, and keys.' },
   { id: 'flow', label: 'Flow', subdomain: 'flow', type: 'app', icon: '🚀', color: '#10B981', description: 'Tasks and workflows.' },
   { id: 'connect', label: 'Connect', subdomain: 'connect', type: 'app', icon: '💬', color: '#F43F5E', description: 'Secure messages and sharing.' },
-  { id: 'accounts', label: 'Identity', subdomain: 'accounts', type: 'accounts', icon: '🛡️', color: '#00F5FF', description: 'Your Kylrix account.' },
+  { id: 'accounts', label: 'Identity', subdomain: 'accounts', type: 'accounts', icon: '🛡️', color: '#6366F1', description: 'Your Kylrix account.' },
 ];
 
 export function getEcosystemUrl(subdomain: string) {

@@ -53,7 +53,7 @@ export default function PasswordGenerator() {
                 </Box>
             ), { 
               duration: 5000, 
-              icon: <ShieldIcon sx={{ fontSize: 20, color: "#00F5FF" }} />,
+              icon: <ShieldIcon sx={{ fontSize: 20, color: "#6366F1" }} />,
               style: {
                 background: 'rgba(10, 10, 10, 0.95)',
                 backdropFilter: 'blur(25px)',
@@ -125,8 +125,8 @@ export default function PasswordGenerator() {
                 checked={showHistory} 
                 onChange={(e) => setShowHistory(e.target.checked)}
                 sx={{
-                  '& .MuiSwitch-switchBase.Mui-checked': { color: '#00F5FF' },
-                  '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { bgcolor: '#00F5FF' }
+                  '& .MuiSwitch-switchBase.Mui-checked': { color: '#6366F1' },
+                  '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { bgcolor: '#6366F1' }
                 }}
               />
             }
@@ -149,14 +149,14 @@ export default function PasswordGenerator() {
                 borderRadius: '16px',
                 '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.1)' },
                 '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.2)' },
-                '&.Mui-focused fieldset': { borderColor: '#00F5FF' },
+                '&.Mui-focused fieldset': { borderColor: '#6366F1' },
                 pr: 10
               }
             }}
           />
           <Stack direction="row" spacing={0.5} sx={{ position: 'absolute', right: 8, top: '50%', transform: 'translateY(-50%)' }}>
             <Tooltip title="Copy">
-              <IconButton onClick={handleCopy} size="small" sx={{ color: copied ? '#00F5FF' : 'rgba(255, 255, 255, 0.4)' }}>
+              <IconButton onClick={handleCopy} size="small" sx={{ color: copied ? '#6366F1' : 'rgba(255, 255, 255, 0.4)' }}>
                 <ContentCopyIcon sx={{ fontSize: 18 }} />
               </IconButton>
             </Tooltip>
@@ -171,7 +171,7 @@ export default function PasswordGenerator() {
         <Box>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
             <Typography variant="caption" sx={{ fontWeight: 700, color: 'rgba(255, 255, 255, 0.5)' }}>LENGTH</Typography>
-            <Typography variant="caption" sx={{ fontWeight: 900, color: '#00F5FF' }}>{length} characters</Typography>
+            <Typography variant="caption" sx={{ fontWeight: 900, color: '#6366F1' }}>{length} characters</Typography>
           </Box>
           <Slider
             value={length}
@@ -179,13 +179,13 @@ export default function PasswordGenerator() {
             max={64}
             onChange={handleLengthChange}
             sx={{
-              color: '#00F5FF',
+              color: '#6366F1',
               height: 6,
               '& .MuiSlider-thumb': {
                 width: 18,
                 height: 18,
-                bgcolor: '#00F5FF',
-                '&:hover, &.Mui-focusVisible': { boxShadow: '0 0 0 8px rgba(0, 245, 255, 0.16)' }
+                bgcolor: '#6366F1',
+                '&:hover, &.Mui-focusVisible': { boxShadow: '0 0 0 8px rgba(99, 102, 241, 0.16)' }
               },
               '& .MuiSlider-track': { border: 'none' },
               '& .MuiSlider-rail': { opacity: 0.1, bgcolor: 'white' }
@@ -199,7 +199,7 @@ export default function PasswordGenerator() {
             variant="contained"
             onClick={handleGenerate}
             sx={{
-              bgcolor: '#00F5FF',
+              bgcolor: '#6366F1',
               color: '#000',
               fontWeight: 800,
               borderRadius: '14px',
@@ -217,12 +217,12 @@ export default function PasswordGenerator() {
             disabled={isAnalyzing}
             startIcon={isAnalyzing ? <CircularProgress size={16} color="inherit" /> : <AutoAwesomeIcon sx={{ fontSize: 16 }} />}
             sx={{
-              borderColor: alpha('#00F5FF', 0.2),
-              color: '#00F5FF',
+              borderColor: alpha('#6366F1', 0.2),
+              color: '#6366F1',
               fontWeight: 700,
               borderRadius: '14px',
               py: 1.2,
-              '&:hover': { borderColor: '#00F5FF', bgcolor: alpha('#00F5FF', 0.05) }
+              '&:hover': { borderColor: '#6366F1', bgcolor: alpha('#6366F1', 0.05) }
             }}
           >
             {isAnalyzing ? "Analyzing..." : "Check Strength with AI"}

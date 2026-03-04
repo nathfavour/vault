@@ -180,9 +180,9 @@ export default function ImportPage() {
                         color: 'rgba(255, 255, 255, 0.5)',
                         fontWeight: 700,
                         '&.Mui-selected': {
-                          bgcolor: 'rgba(0, 245, 255, 0.1)',
-                          color: '#00F5FF',
-                          borderColor: '#00F5FF !important',
+                          bgcolor: 'rgba(99, 102, 241, 0.1)',
+                          color: '#6366F1',
+                          borderColor: '#6366F1 !important',
                         }
                       }
                     }}
@@ -201,7 +201,7 @@ export default function ImportPage() {
                   border: '1px solid rgba(255, 255, 255, 0.05)'
                 }}>
                   <Stack direction="row" spacing={2} alignItems="flex-start" sx={{ mb: 2 }}>
-                    <InfoIcon sx={{ fontSize: 20, color: "#00F5FF" }} />
+                    <InfoIcon sx={{ fontSize: 20, color: "#6366F1" }} />
                     <Typography variant="subtitle2" sx={{ fontWeight: 800 }}>
                       {importType === "bitwarden" ? "How to export from Bitwarden" : "Restoring from Kylrix Note"}
                     </Typography>
@@ -234,7 +234,7 @@ export default function ImportPage() {
                       transition: 'all 0.2s ease',
                       '&:hover': {
                         bgcolor: 'rgba(255, 255, 255, 0.03)',
-                        borderColor: 'rgba(0, 245, 255, 0.3)'
+                        borderColor: 'rgba(99, 102, 241, 0.3)'
                       }
                     }}
                   >
@@ -258,10 +258,10 @@ export default function ImportPage() {
                     borderRadius: '16px', 
                     py: 2, 
                     fontWeight: 800,
-                    bgcolor: '#00F5FF',
+                    bgcolor: '#6366F1',
                     color: '#000',
                     '&:hover': { bgcolor: '#00D1DA' },
-                    '&.Mui-disabled': { bgcolor: 'rgba(0, 245, 255, 0.3)' }
+                    '&.Mui-disabled': { bgcolor: 'rgba(99, 102, 241, 0.3)' }
                   }}
                 >
                   {globalImporting ? "Import in Progress..." : "Preview & Import"}
@@ -329,12 +329,12 @@ export default function ImportPage() {
                       width: 36, 
                       height: 36, 
                       borderRadius: '10px', 
-                      bgcolor: 'rgba(0, 245, 255, 0.05)', 
+                      bgcolor: 'rgba(99, 102, 241, 0.05)', 
                       display: 'flex', 
                       alignItems: 'center', 
                       justifyContent: 'center' 
                     }}>
-                      <item.icon sx={{ fontSize: 18, color: "#00F5FF" }} />
+                      <item.icon sx={{ fontSize: 18, color: "#6366F1" }} />
                     </Box>
                   </ListItemIcon>
                   <ListItemText 
