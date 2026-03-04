@@ -317,7 +317,7 @@ export function Header({ onMenuClick }: HeaderProps) {
             <MenuItem 
               onClick={() => {
                 const domain = process.env.NEXT_PUBLIC_DOMAIN || 'kylrix.space';
-                const idSubdomain = process.env.NEXT_PUBLIC_AUTH_SUBDOMAIN || 'id';
+                const idSubdomain = process.env.NEXT_PUBLIC_AUTH_SUBDOMAIN || 'accounts';
                 window.location.href = `https://${idSubdomain}.${domain}/settings?source=${encodeURIComponent(window.location.origin)}`;
                 setAnchorElAccount(null);
               }}
