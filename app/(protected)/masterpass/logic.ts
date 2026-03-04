@@ -96,6 +96,13 @@ export class MasterPassCrypto {
       // 1. Try to unlock via Keychain (New Architecture)
       const keychainSuccess = await this.unlockWithKeychain(masterPassword, userId);
       if (keychainSuccess) {
+        // Ensure user document is marked as having masterpass if keychain exists
+        const { AppwriteService } = await import("../../../lib/appwrite");
+        const userDoc = await AppwriteService.getUserDoc(userId);
+        if (userDoc && !userDoc.masterpass) {
+          await AppwriteService.setMasterpassFlag(userId, userDoc.email);
+        }
+
         this.isUnlocked = true;
         if (typeof sessionStorage !== "undefined") {
           sessionStorage.setItem("vault_unlocked", Date.now().toString());
