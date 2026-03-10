@@ -33,6 +33,7 @@ import { useAppwriteVault } from "@/context/appwrite-context";
 import { ecosystemSecurity } from "@/lib/ecosystem/security";
 import { MasterPassModal } from "@/components/overlays/MasterPassModal";
 import { PasskeySetup } from "@/components/overlays/passkeySetup";
+import { DiscoverabilitySettings } from "@/components/settings/DiscoverabilitySettings";
 import { masterPassCrypto } from "@/app/(protected)/masterpass/logic";
 import { AppwriteService } from "@/lib/appwrite";
 import toast from "react-hot-toast";
@@ -180,6 +181,7 @@ export default function SettingsPage() {
       </Typography>
 
       <Stack spacing={4}>
+        <DiscoverabilitySettings />
         {/* Security Section */}
         <Box>
           <Typography variant="overline" sx={{ fontWeight: 900, color: 'primary.main', mb: 2, display: 'block', letterSpacing: '0.1em' }}>
