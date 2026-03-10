@@ -84,14 +84,14 @@ export async function ensureGlobalIdentity(user: any, force = false) {
             }
         }
 
-        // Add 'keep' to appsActive if not present
+        // Add 'vault' to appsActive if not present
         if (profile && Array.isArray(profile.appsActive) && !profile.appsActive.includes('vault')) {
             await appwriteDatabases.updateDocument(
                 CONNECT_DATABASE_ID,
                 CONNECT_COLLECTION_ID_USERS,
                 user.$id,
                 {
-                    appsActive: [...profile.appsActive, 'keep'],
+                    appsActive: [...profile.appsActive, 'vault'],
                     updatedAt: new Date().toISOString()
                 }
             );
@@ -108,6 +108,7 @@ export async function ensureGlobalIdentity(user: any, force = false) {
 
 /**
  * Searches for users across the entire ecosystem.
+ * Only returns users who have active discovery for 'vault'.
  */
 export async function searchGlobalUsers(query: string, limit = 10) {
     if (!query || query.length < 2) return [];
@@ -121,6 +122,7 @@ export async function searchGlobalUsers(query: string, limit = 10) {
                     Query.startsWith('username', query.toLowerCase()),
                     Query.startsWith('displayName', query)
                 ]),
+                Query.contains('appsActive', 'vault'),
                 Query.limit(limit)
             ]
         );
@@ -130,7 +132,7 @@ export async function searchGlobalUsers(query: string, limit = 10) {
             title: doc.displayName || doc.username,
             subtitle: `@${doc.username}`,
             avatar: null,
-            avatarFileId: doc.avatarFileId,
+            avatarFileId: doc.avatarFileId || doc.profilePicId,
             apps: doc.appsActive || []
         }));
     } catch (error: unknown) {
