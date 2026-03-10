@@ -61,6 +61,11 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
   const { finalizeAuth } = useFinalizeAuth();
   const router = useRouter();
 
+  const onSuccess = useCallback(async () => {
+    onClose();
+    await finalizeAuth({ redirect: true, fallback: "/masterpass" });
+  }, [onClose, finalizeAuth]);
+
   const handlePasskeyUnlock = useCallback(async () => {
     if (!user) return;
     setPasskeyLoading(true);
@@ -192,17 +197,9 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
     return (
       <PasskeySetup 
         isOpen={true} 
-        onClose={async () => {
-          setShowPasskeyIncentive(false);
-          onClose();
-          await finalizeAuth({ redirect: true, fallback: "/masterpass" });
-        }} 
+        onClose={onSuccess} 
         userId={user.$id} 
-        onSuccess={async () => {
-          setShowPasskeyIncentive(false);
-          onClose();
-          await finalizeAuth({ redirect: true, fallback: "/masterpass" });
-        }}
+        onSuccess={onSuccess}
         trustUnlocked={true}
       />
     );
