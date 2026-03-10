@@ -1,8 +1,6 @@
 "use client";
 
 import {
-  createContext,
-  useContext,
   useEffect,
   useState,
   useCallback,
@@ -20,7 +18,7 @@ import { APPWRITE_CONFIG } from "@/lib/appwrite/config";
 import { getAuthOrigin, openAuthPopup } from "@/lib/authUrl";
 import { masterPassCrypto } from "./(protected)/masterpass/logic";
 import { logDebug, logWarn } from "@/lib/logger";
-import { AppwriteContext, type AppwriteContextType } from "@/context/appwrite-context";
+import { AppwriteContext } from "@/context/appwrite-context";
 
 // Types
 import type { Models } from "appwrite";
@@ -173,7 +171,7 @@ export function AppwriteProvider({ children }: { children: ReactNode }) {
         }
         return;
       }
-    } catch (e: unknown) {
+    } catch (_e: unknown) {
       // No session, proceed to silent check
     }
 
@@ -189,7 +187,7 @@ export function AppwriteProvider({ children }: { children: ReactNode }) {
         }
         return;
       }
-    } catch (e: unknown) {
+    } catch (_e: unknown) {
       // Still no session
     }
 

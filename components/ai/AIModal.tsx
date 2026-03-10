@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Dialog, Box, Typography, TextField, Button, IconButton, alpha, CircularProgress } from "@mui/material";
+import { Dialog, Box, Typography, TextField, Button, CircularProgress } from "@mui/material";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import SendIcon from "@mui/icons-material/Send";
 import { useAI } from "@/app/context/AIContext";

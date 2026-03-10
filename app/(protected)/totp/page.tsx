@@ -14,7 +14,6 @@ import {
   DialogTitle, 
   DialogContent, 
   DialogActions, 
-  alpha, 
   Chip 
 } from "@mui/material";
 import ShieldIcon from "@mui/icons-material/Shield";
@@ -83,7 +82,7 @@ export default function TOTPPage() {
         toast.error("Failed to load data.");
       })
       .finally(() => setLoading(false));
-  }, [user, showNew]);
+  }, [user, showNew, isVaultUnlocked]);
 
   const generateTOTP = (
     secret: string,

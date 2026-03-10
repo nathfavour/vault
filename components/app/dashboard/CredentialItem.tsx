@@ -9,7 +9,6 @@ import {
   MenuItem, 
   ListItemIcon, 
   ListItemText,
-  alpha,
   useTheme,
   useMediaQuery
 } from "@mui/material";
@@ -24,14 +23,14 @@ import type { Credentials } from "@/types/appwrite.d";
 export default function CredentialItem({
   credential,
   onCopy,
-  isDesktop,
+  _isDesktop,
   onEdit,
   onDelete,
   onClick,
 }: {
   credential: Credentials;
   onCopy: (value: string) => void;
-  isDesktop: boolean;
+  _isDesktop: boolean;
   onEdit: () => void;
   onDelete: () => void;
   onClick?: () => void;

@@ -7,9 +7,6 @@ import {
   Shield, 
   Settings, 
   LogOut, 
-  Sun, 
-  Moon, 
-  Monitor, 
   Home, 
   PlusCircle, 
   Share2, 
@@ -62,9 +59,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const theme = 'dark' as "light" | "dark" | "system";
-  const setTheme = (t: "light" | "dark" | "system") => {};
-  const muiTheme = useMuiTheme();
   const { user, loading, logout, refresh } = useAppwriteVault();
   const [showPasskeySetup, setShowPasskeySetup] = useState(false);
 

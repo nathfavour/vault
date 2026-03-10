@@ -4,7 +4,6 @@ import React, { createContext, useContext, useState, useEffect, useCallback, Rea
 import { 
   appwriteRealtime as realtime, 
   appwriteDatabases as databases,
-  APPWRITE_DATABASE_ID,
   Query 
 } from '@/lib/appwrite';
 import { APPWRITE_CONFIG } from '@/lib/appwrite/config';
@@ -42,15 +41,13 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
   const { user } = useAppwriteVault();
 
-  const APPWRITE_TABLE_ID_ACTIVITYLOG = "activityLog";
-
   const parseMetadata = (details: string | null): NotificationMetadata => {
     if (!details) return { read: false, originalDetails: null };
     try {
       if (details.startsWith('{')) {
         return JSON.parse(details);
       }
-    } catch (e: unknown) {}
+    } catch (_e: unknown) {}
     return { read: false, originalDetails: details };
   };
 

@@ -8,9 +8,7 @@ import {
   Grid, 
   Paper, 
   Stack, 
-  IconButton, 
   alpha, 
-  CircularProgress,
   ToggleButton,
   ToggleButtonGroup,
   Alert,
@@ -25,7 +23,6 @@ import ShieldIcon from "@mui/icons-material/Shield";
 import InfoIcon from "@mui/icons-material/Info";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import FolderIcon from "@mui/icons-material/Folder";
 import { useAppwriteVault } from "@/context/appwrite-context";

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { 
   Box, 
   Typography, 
@@ -11,7 +11,6 @@ import {
   Switch, 
   FormControlLabel, 
   Divider,
-  Alert,
   CircularProgress,
   alpha,
   useTheme,
@@ -24,7 +23,6 @@ import {
 import { 
   Lock, 
   Shield, 
-  Smartphone,
   Fingerprint,
   Trash2,
   AlertTriangle
@@ -49,11 +47,24 @@ export default function SettingsPage() {
   const [confirmPin, setConfirmPin] = useState("");
   const [isPinSet, setIsPinSet] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [pendingAction, setPendingAction] = useState<'setup' | 'wipe' | null>(null);
   
   // Passkey state
   const [passkeyEntries, setPasskeyEntries] = useState<any[]>([]);
-  const [loadingPasskeys, setLoadingPasskeys] = useState(true);
+
+  const loadPasskeys = useCallback(async () => {
+    if (!user?.$id) return;
+    try {
+        const entries = await AppwriteService.listKeychainEntries(user.$id);
+        const pkEntries = entries.filter(e => e.type === 'passkey').map(e => ({
+            ...e,
+            params: typeof e.params === 'string' ? JSON.parse(e.params) : e.params
+        }));
+        
+        setPasskeyEntries(pkEntries);
+    } catch (_e) {
+        console.error("Failed to load passkeys", _e);
+    }
+  }, [user?.$id]);
 
   useEffect(() => {
     setIsPinSet(ecosystemSecurity.isPinSet());
@@ -70,24 +81,7 @@ export default function SettingsPage() {
     }
 
     return () => clearInterval(interval);
-  }, [isUnlocked, user]);
-
-  const loadPasskeys = async () => {
-    if (!user?.$id) return;
-    try {
-        const entries = await AppwriteService.listKeychainEntries(user.$id);
-        const pkEntries = entries.filter(e => e.type === 'passkey').map(e => ({
-            ...e,
-            params: typeof e.params === 'string' ? JSON.parse(e.params) : e.params
-        }));
-        
-        setPasskeyEntries(pkEntries);
-    } catch (e) {
-        console.error("Failed to load passkeys", e);
-    } finally {
-        setLoadingPasskeys(false);
-    }
-  };
+  }, [isUnlocked, user?.$id, loadPasskeys]);
 
   const handleRemovePasskey = async (id: string) => {
     if (!window.confirm("Are you sure you want to remove this passkey? This cannot be undone.")) return;
@@ -120,7 +114,6 @@ export default function SettingsPage() {
     }
 
     if (!masterPassCrypto.isVaultUnlocked()) {
-      setPendingAction('setup');
       setUnlockModalOpen(true);
       return;
     }
@@ -141,17 +134,15 @@ export default function SettingsPage() {
       } else {
         toast.error("Failed to setup PIN. Please ensure vault is unlocked.");
       }
-    } catch (err: unknown) {
+    } catch (_err: unknown) {
       toast.error("An unexpected error occurred.");
     } finally {
       setLoading(false);
-      setPendingAction(null);
     }
   };
 
   const handleWipePin = () => {
     if (!masterPassCrypto.isVaultUnlocked()) {
-      setPendingAction('wipe');
       setUnlockModalOpen(true);
       return;
     }
@@ -162,7 +153,6 @@ export default function SettingsPage() {
     setPin("");
     setConfirmPin("");
     toast.success("PIN reset successful. You can now set a new one.");
-    setPendingAction(null);
   };
 
   const handleLock = () => {
@@ -425,7 +415,6 @@ export default function SettingsPage() {
         isOpen={unlockModalOpen}
         onClose={() => {
           setUnlockModalOpen(false);
-          setPendingAction(null);
         }}
       />
 

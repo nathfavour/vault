@@ -6,7 +6,6 @@ import {
   Button, 
   Drawer, 
   Divider, 
-  Tooltip, 
   alpha, 
   useTheme,
   Chip,
@@ -20,10 +19,8 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import CloseIcon from "@mui/icons-material/Close";
 import LanguageIcon from "@mui/icons-material/Language";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import GppMaybeIcon from "@mui/icons-material/GppMaybe";
 import GppGoodIcon from "@mui/icons-material/GppGood";
-import DescriptionIcon from "@mui/icons-material/Description";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { Credentials } from "@/types/appwrite";
 import { useAI } from "@/app/context/AIContext";

@@ -21,10 +21,8 @@ import {
     SpeedOutlined as FlowIcon,
     ChatBubbleOutline as ConnectIcon,
     ShieldOutlined as IDIcon,
-    MonitorHeartOutlined as ActivityIcon,
 } from '@mui/icons-material';
 import { ECOSYSTEM_APPS, getEcosystemUrl } from '../../lib/constants';
-import { EcosystemWidgets } from '../../ecosystem/integration/Widgets';
 
 interface EcosystemPortalProps {
     open: boolean;

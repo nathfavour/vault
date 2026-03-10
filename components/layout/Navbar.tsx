@@ -22,7 +22,6 @@ import MenuItem from "@mui/material/MenuItem";
 import Divider from "@mui/material/Divider";
 import Tooltip from "@mui/material/Tooltip";
 import CircularProgress from "@mui/material/CircularProgress";
-import Stack from "@mui/material/Stack";
 import { alpha } from "@mui/material/styles";
 import { useState, useEffect } from "react";
 import { DropdownMenu } from "@/components/ui/DropdownMenu";
@@ -38,7 +37,7 @@ const PasswordGenerator = dynamic(() => import("@/components/ui/PasswordGenerato
 });
 
 export function Navbar() {
-  const { user, logout, openIDMWindow } = useAppwriteVault();
+  const { user, logout } = useAppwriteVault();
   const { openAIModal } = useAI();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [isEcosystemPortalOpen, setIsEcosystemPortalOpen] = useState(false);

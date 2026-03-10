@@ -21,8 +21,6 @@ import {
   InputAdornment, 
   Box, 
   Typography, 
-  Divider,
-  alpha,
   useTheme,
   Grid
 } from "@mui/material";
@@ -45,7 +43,6 @@ export default function CredentialDialog({
   prefill?: { name?: string; url?: string; username?: string };
 }) {
   const { user } = useAppwriteVault();
-  const theme = useTheme();
   const [showPassword, setShowPassword] = useState(false);
   const [customFields, setCustomFields] = useState<
     Array<{ id: string; label: string; value: string }>

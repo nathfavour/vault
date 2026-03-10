@@ -7,13 +7,11 @@ import {
   DialogActions, 
   Button, 
   TextField, 
-  Box, 
   Typography, 
   FormControlLabel, 
   Checkbox,
   Grid,
-  CircularProgress,
-  alpha
+  CircularProgress
 } from "@mui/material";
 import { createTotpSecret, updateTotpSecret } from "@/lib/appwrite";
 import { useAppwriteVault } from "@/context/appwrite-context";
