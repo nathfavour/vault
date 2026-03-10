@@ -28,27 +28,20 @@ import {
   Container, 
   Grid, 
   Paper, 
-  IconButton, 
-  TextField, 
   CircularProgress, 
   Dialog, 
   DialogTitle, 
   DialogContent, 
   DialogActions, 
-  alpha, 
   Chip,
   Menu,
   MenuItem,
   useTheme,
-  useMediaQuery,
-  Skeleton,
-  Fade
+  useMediaQuery
 } from "@mui/material";
 import FolderIcon from "@mui/icons-material/Folder";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AddIcon from "@mui/icons-material/Add";
-import SearchIcon from "@mui/icons-material/Search";
-import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (

@@ -17,7 +17,6 @@ import {
   InputLabel, 
   InputAdornment, 
   CircularProgress,
-  alpha,
   ToggleButton,
   ToggleButtonGroup
 } from "@mui/material";
@@ -27,7 +26,6 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
-import ShieldIcon from "@mui/icons-material/Shield";
 import FolderIcon from "@mui/icons-material/Folder";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import { useAppwriteVault } from "@/context/appwrite-context";
