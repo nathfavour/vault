@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
     Dialog,
     DialogTitle,
@@ -25,11 +25,9 @@ import { AppwriteService } from "@/lib/appwrite";
 import { ecosystemSecurity } from "@/lib/ecosystem/security";
 import { PasskeySetup } from "./passkeySetup";
 import { useAppwriteVault } from "@/context/appwrite-context";
-import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { masterPassCrypto } from "@/app/(protected)/masterpass/logic";
-import { unlockWithPasskey } from "@/lib/passkey";
-import React, { useCallback } from "react";
+import React from "react";
 
 interface SudoModalProps {
     isOpen: boolean;
@@ -43,19 +41,21 @@ export default function SudoModal({
     onCancel,
 }: SudoModalProps) {
     const { user } = useAppwriteVault();
-    const router = useRouter();
     const [password, setPassword] = useState("");
     const [pin, setPin] = useState("");
     const [loading, setLoading] = useState(false);
-    const [passkeyLoading, setPasskeyLoading] = useState(false);
-    const [hasPasskey, setHasPasskey] = useState(false);
-    const [hasPin, setHasPin] = useState(false);
-    const [hasMasterpass, setHasMasterpass] = useState<boolean | null>(null);
+    const [hasPasskey] = useState(false);
+    const [hasPin] = useState(false);
+    const [hasMasterpass] = useState<boolean | null>(null);
     const [mode, setMode] = useState<"passkey" | "password" | "pin" | "initialize" | null>(null);
-    const [isDetecting, setIsDetecting] = useState(true);
+    const [isDetecting] = useState(true);
     const [confirmPassword, setConfirmPassword] = useState("");
+    const [showPasskeyIncentive, setShowPasskeyIncentive] = useState(false);
 
-    // ... (rest of the component)
+    const handlePasskeyVerify = () => {
+        // Mock implementation since passkey auth logic seems incomplete or unused here
+        toast.error("Passkey authentication not available here yet.");
+    };
 
     const handleInitializeMasterPass = async (e: React.FormEvent) => {
         e.preventDefault();
