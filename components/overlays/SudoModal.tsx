@@ -115,12 +115,6 @@ export default function SudoModal({
             setMode("initialize");
             return;
         }
-        // ... rest of handlePasswordVerify
-    };
-
-    // ... inside return (UI logic)
-    // Replace the redirect logic with initialization UI when hasMasterpass is false
-
 
         setLoading(true);
         try {
