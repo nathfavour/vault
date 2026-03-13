@@ -613,9 +613,12 @@ export class EcosystemSecurity {
 
         try {
           try {
-            const uDoc = await tablesDB.getDocument(CHAT_DB, CHAT_USERS_TABLE, userId);
-            if (uDoc) {
-              await tablesDB.updateDocument(CHAT_DB, CHAT_USERS_TABLE, uDoc.$id, {
+            const res = await tablesDB.listDocuments(CHAT_DB, CHAT_USERS_TABLE, [
+              Query.equal('userId', userId),
+              Query.limit(1)
+            ]);
+            if (res.total > 0) {
+              await tablesDB.updateDocument(CHAT_DB, CHAT_USERS_TABLE, res.documents[0].$id, {
                 publicKey: doc.publicKey
               });
             }
@@ -651,9 +654,12 @@ export class EcosystemSecurity {
 
       try {
         try {
-          const uDoc = await tablesDB.getDocument(CHAT_DB, CHAT_USERS_TABLE, userId);
-          if (uDoc) {
-            await tablesDB.updateDocument(CHAT_DB, CHAT_USERS_TABLE, uDoc.$id, {
+          const res = await tablesDB.listDocuments(CHAT_DB, CHAT_USERS_TABLE, [
+            Query.equal('userId', userId),
+            Query.limit(1)
+          ]);
+          if (res.total > 0) {
+            await tablesDB.updateDocument(CHAT_DB, CHAT_USERS_TABLE, res.documents[0].$id, {
               publicKey: pubBase64
             });
           }
