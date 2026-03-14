@@ -24,6 +24,7 @@ import ShieldIcon from "@mui/icons-material/Shield";
 import LogoutIcon from "@mui/icons-material/Logout";
 import FingerprintIcon from "@mui/icons-material/Fingerprint";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import AppsIcon from "@mui/icons-material/Apps";
 import { useAppwriteVault } from "@/context/appwrite-context";
 import { masterPassCrypto } from "@/app/(protected)/masterpass/logic";
 import { useFinalizeAuth } from "@/lib/finalizeAuth";
@@ -302,84 +303,88 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
       PaperProps={{
         sx: {
           borderRadius: '32px',
-          bgcolor: 'rgba(10, 10, 10, 0.9)',
+          bgcolor: 'rgba(5, 5, 5, 0.03)',
           backdropFilter: 'blur(25px) saturate(180%)',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
           backgroundImage: 'none',
+          boxShadow: '0 25px 50px rgba(0, 0, 0, 0.6)',
           width: '100%',
-          maxWidth: '440px',
-          overflow: 'visible'
+          maxWidth: '400px',
+          overflow: 'hidden'
         }
       }}
     >
-      <Box sx={{ position: 'absolute', top: -32, left: '50%', transform: 'translateX(-50%)' }}>
-        <Box sx={{ position: 'relative' }}>
-          <Box 
-            component="img" 
-            src="/logo.jpg" 
-            alt="App Logo" 
-            sx={{ 
-              width: 64, 
-              height: 64, 
-              borderRadius: '18px',
-              objectFit: 'cover',
-              border: '2px solid rgba(255, 255, 255, 0.1)',
-              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)'
-            }} 
-          />
-          <Box sx={{
-            position: 'absolute',
-            bottom: -8,
-            right: -8,
-            width: 32,
-            height: 32,
-            borderRadius: '10px',
-            bgcolor: '#A855F7',
-            color: 'white',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 4px 12px rgba(168, 85, 247, 0.4)',
-            border: '3px solid rgba(10, 10, 10, 1)',
-            zIndex: 1
-          }}>
-            <LockIcon sx={{ fontSize: 16 }} />
+      <style>{`
+        @keyframes race {
+          from { stroke-dashoffset: 240; }
+          to { stroke-dashoffset: 0; }
+        }
+        @keyframes pulse-hex {
+          0% { transform: scale(1); opacity: 1; }
+          50% { transform: scale(1.05); opacity: 0.8; }
+          100% { transform: scale(1); opacity: 1; }
+        }
+      `}</style>
+      <DialogTitle sx={{ textAlign: 'center', pt: 6, pb: 1, position: 'relative' }}>
+        <Box sx={{ position: 'absolute', top: -32, left: '50%', transform: 'translateX(-50%)' }}>
+          <Box sx={{ position: 'relative' }}>
+            <Box
+              component="img"
+              src="/logo.jpg"
+              alt="App Logo"
+              sx={{
+                width: 64,
+                height: 64,
+                borderRadius: '18px',
+                objectFit: 'cover',
+                border: '2px solid rgba(255, 255, 255, 0.1)',
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)'
+              }}
+            />
+            <Box sx={{
+              position: 'absolute',
+              bottom: -6,
+              right: -6,
+              width: 28,
+              height: 28,
+              borderRadius: '8px',
+              bgcolor: '#A855F7',
+              color: 'white',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 4px 12px rgba(168, 85, 247, 0.4)',
+              border: '3px solid #0a0a0a',
+              zIndex: 1
+            }}>
+              <ShieldIcon sx={{ fontSize: 14 }} />
+            </Box>
           </Box>
         </Box>
-      </Box>
 
-      <DialogTitle sx={{ textAlign: 'center', pt: 5, pb: 1 }}>
-        {user && (
-          <Box sx={{ mb: 2 }}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 800, color: '#A855F7' }}>
-              {user.name || user.email}
-            </Typography>
-            {user.email && user.name && (
-              <Typography variant="caption" sx={{ color: 'text.secondary', display: 'block' }}>
-                {user.email}
-              </Typography>
-            )}
-          </Box>
-        )}
-        <Typography variant="h4" sx={{ fontWeight: 900, fontFamily: 'var(--font-space-grotesk)', letterSpacing: '-0.02em' }}>
-          {isFirstTime ? "Set Master Password" : "Unlock Vault"}
+        <Typography variant="h5" sx={{
+          fontWeight: 900,
+          letterSpacing: '-0.04em',
+          fontFamily: 'var(--font-clash)',
+          color: 'white',
+          mt: 4
+        }}>
+          {user?.name || "User"}
         </Typography>
-        <Typography variant="body2" sx={{ color: 'text.secondary', mt: 1, fontWeight: 500 }}>
-          {isFirstTime
-            ? "Create a master password to encrypt your data"
-            : "Enter your master password to access encrypted data"}
+        <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.4)', mt: 1, fontFamily: 'var(--font-satoshi)' }}>
+          Security verification required
         </Typography>
       </DialogTitle>
 
-      <DialogContent sx={{ mt: 2 }}>
+      <DialogContent sx={{ pb: 4 }}>
         {isFirstTime === null || (loading && !masterPassword && mode !== "pin") ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
-            <CircularProgress />
+            <CircularProgress sx={{ color: '#A855F7' }} />
           </Box>
         ) : mode === "pin" ? (
           <Stack spacing={3} sx={{ mt: 2 }}>
             <Box>
-              <Typography variant="caption" sx={{ fontWeight: 700, mb: 1, display: 'block', textAlign: 'center' }}>
+              <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.4)', fontWeight: 600, mb: 1, display: 'block', textAlign: 'center' }}>
                 ENTER 4-DIGIT PIN
               </Typography>
               <TextField
@@ -394,28 +399,17 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
                   inputMode: 'numeric',
                   style: { textAlign: 'center', fontSize: '2rem', letterSpacing: '0.5em' }
                 }}
-                variant="filled"
-                InputProps={{
-                  disableUnderline: true,
-                  sx: { borderRadius: '16px', bgcolor: 'rgba(255, 255, 255, 0.05)' }
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '14px',
+                    bgcolor: 'rgba(255, 255, 255, 0.03)',
+                    '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.1)' },
+                    '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.2)' },
+                    '&.Mui-focused fieldset': { borderColor: '#A855F7' },
+                  },
+                  '& .MuiInputBase-input': { color: 'white' }
                 }}
               />
-            </Box>
-
-            <Box sx={{ width: '100%', position: 'relative', py: 1 }}>
-              <Box sx={{ position: 'absolute', top: '50%', left: 0, right: 0, height: '1px', bgcolor: 'rgba(255, 255, 255, 0.1)' }} />
-              <Typography variant="caption" sx={{
-                position: 'relative',
-                bgcolor: 'rgb(24, 24, 24)',
-                px: 2,
-                mx: 'auto',
-                display: 'table',
-                color: 'text.secondary',
-                textTransform: 'uppercase',
-                letterSpacing: '0.1em'
-              }}>
-                Or
-              </Typography>
             </Box>
 
             <Button
@@ -423,7 +417,7 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
               variant="text"
               size="small"
               onClick={() => setMode("password")}
-              sx={{ color: 'text.secondary', '&:hover': { color: 'white' } }}
+              sx={{ color: 'rgba(255, 255, 255, 0.5)', '&:hover': { color: 'white' } }}
             >
               Use Master Password
             </Button>
@@ -433,56 +427,67 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
             <Box
               onClick={handlePasskeyUnlock}
               sx={{
-                width: 100,
-                height: 100,
-                borderRadius: '50%',
-                border: '2px dashed',
-                borderColor: passkeyLoading ? 'primary.main' : 'rgba(255, 255, 255, 0.2)',
+                width: 80,
+                height: 80,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 cursor: 'pointer',
+                position: 'relative',
                 transition: 'all 0.3s ease',
                 '&:hover': {
-                  borderColor: 'primary.main',
-                  bgcolor: alpha(muiTheme.palette.primary.main, 0.05),
                   transform: 'scale(1.05)'
                 }
               }}
             >
-              {passkeyLoading ? (
-                <CircularProgress size={40} />
-              ) : (
-                <FingerprintIcon sx={{ fontSize: 48, color: "rgba(255, 255, 255, 0.4)" }} />
-              )}
+              <svg width="80" height="80" viewBox="0 0 80 80">
+                <path
+                  d="M40 5 L70 22.5 L70 57.5 L40 75 L10 57.5 L10 22.5 Z"
+                  fill="transparent"
+                  stroke="rgba(255, 255, 255, 0.1)"
+                  strokeWidth="2"
+                  strokeDasharray="4 4"
+                />
+                {passkeyLoading && (
+                  <path
+                    d="M40 5 L70 22.5 L70 57.5 L40 75 L10 57.5 L10 22.5 Z"
+                    fill="transparent"
+                    stroke="url(#racingGradient)"
+                    strokeWidth="3"
+                    strokeDasharray="60 180"
+                    style={{
+                      animation: 'race 2s linear infinite'
+                    }}
+                  />
+                )}
+                <defs>
+                  <linearGradient id="racingGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#A855F7" />
+                    <stop offset="100%" stopColor="#7E22CE" />
+                  </linearGradient>
+                </defs>
+              </svg>
+              <Box sx={{
+                position: 'absolute',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                animation: passkeyLoading ? 'pulse-hex 2s infinite ease-in-out' : 'none'
+              }}>
+                <FingerprintIcon sx={{ fontSize: 32, color: passkeyLoading ? '#A855F7' : 'rgba(255, 255, 255, 0.4)' }} />
+              </Box>
             </Box>
 
-            <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+            <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.3)', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
               {passkeyLoading ? "CONFIRM ON DEVICE" : "TAP TO VERIFY"}
             </Typography>
-
-            <Box sx={{ width: '100%', position: 'relative', py: 1 }}>
-              <Box sx={{ position: 'absolute', top: '50%', left: 0, right: 0, height: '1px', bgcolor: 'rgba(255, 255, 255, 0.1)' }} />
-              <Typography variant="caption" sx={{
-                position: 'relative',
-                bgcolor: 'rgb(24, 24, 24)',
-                px: 2,
-                mx: 'auto',
-                display: 'table',
-                color: 'text.secondary',
-                textTransform: 'uppercase',
-                letterSpacing: '0.1em'
-              }}>
-                Or
-              </Typography>
-            </Box>
 
             <Button
               fullWidth
               variant="text"
               size="small"
               onClick={() => setMode("password")}
-              sx={{ color: 'text.secondary', '&:hover': { color: 'white' } }}
+              sx={{ color: 'rgba(255, 255, 255, 0.5)', '&:hover': { color: 'white' } }}
             >
               Use Master Password
             </Button>
@@ -490,7 +495,7 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
         ) : (
           <Stack spacing={3} component="form" onSubmit={handleSubmit}>
             <Box>
-              <Typography variant="caption" sx={{ fontWeight: 700, mb: 1, display: 'block', ml: 1 }}>
+              <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.4)', fontWeight: 600, mb: 1, display: 'block' }}>
                 {isFirstTime ? "CREATE MASTER PASSWORD" : "MASTER PASSWORD"}
               </Typography>
               <TextField
@@ -501,26 +506,31 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
                 onChange={(e) => setMasterPassword(e.target.value)}
                 required
                 autoFocus
-                variant="filled"
-                onKeyDown={(e) => {
-                  if ("getModifierState" in e && (e as React.KeyboardEvent).getModifierState("CapsLock")) {
-                    setCapsLock(true);
-                  } else {
-                    setCapsLock(false);
-                  }
-                }}
                 InputProps={{
-                  disableUnderline: true,
-                  sx: { borderRadius: '16px', bgcolor: 'rgba(255, 255, 255, 0.05)' },
+                  startAdornment: (
+                    <Box sx={{ mr: 1, color: 'rgba(255, 255, 255, 0.3)', display: 'flex' }}>
+                      <LockIcon sx={{ fontSize: 18 }} />
+                    </Box>
+                  ),
                   endAdornment: (
-                    <IconButton onClick={() => setShowPassword(!showPassword)} edge="end" sx={{ color: 'text.secondary' }}>
+                    <IconButton onClick={() => setShowPassword(!showPassword)} edge="end" sx={{ color: 'rgba(255, 255, 255, 0.3)' }}>
                       {showPassword ? <VisibilityOffIcon sx={{ fontSize: 18 }} /> : <VisibilityIcon sx={{ fontSize: 18 }} />}
                     </IconButton>
-                  )
+                  ),
+                }}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: '14px',
+                    bgcolor: 'rgba(255, 255, 255, 0.03)',
+                    '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.1)' },
+                    '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.2)' },
+                    '&.Mui-focused fieldset': { borderColor: '#A855F7' },
+                  },
+                  '& .MuiInputBase-input': { color: 'white' }
                 }}
               />
               {capsLock && (
-                <Typography variant="caption" sx={{ color: 'warning.main', mt: 1, display: 'flex', alignItems: 'center', gap: 0.5, ml: 1 }}>
+                <Typography variant="caption" sx={{ color: 'warning.main', mt: 1, display: 'flex', alignItems: 'center', gap: 0.5 }}>
                   <ErrorOutlineIcon sx={{ fontSize: 12 }} /> Caps Lock is ON
                 </Typography>
               )}
@@ -528,7 +538,7 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
 
             {isFirstTime && (
               <Box>
-                <Typography variant="caption" sx={{ fontWeight: 700, mb: 1, display: 'block', ml: 1 }}>
+                <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.4)', fontWeight: 600, mb: 1, display: 'block' }}>
                   CONFIRM MASTER PASSWORD
                 </Typography>
                 <TextField
@@ -538,31 +548,31 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   required
-                  variant="filled"
-                  onKeyDown={(e) => {
-                    if ("getModifierState" in e && (e as React.KeyboardEvent).getModifierState("CapsLock")) {
-                      setConfirmCapsLock(true);
-                    } else {
-                      setConfirmCapsLock(false);
-                    }
-                  }}
                   InputProps={{
-                    disableUnderline: true,
-                    sx: { borderRadius: '16px', bgcolor: 'rgba(255, 255, 255, 0.05)' },
                     endAdornment: (
-                      <IconButton onClick={() => setShowConfirmPassword(!showConfirmPassword)} edge="end" sx={{ color: 'text.secondary' }}>
+                      <IconButton onClick={() => setShowConfirmPassword(!showConfirmPassword)} edge="end" sx={{ color: 'rgba(255, 255, 255, 0.3)' }}>
                         {showConfirmPassword ? <VisibilityOffIcon sx={{ fontSize: 18 }} /> : <VisibilityIcon sx={{ fontSize: 18 }} />}
                       </IconButton>
                     )
                   }}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '14px',
+                      bgcolor: 'rgba(255, 255, 255, 0.03)',
+                      '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.1)' },
+                      '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.2)' },
+                      '&.Mui-focused fieldset': { borderColor: '#A855F7' },
+                    },
+                    '& .MuiInputBase-input': { color: 'white' }
+                  }}
                 />
                 {confirmCapsLock && (
-                  <Typography variant="caption" sx={{ color: 'warning.main', mt: 1, display: 'flex', alignItems: 'center', gap: 0.5, ml: 1 }}>
+                  <Typography variant="caption" sx={{ color: 'warning.main', mt: 1, display: 'flex', alignItems: 'center', gap: 0.5 }}>
                     <ErrorOutlineIcon sx={{ fontSize: 12 }} /> Caps Lock is ON
                   </Typography>
                 )}
                 {confirmPassword.length > 0 && (
-                  <Typography variant="caption" sx={{ color: confirmPassword === masterPassword ? 'success.main' : 'error.main', mt: 1, display: 'block', ml: 1 }}>
+                  <Typography variant="caption" sx={{ color: confirmPassword === masterPassword ? 'success.main' : 'error.main', mt: 1, display: 'block' }}>
                     {confirmPassword === masterPassword ? "✓ Passwords match" : "✗ Passwords do not match"}
                   </Typography>
                 )}
@@ -570,19 +580,19 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
             )}
 
             {isFirstTime && (
-              <Paper sx={{
+              <Box sx={{
                 p: 2,
                 borderRadius: '16px',
-                bgcolor: alpha(muiTheme.palette.info.main, 0.05),
-                border: `1px solid ${alpha(muiTheme.palette.info.main, 0.2)}`,
+                bgcolor: alpha('#3b82f6', 0.05),
+                border: `1px solid ${alpha('#3b82f6', 0.2)}`,
                 display: 'flex',
                 gap: 1.5
               }}>
-                <ShieldIcon sx={{ fontSize: 20, color: muiTheme.palette.info.main, flexShrink: 0 }} />
-                <Typography variant="caption" sx={{ color: 'info.main', fontWeight: 500 }}>
+                <ShieldIcon sx={{ fontSize: 20, color: '#3b82f6', flexShrink: 0 }} />
+                <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.5)', fontWeight: 500 }}>
                   <strong>Important:</strong> Your master password encrypts all your data locally. We cannot recover it if you forget it.
                 </Typography>
-              </Paper>
+              </Box>
             )}
 
             <Button
@@ -590,82 +600,99 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
               variant="contained"
               fullWidth
               disabled={loading}
-              sx={{ borderRadius: '16px', py: 1.5, fontWeight: 800, fontSize: '1rem' }}
+              sx={{
+                py: 1.8,
+                borderRadius: '16px',
+                background: 'linear-gradient(135deg, #A855F7 0%, #7E22CE 100%)',
+                color: '#FFFFFF',
+                fontWeight: 800,
+                fontFamily: 'var(--font-satoshi)',
+                textTransform: 'none',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #9333EA 0%, #6B21A8 100%)',
+                  transform: 'translateY(-1px)',
+                  boxShadow: '0 8px 25px rgba(168, 85, 247, 0.25)'
+                }
+              }}
             >
-              {loading ? <CircularProgress size={24} /> : (isFirstTime ? "Set Master Password" : "Unlock Vault")}
+              {loading ? <CircularProgress size={24} color="inherit" /> : (isFirstTime ? "Set Master Password" : "Confirm Security Entry")}
             </Button>
+
+            {hasPasskey && mode !== "passkey" && !isFirstTime && (
+              <Button
+                fullWidth
+                variant="text"
+                startIcon={<FingerprintIcon sx={{ fontSize: 18 }} />}
+                onClick={() => {
+                  setMode("passkey");
+                  handlePasskeyUnlock();
+                }}
+                sx={{
+                  color: 'rgba(255, 255, 255, 0.6)',
+                  py: 1.5,
+                  borderRadius: '14px',
+                  border: '1px solid rgba(255, 255, 255, 0.05)',
+                  textTransform: 'none',
+                  fontFamily: 'var(--font-satoshi)',
+                  fontWeight: 600,
+                  '&:hover': { color: 'white', bgcolor: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.15)' },
+                  mt: 1
+                }}
+              >
+                Use Passkey
+              </Button>
+            )}
+
+            {hasPin && mode !== "pin" && !isFirstTime && (
+              <Button
+                fullWidth
+                variant="text"
+                startIcon={<AppsIcon sx={{ fontSize: 18 }} />}
+                onClick={() => setMode("pin")}
+                sx={{
+                  color: 'rgba(255, 255, 255, 0.5)',
+                  py: 1,
+                  borderRadius: '12px',
+                  textTransform: 'none',
+                  fontFamily: 'var(--font-satoshi)',
+                  fontWeight: 500,
+                  '&:hover': { color: 'white', bgcolor: 'rgba(255, 255, 255, 0.03)' },
+                  mt: 0.5
+                }}
+              >
+                Use PIN
+              </Button>
+            )}
+
+            {mode === "password" && !isFirstTime && (
+              <Button
+                fullWidth
+                variant="text"
+                size="small"
+                onClick={() => router.push("/masterpass/reset")}
+                sx={{
+                  color: 'error.main',
+                  fontSize: '0.75rem',
+                  mt: 1,
+                  '&:hover': { bgcolor: alpha('#ef4444', 0.1) },
+                  textTransform: 'none',
+                  fontWeight: 600
+                }}
+              >
+                Reset Master Password
+              </Button>
+            )}
           </Stack>
         )}
       </DialogContent>
 
       <DialogActions sx={{ flexDirection: 'column', p: 4, pt: 0, gap: 2 }}>
-        {!isFirstTime && (
-          <Button
-            variant="text"
-            fullWidth
-            onClick={() => router.push("/masterpass/reset")}
-            sx={{
-              borderRadius: '16px',
-              py: 1,
-              fontWeight: 700,
-              color: 'error.main',
-              '&:hover': { bgcolor: alpha(muiTheme.palette.error.main, 0.1) }
-            }}
-          >
-            Reset Master Password
-          </Button>
-        )}
-
-        {!isFirstTime && hasPin && mode !== "pin" && mode !== "passkey" && (
-          <Button
-            variant="outlined"
-            fullWidth
-            onClick={() => setMode("pin")}
-            sx={{
-              borderRadius: '16px',
-              py: 1.5,
-              fontWeight: 700,
-              bgcolor: 'rgba(255, 255, 255, 0.02)',
-              borderColor: 'rgba(255, 255, 255, 0.1)',
-              '&:hover': {
-                bgcolor: 'rgba(255, 255, 255, 0.05)',
-                borderColor: 'primary.main'
-              }
-            }}
-          >
-            Unlock with PIN
-          </Button>
-        )}
-
-        {!isFirstTime && hasPasskey && mode !== "passkey" && mode !== "pin" && (
-          <Button
-            variant="outlined"
-            fullWidth
-            onClick={handlePasskeyUnlock}
-            disabled={passkeyLoading || loading}
-            startIcon={passkeyLoading ? <CircularProgress size={18} /> : <FingerprintIcon sx={{ fontSize: 18 }} />}
-            sx={{
-              borderRadius: '16px',
-              py: 1.5,
-              fontWeight: 700,
-              bgcolor: 'rgba(255, 255, 255, 0.02)',
-              borderColor: 'rgba(255, 255, 255, 0.1)',
-              '&:hover': {
-                bgcolor: 'rgba(255, 255, 255, 0.05)',
-                borderColor: 'primary.main'
-              }
-            }}
-          >
-            {passkeyLoading ? "Unlocking..." : "Unlock with Passkey"}
-          </Button>
-        )}
-
         <Button
           variant="text"
           size="small"
           onClick={handleLogout}
           startIcon={<LogoutIcon sx={{ fontSize: 14 }} />}
-          sx={{ color: 'text.secondary', fontWeight: 600 }}
+          sx={{ color: 'rgba(255, 255, 255, 0.4)', fontWeight: 600, '&:hover': { color: 'white' } }}
         >
           Logout from Account
         </Button>

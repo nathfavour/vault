@@ -21,94 +21,16 @@ export default function MasterPassPage() {
   const router = useRouter();
   const theme = useTheme();
 
-  useEffect(() => {
-    if (!isAuthReady) return;
-
-    // Only show modal if we have a user and they're authenticated
-    // If user is null, the "Authentication Required" screen below will show
-    if (user) {
-      setShowModal(true);
-    } else {
-      setShowModal(false);
-    }
-  }, [user, isAuthReady]);
-
-  const handleModalClose = () => {
-    router.replace("/dashboard");
-  };
-
-  if (!isAuthReady) return null;
-
-  if (!user) {
-    return (
-      <Box sx={{ 
-        minHeight: '100vh', 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'center',
-        bgcolor: 'background.default',
-        p: 3
-      }}>
-        <Container maxWidth="sm">
-          <Paper sx={{
-            p: 4,
-            borderRadius: '32px',
-            bgcolor: 'rgba(255, 255, 255, 0.02)',
-            backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            textAlign: 'center',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: 2
-          }}>
-            <Box sx={{ 
-              width: 64, 
-              height: 64, 
-              borderRadius: '18px', 
-              bgcolor: alpha(theme.palette.primary.main, 0.1),
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'primary.main',
-              mb: 0.5
-            }}>
-              <ShieldIcon sx={{ fontSize: 32 }} />
-            </Box>
-            <Box>
-              <Typography variant="h4" sx={{ fontWeight: 900, fontFamily: 'var(--font-space-grotesk)', mb: 1 }}>
-                Authentication Required
-              </Typography>
-              <Typography variant="body1" sx={{ color: 'text.secondary', fontWeight: 500 }}>
-                Please log in to access your secure vault.
-              </Typography>
-            </Box>
-            <Button
-              variant="contained"
-              size="large"
-              onClick={() => {
-                try {
-                  openIDMWindow();
-                } catch (err: unknown) {
-                  console.error("Failed to open auth popup:", err);
-                }
-              }}
-              sx={{ 
-                borderRadius: '16px', 
-                px: 6, 
-                py: 2, 
-                fontWeight: 800,
-                fontSize: '1.1rem',
-                textTransform: 'none'
-              }}
-            >
-              Connect Account
-            </Button>
-          </Paper>
-        </Container>
-      </Box>
-    );
-  }
-
-  return <MasterPassModal isOpen={showModal} onClose={handleModalClose} />;
+  return (
+    <Box sx={{ 
+      minHeight: '100vh', 
+      display: 'flex', 
+      alignItems: 'center', 
+      justifyContent: 'center',
+      bgcolor: 'background.default',
+      p: 3
+    }}>
+      <MasterPassModal isOpen={true} onClose={() => router.replace("/dashboard")} />
+    </Box>
+  );
 }
