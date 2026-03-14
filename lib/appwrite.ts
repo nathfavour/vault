@@ -213,6 +213,14 @@ export const FLOW_COLLECTION_ID_EVENTS = APPWRITE_CONFIG.TABLES.FLOW.EVENTS;
 export const NOTE_DATABASE_ID = APPWRITE_CONFIG.DATABASES.NOTE;
 export const NOTE_COLLECTION_ID = APPWRITE_CONFIG.TABLES.NOTE.NOTES;
 
+// Ecosystem: Unified Identity & Chat
+export const PASSWORD_MANAGER_DATABASE_ID = APPWRITE_CONFIG.DATABASES.PASSWORD_MANAGER;
+export const APPWRITE_COLLECTION_IDENTITIES_ID = APPWRITE_CONFIG.TABLES.PASSWORD_MANAGER.IDENTITIES;
+export const CHAT_DATABASE_ID = APPWRITE_CONFIG.DATABASES.CHAT;
+export const CHAT_COLLECTION_CONVERSATIONS_ID = APPWRITE_CONFIG.TABLES.CHAT.CONVERSATIONS;
+export const CHAT_COLLECTION_MESSAGES_ID = APPWRITE_CONFIG.TABLES.CHAT.MESSAGES;
+export const CHAT_COLLECTION_USERS_ID = APPWRITE_CONFIG.TABLES.CHAT.USERS;
+
 // --- Collection Structure & Field Mappings ---
 // Dynamically derive encrypted/plaintext fields from the types
 // These fields receive CLIENT-SIDE end-to-end encryption (on top of Appwrite's database encryption)
@@ -1862,14 +1870,16 @@ export async function setMasterpassFlag(
  */
 export async function resetMasterpassAndWipe(userId: string): Promise<void> {
   // Helper to delete all documents in a collection for a user in parallel batches
-  const deleteCollectionDocs = async (collectionId: string) => {
+  const deleteCollectionDocs = async (collectionId: string, databaseId: string = APPWRITE_DATABASE_ID, customQueries: string[] = []) => {
     try {
       let hasMore = true;
+      const baseQueries = customQueries.length > 0 ? customQueries : [Query.equal("userId", userId)];
+
       while (hasMore) {
         const response = await appwriteDatabases.listDocuments(
-          APPWRITE_DATABASE_ID,
+          databaseId,
           collectionId,
-          [Query.equal("userId", userId), Query.limit(50)],
+          [...baseQueries, Query.limit(50)],
         );
 
         if (response.documents.length === 0) {
@@ -1881,8 +1891,8 @@ export async function resetMasterpassAndWipe(userId: string): Promise<void> {
         await Promise.all(
           response.documents.map((doc) =>
             appwriteDatabases
-              .deleteDocument(APPWRITE_DATABASE_ID, collectionId, doc.$id)
-              .catch((e) => console.warn(`Failed to delete doc ${doc.$id}`, e))
+              .deleteDocument(databaseId, collectionId, doc.$id)
+              .catch((e) => console.warn(`Failed to delete doc ${doc.$id} in ${collectionId}`, e))
           )
         );
 
@@ -1892,19 +1902,59 @@ export async function resetMasterpassAndWipe(userId: string): Promise<void> {
         }
       }
     } catch (e: unknown) {
-      console.error(`Failed to wipe collection ${collectionId}`, e);
+      console.error(`Failed to wipe collection ${collectionId} in database ${databaseId}`, e);
     }
   };
 
-  // Execute deletions for all collections in parallel
-  await Promise.all([
+  // Execute deletions for all core vault collections in parallel
+  const wipePromises = [
     deleteCollectionDocs(APPWRITE_COLLECTION_USER_ID),
     deleteCollectionDocs(APPWRITE_COLLECTION_CREDENTIALS_ID),
     deleteCollectionDocs(APPWRITE_COLLECTION_TOTPSECRETS_ID),
     deleteCollectionDocs(APPWRITE_COLLECTION_FOLDERS_ID),
     deleteCollectionDocs(APPWRITE_COLLECTION_SECURITYLOGS_ID),
     deleteCollectionDocs(APPWRITE_COLLECTION_KEYCHAIN_ID),
-  ]);
+    deleteCollectionDocs(APPWRITE_COLLECTION_IDENTITIES_ID, PASSWORD_MANAGER_DATABASE_ID),
+  ];
+
+  // Ecosystem Chat Wipe: Personal/Saved Messages
+  const wipeChatData = async () => {
+    try {
+      // 1. Find self-chats (direct chats where the user is the only participant or repeated)
+      const selfChats = await appwriteDatabases.listDocuments(
+        CHAT_DATABASE_ID,
+        CHAT_COLLECTION_CONVERSATIONS_ID,
+        [
+          Query.contains("participants", userId),
+          Query.equal("type", "direct")
+        ]
+      );
+
+      for (const conv of selfChats.documents) {
+        const participants = conv.participants || [];
+        const isSelf = participants.length === 1 || (participants.length === 2 && participants[0] === participants[1]);
+
+        if (isSelf) {
+          // Nuclear wipe messages in this self-chat
+          await deleteCollectionDocs(CHAT_COLLECTION_MESSAGES_ID, CHAT_DATABASE_ID, [Query.equal("conversationId", conv.$id)]);
+          // Delete the conversation itself
+          await appwriteDatabases.deleteDocument(CHAT_DATABASE_ID, CHAT_COLLECTION_CONVERSATIONS_ID, conv.$id).catch(() => null);
+        }
+      }
+
+      // 2. Clear publicKey in Chat Users (this makes existing encrypted chats un-addressable with old identity)
+      const chatUserDoc = await appwriteDatabases.listDocuments(CHAT_DATABASE_ID, CHAT_COLLECTION_USERS_ID, [Query.equal("$id", userId)]).then(res => res.documents[0]).catch(() => null);
+      if (chatUserDoc) {
+        await appwriteDatabases.updateDocument(CHAT_DATABASE_ID, CHAT_COLLECTION_USERS_ID, userId, {
+          publicKey: ""
+        }).catch(err => console.warn("Failed to clear chat public key:", err));
+      }
+    } catch (err) {
+      console.error("Ecosystem chat wipe failed:", err);
+    }
+  };
+
+  await Promise.all([...wipePromises, wipeChatData()]);
 }
 
 /**
