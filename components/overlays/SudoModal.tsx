@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
     Dialog,
     DialogTitle,
@@ -21,6 +21,7 @@ import FingerprintIcon from "@mui/icons-material/Fingerprint";
 import CloseIcon from "@mui/icons-material/Close";
 import ShieldIcon from "@mui/icons-material/Shield";
 import AppsIcon from "@mui/icons-material/Apps";
+import KeyRoundIcon from "@mui/icons-material/Key";
 import { AppwriteService } from "@/lib/appwrite";
 import { ecosystemSecurity } from "@/lib/ecosystem/security";
 import { PasskeySetup } from "./passkeySetup";
@@ -28,59 +29,86 @@ import { useAppwriteVault } from "@/context/appwrite-context";
 import toast from "react-hot-toast";
 import { masterPassCrypto } from "@/app/(protected)/masterpass/logic";
 import React from "react";
+import { unlockWithPasskey } from "@/lib/passkey";
+import { useRouter } from "next/navigation";
 
 interface SudoModalProps {
     isOpen: boolean;
     onSuccess: () => void;
     onCancel: () => void;
+    intent?: "unlock" | "initialize" | "reset";
 }
 
 export default function SudoModal({
     isOpen,
     onSuccess,
     onCancel,
+    intent,
 }: SudoModalProps) {
     const { user } = useAppwriteVault();
+    const router = useRouter();
     const [password, setPassword] = useState("");
     const [pin, setPin] = useState("");
     const [loading, setLoading] = useState(false);
-    const [hasPasskey] = useState(false);
-    const [hasPin] = useState(false);
-    const [hasMasterpass] = useState<boolean | null>(null);
+    const [passkeyLoading, setPasskeyLoading] = useState(false);
+    const [hasPasskey, setHasPasskey] = useState(false);
+    const [hasPin, setHasPin] = useState(false);
     const [mode, setMode] = useState<"passkey" | "password" | "pin" | "initialize" | null>(null);
-    const [isDetecting] = useState(true);
-    const [confirmPassword, setConfirmPassword] = useState("");
+    const [isDetecting, setIsDetecting] = useState(true);
     const [showPasskeyIncentive, setShowPasskeyIncentive] = useState(false);
+    const [isResetting, setIsResetting] = useState(false);
+    const [resetStep, setResetStep] = useState(1);
 
-    const handlePasskeyVerify = () => {
-        // Mock implementation since passkey auth logic seems incomplete or unused here
-        toast.error("Passkey authentication not available here yet.");
-    };
-
-    const handleSuccessWithSync = React.useCallback(async () => {
+    const handleSuccessWithSync = useCallback(async () => {
         if (user?.$id) {
             try {
                 // Sudo Hook: Ensure E2E Identity is created and published upon successful MasterPass unlock
                 console.log("Synchronizing Identity...");
                 await ecosystemSecurity.ensureE2EIdentity(user.$id);
+
+                // Incentive: If user doesn't have a passkey, show incentive (7-day snooze)
+                const entries = await AppwriteService.listKeychainEntries(user.$id);
+                const hasPasskey = entries.some((e: any) => e.type === 'passkey');
+                
+                if (intent === "reset") {
+                    setResetStep(2); // Move to second phase of reset
+                    return;
+                }
+
+                if (!hasPasskey) {
+                    const lastSkip = localStorage.getItem(`passkey_skip_${user.$id}`);
+                    const sevenDays = 7 * 24 * 60 * 60 * 1000;
+                    if (!lastSkip || (Date.now() - parseInt(lastSkip)) > sevenDays) {
+                        setShowPasskeyIncentive(true);
+                        return; // Don't call onSuccess yet, PasskeySetup will handle it
+                    }
+                }
             } catch (e) {
                 console.error("Failed to sync identity on unlock", e);
             }
         }
         onSuccess();
-    }, [user?.$id, onSuccess]);
+    }, [user?.$id, onSuccess, intent]);
+
+    const handlePasskeyVerify = useCallback(async () => {
+        if (!user?.$id || !isOpen) return;
+        setPasskeyLoading(true);
+        try {
+            const success = await unlockWithPasskey(user.$id);
+            if (success && isOpen) {
+                toast.success("Verified via Passkey");
+                handleSuccessWithSync();
+            }
+        } catch (e) {
+            console.error("Passkey verification failed or cancelled", e);
+        } finally {
+            setPasskeyLoading(false);
+        }
+    }, [user?.$id, isOpen, handleSuccessWithSync]);
 
     const handleInitializeMasterPass = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!user?.$id || !user?.email) return;
-        if (password !== confirmPassword) {
-            toast.error("Passwords do not match");
-            return;
-        }
-        if (password.length < 8) {
-            toast.error("Password must be at least 8 characters");
-            return;
-        }
 
         setLoading(true);
         try {
@@ -105,7 +133,7 @@ export default function SudoModal({
             // 4. Set Masterpass Flag on User Doc
             await AppwriteService.setMasterpassFlag(user.$id, user.email);
             
-            // 5. Unlock MasterPassCrypto locally
+            // 5. Unlock locally
             const rawMek = await crypto.subtle.exportKey("raw", mek);
             await masterPassCrypto.importKey(rawMek);
             await masterPassCrypto.unlockWithImportedKey();
@@ -124,21 +152,12 @@ export default function SudoModal({
         e?.preventDefault();
         if (!user?.$id) return;
 
-        if (hasMasterpass === false) {
-            setMode("initialize");
-            return;
-        }
-
         setLoading(true);
         try {
             const isValid = await masterPassCrypto.unlock(password, user.$id);
             if (isValid) {
-                if (!hasPasskey) {
-                    setShowPasskeyIncentive(true);
-                } else {
-                    toast.success("Verified");
-                    handleSuccessWithSync();
-                }
+                toast.success("Identity Verified");
+                handleSuccessWithSync();
             } else {
                 toast.error("Incorrect master password");
             }
@@ -157,12 +176,8 @@ export default function SudoModal({
         try {
             const success = await ecosystemSecurity.unlockWithPin(pinValue);
             if (success) {
-                if (!hasPasskey) {
-                    setShowPasskeyIncentive(true);
-                } else {
-                    toast.success("Verified via PIN");
-                    handleSuccessWithSync();
-                }
+                toast.success("Verified via PIN");
+                handleSuccessWithSync();
             } else {
                 toast.error("Incorrect PIN");
                 setPin("");
@@ -182,6 +197,102 @@ export default function SudoModal({
             handlePinVerify(val);
         }
     };
+
+    const handleFinalReset = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!password || !user?.$id) return;
+        setLoading(true);
+        try {
+            const mek = await ecosystemSecurity.generateRandomMEK();
+            const salt = crypto.getRandomValues(new Uint8Array(32));
+            const wrappedKey = await ecosystemSecurity.wrapMEK(mek, password, salt);
+            
+            const entries = await AppwriteService.listKeychainEntries(user.$id);
+            const passEntry = entries.find((e: any) => e.type === 'password');
+            
+            if (passEntry) {
+                await AppwriteService.deleteKeychainEntry(passEntry.$id);
+            }
+
+            await AppwriteService.createKeychainEntry({
+                userId: user.$id,
+                type: 'password',
+                wrappedKey,
+                salt: btoa(String.fromCharCode(...salt)),
+                createdAt: new Date().toISOString()
+            } as any);
+
+            const rawMek = await crypto.subtle.exportKey("raw", mek);
+            await masterPassCrypto.importKey(rawMek);
+            await masterPassCrypto.unlockWithImportedKey();
+            
+            toast.success("MasterPass Reset Successful");
+            onSuccess();
+        } catch (_e) {
+            toast.error("Reset failed");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (isOpen && user?.$id) {
+            const pinSet = ecosystemSecurity.isPinSet();
+            setHasPin(pinSet);
+
+            AppwriteService.listKeychainEntries(user.$id).then(entries => {
+                const passkeyPresent = entries.some((e: any) => e.type === 'passkey');
+                const passwordPresent = entries.some((e: any) => e.type === 'password');
+                const pinPresent = entries.some((e: any) => e.type === 'pin') || pinSet;
+                
+                setHasPasskey(passkeyPresent);
+                setHasPin(pinPresent);
+
+                if (intent === "initialize") {
+                    if (passwordPresent) {
+                        toast.error("MasterPass is already setup. Use reset if needed.");
+                        setMode("password");
+                    } else {
+                        setMode("initialize");
+                    }
+                    setIsDetecting(false);
+                    return;
+                }
+
+                if (intent === "reset") {
+                    setIsResetting(true);
+                    setMode(passkeyPresent ? "passkey" : "password");
+                    setIsDetecting(false);
+                    return;
+                }
+
+                if (!passwordPresent && isOpen) {
+                    setMode("initialize");
+                    setIsDetecting(false);
+                    return;
+                }
+
+                if (passkeyPresent) {
+                    setMode("passkey");
+                    handlePasskeyVerify();
+                } else if (pinPresent) {
+                    setMode("pin");
+                } else {
+                    setMode("password");
+                }
+                setIsDetecting(false);
+            }).catch(() => {
+                setIsDetecting(false);
+                setMode("password");
+            });
+
+            setPassword("");
+            setPin("");
+            setLoading(false);
+            setPasskeyLoading(false);
+            setIsDetecting(true);
+        }
+    }, [isOpen, user, handlePasskeyVerify, intent]);
 
     if (showPasskeyIncentive && user) {
         return (
@@ -259,13 +370,88 @@ export default function SudoModal({
             </DialogTitle>
 
             <DialogContent sx={{ pb: 4 }}>
-                {isDetecting ? (
+                {isResetting && resetStep === 2 ? (
+                    <Stack spacing={3} sx={{ mt: 2 }}>
+                        <Box sx={{
+                            p: 2,
+                            borderRadius: '16px',
+                            bgcolor: alpha('#ef4444', 0.1),
+                            border: '1px solid rgba(239, 68, 68, 0.2)',
+                        }}>
+                            <Typography variant="body2" sx={{ color: '#ef4444', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <KeyRoundIcon sx={{ fontSize: 16 }} /> RESET MASTERPASS
+                            </Typography>
+                            <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.5)', mt: 0.5, display: 'block' }}>
+                                This will replace your current master password. Your encrypted data will remain accessible with the new password.
+                            </Typography>
+                        </Box>
+
+                        <form onSubmit={handleFinalReset}>
+                            <Stack spacing={2.5}>
+                                <Box>
+                                    <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.4)', fontWeight: 600, mb: 1, display: 'block' }}>
+                                        ENTER NEW MASTERPASS
+                                    </Typography>
+                                    <TextField
+                                        fullWidth
+                                        type="password"
+                                        placeholder="New master password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        autoFocus
+                                        InputProps={{
+                                            startAdornment: (
+                                                <InputAdornment position="start">
+                                                    <LockIcon sx={{ fontSize: 18, color: "rgba(255, 255, 255, 0.3)" }} />
+                                                </InputAdornment>
+                                            ),
+                                        }}
+                                        sx={{
+                                            '& .MuiOutlinedInput-root': {
+                                                borderRadius: '14px',
+                                                bgcolor: 'rgba(255, 255, 255, 0.03)',
+                                                '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.1)' },
+                                                '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.2)' },
+                                                '&.Mui-focused fieldset': { borderColor: '#ef4444' },
+                                            },
+                                            '& .MuiInputBase-input': { color: 'white' }
+                                        }}
+                                    />
+                                </Box>
+
+                                <Button
+                                    fullWidth
+                                    type="submit"
+                                    variant="contained"
+                                    disabled={loading || !password || password.length < 8}
+                                    sx={{
+                                        py: 1.5,
+                                        borderRadius: '14px',
+                                        bgcolor: '#ef4444',
+                                        color: '#fff',
+                                        fontWeight: 700,
+                                        '&:hover': {
+                                            bgcolor: alpha('#ef4444', 0.8),
+                                        }
+                                    }}
+                                >
+                                    {loading ? <CircularProgress size={24} color="inherit" /> : "Reset and Update Vault"}
+                                </Button>
+                            </Stack>
+                        </form>
+                    </Stack>
+                ) : isDetecting || passkeyLoading ? (
                     <Stack spacing={3} sx={{ mt: 4, mb: 2, alignItems: 'center' }}>
                         <CircularProgress size={48} sx={{ color: '#A855F7' }} />
                         <Box sx={{ textAlign: 'center' }}>
                             <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.5)', fontWeight: 600, letterSpacing: '0.1em' }}>
-                                PREPARING SECURITY CHECK...
+                                {passkeyLoading ? "AUTHENTICATING..." : "PREPARING SECURITY CHECK..."}
                             </Typography>
+                            {passkeyLoading && (
+                                <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.3)', mt: 1, display: 'block' }}>
+                                    Please confirm on your device
+                                </Typography>
+                            )}
                         </Box>
                     </Stack>
                 ) : mode === "initialize" ? (
@@ -302,41 +488,12 @@ export default function SudoModal({
                                         }}
                                     />
                                 </Box>
-                                <Box>
-                                    <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.4)', fontWeight: 600, mb: 1, display: 'block' }}>
-                                        CONFIRM PASSWORD
-                                    </Typography>
-                                    <TextField
-                                        fullWidth
-                                        type="password"
-                                        placeholder="Repeat your password"
-                                        value={confirmPassword}
-                                        onChange={(e) => setConfirmPassword(e.target.value)}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <InputAdornment position="start">
-                                                    <ShieldIcon sx={{ fontSize: 18, color: "rgba(255, 255, 255, 0.3)" }} />
-                                                </InputAdornment>
-                                            ),
-                                        }}
-                                        sx={{
-                                            '& .MuiOutlinedInput-root': {
-                                                borderRadius: '14px',
-                                                bgcolor: 'rgba(255, 255, 255, 0.03)',
-                                                '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.1)' },
-                                                '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.2)' },
-                                                '&.Mui-focused fieldset': { borderColor: '#A855F7' },
-                                            },
-                                            '& .MuiInputBase-input': { color: 'white' }
-                                        }}
-                                    />
-                                </Box>
 
                                 <Button
                                     fullWidth
                                     type="submit"
                                     variant="contained"
-                                    disabled={loading || !password || !confirmPassword}
+                                    disabled={loading || !password || password.length < 8}
                                     sx={{
                                         py: 1.8,
                                         borderRadius: '16px',
@@ -434,13 +591,13 @@ export default function SudoModal({
                                 height: 80,
                                 borderRadius: '50%',
                                 border: '2px dashed',
-                                borderColor: 'rgba(255, 255, 255, 0.2)',
+                                borderColor: passkeyLoading ? '#A855F7' : 'rgba(255, 255, 255, 0.2)',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 cursor: 'pointer',
                                 transition: 'all 0.3s ease',
-                                animation: 'none',
+                                animation: passkeyLoading ? 'pulse 2s infinite' : 'none',
                                 '&:hover': {
                                     borderColor: '#A855F7',
                                     bgcolor: alpha('#A855F7', 0.05)
@@ -452,7 +609,7 @@ export default function SudoModal({
                                 }
                             }}
                         >
-                            <FingerprintIcon sx={{ fontSize: 40, color: 'rgba(255, 255, 255, 0.4)' }} />
+                            <FingerprintIcon sx={{ fontSize: 40, color: passkeyLoading ? '#A855F7' : 'rgba(255, 255, 255, 0.4)' }} />
                         </Box>
 
                         <Box sx={{ textAlign: 'center' }}>
@@ -468,7 +625,7 @@ export default function SudoModal({
                             fullWidth
                             variant="contained"
                             onClick={handlePasskeyVerify}
-                            disabled={false}
+                            disabled={passkeyLoading}
                             sx={{
                                 py: 1.5,
                                 borderRadius: '14px',
@@ -486,7 +643,12 @@ export default function SudoModal({
                                 }
                             }}
                         >
-                            Verify with Passkey
+                            {passkeyLoading ? (
+                                <Stack direction="row" spacing={1} alignItems="center">
+                                    <CircularProgress size={20} color="inherit" />
+                                    <span>Waiting for Passkey...</span>
+                                </Stack>
+                            ) : "Verify with Passkey"}
                         </Button>
 
                         <Box sx={{ width: '100%', position: 'relative', py: 1 }}>
@@ -575,75 +737,57 @@ export default function SudoModal({
                             </Stack>
                         </form>
 
-                        {hasPasskey && (
-                            <>
-                                <Box sx={{ width: '100%', position: 'relative', py: 1.5 }}>
-                                    <Box sx={{ position: 'absolute', top: '50%', left: 0, right: 0, height: '1px', bgcolor: 'rgba(255, 255, 255, 0.05)' }} />
-                                    <Typography variant="caption" sx={{
-                                        position: 'relative',
-                                        bgcolor: 'rgba(5, 5, 5, 1)',
-                                        px: 2.5,
-                                        mx: 'auto',
-                                        display: 'table',
-                                        color: 'rgba(255, 255, 255, 0.25)',
-                                        textTransform: 'uppercase',
-                                        letterSpacing: '0.15em',
-                                        fontFamily: 'var(--font-mono)',
-                                        fontSize: '0.65rem'
-                                    }}>
-                                        Or
-                                    </Typography>
-                                </Box>
-
-                                <Button
-                                    fullWidth
-                                    variant="text"
-                                    startIcon={<FingerprintIcon sx={{ fontSize: 18 }} />}
-                                    onClick={() => setMode("passkey")}
-                                    sx={{
-                                        color: 'rgba(255, 255, 255, 0.6)',
-                                        py: 1.5,
-                                        borderRadius: '16px',
-                                        border: '1px solid rgba(255, 255, 255, 0.05)',
-                                        textTransform: 'none',
-                                        fontFamily: 'var(--font-satoshi)',
-                                        fontWeight: 600,
-                                        '&:hover': { color: 'white', bgcolor: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.15)' }
-                                    }}
-                                >
-                                    Use Passkey
-                                </Button>
-                            </>
+                        {(hasPasskey || hasPin) && (
+                            <Box sx={{ width: '100%', position: 'relative', py: 1.5 }}>
+                                <Box sx={{ position: 'absolute', top: '50%', left: 0, right: 0, height: '1px', bgcolor: 'rgba(255, 255, 255, 0.05)' }} />
+                                <Typography variant="caption" sx={{
+                                    position: 'relative',
+                                    bgcolor: 'rgba(5, 5, 5, 1)',
+                                    px: 2.5,
+                                    mx: 'auto',
+                                    display: 'table',
+                                    color: 'rgba(255, 255, 255, 0.25)',
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.15em',
+                                    fontFamily: 'var(--font-mono)',
+                                    fontSize: '0.65rem'
+                                }}>
+                                    Or
+                                </Typography>
+                            </Box>
                         )}
 
-                        {hasPin && mode !== "pin" && (
-                            <>
-                                <Box sx={{ width: '100%', position: 'relative', py: 1 }}>
-                                    <Box sx={{ position: 'absolute', top: '50%', left: 0, right: 0, height: '1px', bgcolor: 'rgba(255, 255, 255, 0.1)' }} />
-                                    <Typography variant="caption" sx={{
-                                        position: 'relative',
-                                        bgcolor: 'rgba(10, 10, 10, 1)',
-                                        px: 2,
-                                        mx: 'auto',
-                                        display: 'table',
-                                        color: 'rgba(255, 255, 255, 0.3)',
-                                        textTransform: 'uppercase',
-                                        letterSpacing: '0.1em'
-                                    }}>
-                                        Or
-                                    </Typography>
-                                </Box>
+                        {hasPasskey && (
+                            <Button
+                                fullWidth
+                                variant="text"
+                                startIcon={<FingerprintIcon sx={{ fontSize: 18 }} />}
+                                onClick={() => setMode("passkey")}
+                                sx={{
+                                    color: 'rgba(255, 255, 255, 0.6)',
+                                    py: 1.5,
+                                    borderRadius: '16px',
+                                    border: '1px solid rgba(255, 255, 255, 0.05)',
+                                    textTransform: 'none',
+                                    fontFamily: 'var(--font-satoshi)',
+                                    fontWeight: 600,
+                                    '&:hover': { color: 'white', bgcolor: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.15)' }
+                                }}
+                            >
+                                Use Passkey
+                            </Button>
+                        )}
 
-                                <Button
-                                    fullWidth
-                                    variant="text"
-                                    startIcon={<AppsIcon sx={{ fontSize: 18 }} />}
-                                    onClick={() => setMode("pin")}
-                                    sx={{ color: 'rgba(255, 255, 255, 0.5)', '&:hover': { color: 'white' } }}
-                                >
-                                    Use PIN
-                                </Button>
-                            </>
+                        {hasPin && (
+                            <Button
+                                fullWidth
+                                variant="text"
+                                startIcon={<AppsIcon sx={{ fontSize: 18 }} />}
+                                onClick={() => setMode("pin")}
+                                sx={{ color: 'rgba(255, 255, 255, 0.5)', '&:hover': { color: 'white' } }}
+                            >
+                                Use PIN
+                            </Button>
                         )}
                     </Stack>
                 )}
