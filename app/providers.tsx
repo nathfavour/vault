@@ -6,22 +6,40 @@ import { BackgroundTaskProvider } from "./context/BackgroundTaskContext";
 import { AIProvider } from "./context/AIContext";
 import { SudoProvider } from "./context/SudoContext";
 import { NotificationProvider } from "./context/NotificationContext";
+import { SubscriptionProvider } from "@/context/subscription/SubscriptionContext";
 import { Toaster } from "react-hot-toast";
-import { ThemeProvider as MuiThemeProvider, CssBaseline } from "@mui/material";
-import { darkTheme } from "@/theme/theme";
-import EcosystemPortal from "@/components/common/EcosystemPortal";
-import { useEcosystemNode } from "@/hooks/useEcosystemNode";
 
-function GlobalEcosystemHandler() {
-  const [open, setOpen] = useState(false);
-  useEcosystemNode('vault');
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === ' ') {
-        e.preventDefault();
-        setOpen(prev => !prev);
-      }
+export function Providers({ children }: { children: React.ReactNode }) {
+  return (
+    <SubscriptionProvider>
+      <MuiThemeProvider theme={darkTheme}>
+        <CssBaseline />
+        <AppwriteProvider>
+          <NotificationProvider>
+            <SudoProvider>
+              <BackgroundTaskProvider>
+                <AIProvider>
+                  <GlobalEcosystemHandler />
+                  {children}
+                  <Toaster
+                    position="bottom-right"
+                    toastOptions={{
+                      className: "font-mono border-2 border-border shadow-floating rounded-xl",
+                      style: {
+                        background: "var(--card)",
+                        color: "var(--foreground)",
+                      },
+                    }}
+                  />
+                </AIProvider>
+              </BackgroundTaskProvider>
+            </SudoProvider>
+          </NotificationProvider>
+        </AppwriteProvider>
+      </MuiThemeProvider>
+    </SubscriptionProvider>
+  );
+}
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);

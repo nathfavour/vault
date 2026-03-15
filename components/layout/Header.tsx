@@ -31,6 +31,7 @@ import {
   Menu as MenuIcon,
   Search
 } from "lucide-react";
+import { SubscriptionBadge } from "@/context/subscription/SubscriptionContext";
 import { useAppwriteVault } from "@/context/appwrite-context";
 import { useAI } from "@/app/context/AIContext";
 import { useNotifications } from "@/app/context/NotificationContext";
@@ -332,6 +333,9 @@ export function Header({ onMenuClick }: HeaderProps) {
             <Typography variant="body2" sx={{ fontWeight: 700, color: 'white', mt: 0.5, opacity: 0.9 }}>
               {user?.email}
             </Typography>
+            <Box sx={{ mt: 1.5 }}>
+              <SubscriptionBadge showFree />
+            </Box>
           </Box>
           <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.05)' }} />
           <Box sx={{ py: 1 }}>
