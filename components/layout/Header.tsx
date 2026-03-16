@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { 
   AppBar, 
   Toolbar, 
@@ -31,7 +31,7 @@ import {
   Menu as MenuIcon,
   Search
 } from "lucide-react";
-import { SubscriptionBadge } from "@/context/subscription/SubscriptionContext";
+import { SubscriptionBadge } from "@/context/subscription";
 import { useAppwriteVault } from "@/context/appwrite-context";
 import { useAI } from "@/app/context/AIContext";
 import { useNotifications } from "@/app/context/NotificationContext";
@@ -51,6 +51,7 @@ export function Header({ onMenuClick }: HeaderProps) {
   const { user, logout } = useAppwriteVault();
   const { openAIModal } = useAI();
   const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
+  const router = useRouter();
   const pathname = usePathname();
   const [anchorElAccount, setAnchorElAccount] = useState<null | HTMLElement>(null);
   const [anchorElNotifications, setAnchorElNotifications] = useState<null | HTMLElement>(null);
@@ -341,10 +342,15 @@ export function Header({ onMenuClick }: HeaderProps) {
           <Box sx={{ py: 1 }}>
             <MenuItem 
               onClick={() => {
-              const domain = process.env.NEXT_PUBLIC_DOMAIN || 'kylrix.space';
-              const idSubdomain = process.env.NEXT_PUBLIC_AUTH_SUBDOMAIN || 'accounts';
-              window.location.href = `https://${idSubdomain}.${domain}/settings?source=${encodeURIComponent(window.location.origin)}&tab=profile`;
-            }}
+                setAnchorElAccount(null);
+                if (pathname === "/settings") {
+                  const domain = process.env.NEXT_PUBLIC_DOMAIN || 'kylrix.space';
+                  const idSubdomain = process.env.NEXT_PUBLIC_AUTH_SUBDOMAIN || 'accounts';
+                  window.location.href = `https://${idSubdomain}.${domain}/settings?source=${encodeURIComponent(window.location.origin)}&tab=profile`;
+                } else {
+                  router.push("/settings");
+                }
+              }}
               sx={{ py: 1.5, px: 3, '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.05)' } }}
             >
               <ListItemIcon><Settings size={18} strokeWidth={1.5} color="rgba(255, 255, 255, 0.4)" /></ListItemIcon>

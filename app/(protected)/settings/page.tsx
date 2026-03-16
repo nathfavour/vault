@@ -18,14 +18,21 @@ import {
   List,
   ListItem,
   ListItemText,
-  ListItemIcon
+  ListItemIcon,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  InputAdornment
 } from "@mui/material";
 import { 
   Lock, 
   Shield, 
   Fingerprint,
   Trash2,
-  AlertTriangle
+  AlertTriangle,
+  KeyRound,
+  CheckCircle2
 } from "lucide-react";
 import { useAppwriteVault } from "@/context/appwrite-context";
 import { ecosystemSecurity } from "@/lib/ecosystem/security";
@@ -47,6 +54,12 @@ export default function SettingsPage() {
   const [confirmPin, setConfirmPin] = useState("");
   const [isPinSet, setIsPinSet] = useState(false);
   const [loading, setLoading] = useState(false);
+  
+  // Master Password Change state
+  const [passwordModalOpen, setPasswordModalOpen] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
   
   // Passkey state
   const [passkeyEntries, setPasskeyEntries] = useState<any[]>([]);
@@ -184,6 +197,34 @@ export default function SettingsPage() {
     toast.success("Vault Locked");
   };
 
+  const handleChangePassword = async () => {
+    if (!newPassword || !confirmPassword) {
+      toast.error("Please fill in all fields");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast.error("New passwords do not match");
+      return;
+    }
+    if (newPassword.length < 8) {
+      toast.error("Password must be at least 8 characters");
+      return;
+    }
+
+    setIsChangingPassword(true);
+    try {
+      await masterPassCrypto.changeMasterPassword(newPassword, user!.$id);
+      toast.success("Master password changed successfully!");
+      setPasswordModalOpen(false);
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (error: any) {
+      toast.error(error.message || "Failed to change password");
+    } finally {
+      setIsChangingPassword(false);
+    }
+  };
+
   return (
     <Box sx={{ maxWidth: 800, mx: 'auto' }}>
       <Typography variant="h3" sx={{ fontWeight: 900, mb: 1, fontFamily: 'var(--font-space-grotesk)', letterSpacing: '-0.03em' }}>
@@ -229,6 +270,37 @@ export default function SettingsPage() {
                   }}
                 >
                   {isUnlocked ? "Lock Vault" : "Unlock Vault"}
+                </Button>
+              </Box>
+
+              <Divider sx={{ opacity: 0.05 }} />
+
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Box>
+                  <Typography variant="h6" sx={{ fontWeight: 800, fontFamily: 'var(--font-space-grotesk)' }}>Master Password</Typography>
+                  <Typography variant="body2" sx={{ opacity: 0.6 }}>Rotate your vault access key (Data stays safe)</Typography>
+                </Box>
+                <Button 
+                  variant="outlined"
+                  onClick={() => {
+                    if (!isUnlocked) {
+                      setUnlockModalOpen(true);
+                    } else {
+                      setPasswordModalOpen(true);
+                    }
+                  }}
+                  startIcon={<KeyRound size={18} />}
+                  sx={{ 
+                    borderRadius: '14px', 
+                    px: 3, 
+                    py: 1, 
+                    fontWeight: 700,
+                    borderWidth: '2px',
+                    borderColor: alpha(muiTheme.palette.primary.main, 0.3),
+                    '&:hover': { borderWidth: '2px', bgcolor: alpha(muiTheme.palette.primary.main, 0.05) }
+                  }}
+                >
+                  Change Password
                 </Button>
               </Box>
 
@@ -453,6 +525,117 @@ export default function SettingsPage() {
         }}
         trustUnlocked={true}
       />
+
+      {/* Change Password Modal */}
+      <Dialog 
+        open={passwordModalOpen} 
+        onClose={() => !isChangingPassword && setPasswordModalOpen(false)}
+        PaperProps={{
+          sx: {
+            borderRadius: '24px',
+            bgcolor: '#0A0A0A',
+            border: '1px solid rgba(255, 255, 255, 0.05)',
+            backgroundImage: 'none',
+            maxWidth: '420px',
+            width: '100%'
+          }
+        }}
+      >
+        <DialogTitle sx={{ p: 4, pb: 2 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
+            <Box sx={{ 
+              p: 1.2, 
+              borderRadius: '12px', 
+              bgcolor: alpha(muiTheme.palette.primary.main, 0.1),
+              color: muiTheme.palette.primary.main,
+              display: 'flex'
+            }}>
+              <KeyRound size={20} />
+            </Box>
+            <Typography variant="h5" sx={{ fontWeight: 800, fontFamily: 'var(--font-space-grotesk)' }}>
+              Change Password
+            </Typography>
+          </Box>
+          <Typography variant="body2" sx={{ opacity: 0.6 }}>
+            Update your master access key. Your data will be re-wrapped with the new password.
+          </Typography>
+        </DialogTitle>
+
+        <DialogContent sx={{ p: 4, pt: 1 }}>
+          <Stack spacing={3}>
+            <TextField
+              fullWidth
+              type="password"
+              label="New Master Password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              disabled={isChangingPassword}
+              variant="filled"
+              InputProps={{ 
+                disableUnderline: true, 
+                sx: { borderRadius: '14px', bgcolor: 'rgba(255, 255, 255, 0.03)' },
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Lock size={18} style={{ opacity: 0.4 }} />
+                  </InputAdornment>
+                )
+              }}
+            />
+            <TextField
+              fullWidth
+              type="password"
+              label="Confirm New Password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              disabled={isChangingPassword}
+              variant="filled"
+              InputProps={{ 
+                disableUnderline: true, 
+                sx: { borderRadius: '14px', bgcolor: 'rgba(255, 255, 255, 0.03)' },
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <CheckCircle2 size={18} style={{ opacity: 0.4 }} />
+                  </InputAdornment>
+                )
+              }}
+            />
+            
+            <Box sx={{ 
+              p: 2, 
+              borderRadius: '16px', 
+              bgcolor: alpha(muiTheme.palette.warning.main, 0.05),
+              border: `1px solid ${alpha(muiTheme.palette.warning.main, 0.1)}`,
+              display: 'flex',
+              gap: 1.5
+            }}>
+              <AlertTriangle size={18} color={muiTheme.palette.warning.main} style={{ flexShrink: 0, marginTop: '2px' }} />
+              <Typography variant="caption" sx={{ color: muiTheme.palette.warning.main, opacity: 0.8 }}>
+                Changing your password will NOT wipe your data, but it will invalidate any existing Passkeys. You will need to re-add them after changing.
+              </Typography>
+            </Box>
+          </Stack>
+        </DialogContent>
+
+        <DialogActions sx={{ p: 4, pt: 0 }}>
+          <Button 
+            fullWidth
+            onClick={() => setPasswordModalOpen(false)}
+            disabled={isChangingPassword}
+            sx={{ borderRadius: '12px', py: 1.5, fontWeight: 700, color: 'text.secondary' }}
+          >
+            Cancel
+          </Button>
+          <Button 
+            fullWidth
+            variant="contained"
+            onClick={handleChangePassword}
+            disabled={isChangingPassword || !newPassword || newPassword !== confirmPassword}
+            sx={{ borderRadius: '12px', py: 1.5, fontWeight: 800 }}
+          >
+            {isChangingPassword ? <CircularProgress size={20} color="inherit" /> : "Update Password"}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }

@@ -6,7 +6,7 @@ import { BackgroundTaskProvider } from "./context/BackgroundTaskContext";
 import { AIProvider } from "./context/AIContext";
 import { SudoProvider } from "./context/SudoContext";
 import { NotificationProvider } from "./context/NotificationContext";
-import { SubscriptionProvider } from "@/context/subscription/SubscriptionContext";
+import { SubscriptionProvider } from "@/context/subscription";
 import { Toaster } from "react-hot-toast";
 import { ThemeProvider as MuiThemeProvider, CssBaseline } from "@mui/material";
 import { darkTheme } from "@/theme/theme";

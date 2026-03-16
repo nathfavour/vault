@@ -329,7 +329,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         }}
       >
         {navigation
-          .filter((item) => item.name !== "Import" && item.name !== "Settings")
+          .filter((item) => item.name !== "Import")
           .map((item) => {
             const isActive = pathname === item.href;
             const isBig = item.big;
@@ -346,26 +346,42 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     alignItems: 'center',
                     justifyContent: 'center',
                     mt: -6,
-                    textDecoration: 'none'
+                    textDecoration: 'none',
+                    zIndex: 2
                   }}
                 >
                   <Box
                     sx={{
-                      height: 64,
-                      width: 64,
+                      height: 60,
+                      width: 60,
                       borderRadius: '20px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       bgcolor: '#6366F1',
                       color: '#000',
-                      boxShadow: '0 0 20px rgba(99, 102, 241, 0.4)',
+                      boxShadow: '0 8px 24px rgba(99, 102, 241, 0.4)',
+                      border: '4px solid #000',
                       transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
                       '&:active': { transform: 'scale(0.9) translateY(4px)' }
                     }}
                   >
-                    <item.icon size={28} strokeWidth={1.5} />
+                    <item.icon size={28} strokeWidth={2} />
                   </Box>
+                  <Typography 
+                    variant="caption" 
+                    sx={{ 
+                      fontSize: 10, 
+                      fontWeight: 800, 
+                      mt: 0.5,
+                      color: isActive ? '#6366F1' : 'rgba(255, 255, 255, 0.6)',
+                      fontFamily: 'var(--font-space-grotesk)',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em'
+                    }}
+                  >
+                    {item.name}
+                  </Typography>
                 </Box>
               );
             }
@@ -384,17 +400,21 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   minWidth: 64,
                   textDecoration: 'none',
                   color: isActive ? '#6366F1' : 'rgba(255, 255, 255, 0.4)',
-                  transition: 'all 0.2s ease'
+                  transition: 'all 0.2s ease',
+                  '&:active': { transform: 'scale(0.9)' }
                 }}
               >
-                <item.icon size={22} strokeWidth={1.5} />
+                <item.icon size={22} strokeWidth={isActive ? 2 : 1.5} />
                 <Typography 
                   variant="caption" 
                   sx={{ 
                     fontSize: 10, 
-                    fontWeight: isActive ? 800 : 500, 
+                    fontWeight: isActive ? 800 : 600, 
                     mt: 0.5,
-                    fontFamily: 'var(--font-space-grotesk)'
+                    fontFamily: 'var(--font-space-grotesk)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.02em',
+                    opacity: isActive ? 1 : 0.6
                   }}
                 >
                   {item.name}
