@@ -214,13 +214,13 @@ export default function OverviewPage() {
           <Box>
             <Typography variant="h4" sx={{ 
               fontWeight: 900, 
-              fontFamily: 'var(--font-space-grotesk)',
-              letterSpacing: '-0.03em',
+              fontFamily: 'var(--font-clash)',
+              letterSpacing: '-0.04em',
               mb: 0.5
             }}>
               Overview
             </Typography>
-            <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.5)', fontWeight: 500 }}>
+            <Typography variant="body2" sx={{ color: 'rgba(255, 255, 255, 0.4)', fontWeight: 500 }}>
               A quick snapshot of your secure vault.
             </Typography>
           </Box>
@@ -237,7 +237,7 @@ export default function OverviewPage() {
                 fontWeight: 800,
                 bgcolor: '#6366F1',
                 color: '#000',
-                '&:hover': { bgcolor: '#00D1DA' }
+                '&:hover': { bgcolor: alpha('#6366F1', 0.8) }
               }}
             >
               Add Credential
@@ -284,27 +284,45 @@ export default function OverviewPage() {
         {/* Stats Grid */}
         <Grid container spacing={3} sx={{ mb: 4 }}>
           {[
-            { label: 'Total Credentials', value: stats.totalCreds, icon: VpnKeyIcon, color: '#3B82F6' },
+            { label: 'Total Credentials', value: stats.totalCreds, icon: VpnKeyIcon, color: '#6366F1' },
             { label: 'TOTP Codes', value: stats.totpCount, icon: ShieldIcon, color: '#10B981' },
-            { label: 'Recent Activity', value: Math.min(stats.totalCreds, 5), icon: AccessTimeIcon, color: '#F59E0B' },
-            { label: 'Security Alerts', value: 0, icon: WarningIcon, color: '#EF4444' }
+            { label: 'Recent Activity', value: Math.min(stats.totalCreds, 5), icon: AccessTimeIcon, color: '#A855F7' },
+            { label: 'Security Alerts', value: 0, icon: WarningIcon, color: '#F59E0B' }
           ].map((stat, i) => (
             <Grid size={{ xs: 6, md: 3 }} key={i}>
               <Paper sx={{ 
                 p: 3, 
                 borderRadius: '24px', 
-                bgcolor: 'rgba(255, 255, 255, 0.03)',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
+                bgcolor: '#161412',
+                border: '1px solid rgba(255, 255, 255, 0.05)',
+                position: 'relative',
+                boxShadow: '0 1px 0 rgba(0, 0, 0, 0.4)',
+                '&::before': {
+                  content: '""',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: '1px',
+                  background: 'rgba(255, 255, 255, 0.03)',
+                  borderRadius: '24px',
+                },
                 height: '100%',
                 display: 'flex',
                 flexDirection: 'column',
-                justifyContent: 'space-between'
+                justifyContent: 'space-between',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  borderColor: alpha(stat.color, 0.3),
+                  transform: 'translateY(-2px)',
+                  boxShadow: `0 10px 20px ${alpha(stat.color, 0.05)}, 0 1px 0 rgba(0, 0, 0, 0.4)`
+                }
               }}>
                 <Box sx={{ mb: 2 }}>
-                  <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.4)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                  <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.4)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', fontFamily: 'var(--font-mono)', fontSize: '0.65rem' }}>
                     {stat.label}
                   </Typography>
-                  <Typography variant="h4" sx={{ fontWeight: 900, mt: 0.5, fontFamily: 'var(--font-space-grotesk)' }}>
+                  <Typography variant="h4" sx={{ fontWeight: 900, mt: 0.5, fontFamily: 'var(--font-clash)', letterSpacing: '-0.02em' }}>
                     {loading ? <CircularProgress size={20} thickness={6} sx={{ color: 'rgba(255, 255, 255, 0.2)' }} /> : stat.value}
                   </Typography>
                 </Box>
@@ -312,7 +330,8 @@ export default function OverviewPage() {
                   width: 40, 
                   height: 40, 
                   borderRadius: '12px', 
-                  bgcolor: alpha(stat.color, 0.1), 
+                  bgcolor: alpha(stat.color, 0.05), 
+                  border: `1px solid ${alpha(stat.color, 0.1)}`,
                   display: 'flex', 
                   alignItems: 'center', 
                   justifyContent: 'center' 

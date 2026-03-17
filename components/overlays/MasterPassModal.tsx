@@ -303,14 +303,24 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
       PaperProps={{
         sx: {
           borderRadius: '32px',
-          bgcolor: 'rgba(5, 5, 5, 0.03)',
-          backdropFilter: 'blur(25px) saturate(180%)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
+          bgcolor: '#161412',
+          border: '1px solid rgba(255, 255, 255, 0.05)',
           backgroundImage: 'none',
           boxShadow: '0 25px 50px rgba(0, 0, 0, 0.6)',
           width: '100%',
           maxWidth: '400px',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          position: 'relative',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '1px',
+            background: 'rgba(255, 255, 255, 0.03)',
+            borderRadius: '32px',
+          },
         }
       }}
     >
@@ -327,39 +337,39 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
       `}</style>
       <DialogTitle sx={{ textAlign: 'center', pt: 6, pb: 1, position: 'relative' }}>
         <Box sx={{ position: 'absolute', top: -32, left: '50%', transform: 'translateX(-50%)' }}>
-          <Box sx={{ position: 'relative' }}>
-            <Box
-              component="img"
-              src="/logo.jpg"
-              alt="App Logo"
-              sx={{
-                width: 64,
-                height: 64,
-                borderRadius: '18px',
-                objectFit: 'cover',
-                border: '2px solid rgba(255, 255, 255, 0.1)',
-                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)'
-              }}
-            />
-            <Box sx={{
-              position: 'absolute',
-              bottom: -6,
-              right: -6,
-              width: 28,
-              height: 28,
-              borderRadius: '8px',
-              bgcolor: '#A855F7',
-              color: 'white',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 4px 12px rgba(168, 85, 247, 0.4)',
-              border: '3px solid #0a0a0a',
-              zIndex: 1
-            }}>
-              <LockIcon sx={{ fontSize: 14 }} />
+            <Box sx={{ position: 'relative' }}>
+              <Box
+                component="img"
+                src="/logo.jpg"
+                alt="App Logo"
+                sx={{
+                  width: 64,
+                  height: 64,
+                  borderRadius: '18px',
+                  objectFit: 'cover',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)'
+                }}
+              />
+              <Box sx={{
+                position: 'absolute',
+                bottom: -6,
+                right: -6,
+                width: 28,
+                height: 28,
+                borderRadius: '8px',
+                bgcolor: '#6366F1',
+                color: 'white',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 4px 12px rgba(99, 102, 241, 0.4)',
+                border: '3px solid #161412',
+                zIndex: 1
+              }}>
+                <LockIcon sx={{ fontSize: 14 }} />
+              </Box>
             </Box>
-          </Box>
         </Box>
 
         <Typography variant="h5" sx={{
@@ -405,7 +415,7 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
                     bgcolor: 'rgba(255, 255, 255, 0.03)',
                     '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.1)' },
                     '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.2)' },
-                    '&.Mui-focused fieldset': { borderColor: '#A855F7' },
+                    '&.Mui-focused fieldset': { borderColor: '#6366F1' },
                   },
                   '& .MuiInputBase-input': { color: 'white' }
                 }}
@@ -417,7 +427,7 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
               variant="text"
               size="small"
               onClick={() => setMode("password")}
-              sx={{ color: 'rgba(255, 255, 255, 0.5)', '&:hover': { color: 'white' } }}
+              sx={{ color: 'rgba(255, 255, 255, 0.5)', fontWeight: 600, '&:hover': { color: 'white', bgcolor: 'transparent' } }}
             >
               Use Master Password
             </Button>
@@ -462,8 +472,8 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
                 )}
                 <defs>
                   <linearGradient id="racingGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#A855F7" />
-                    <stop offset="100%" stopColor="#7E22CE" />
+                    <stop offset="0%" stopColor="#6366F1" />
+                    <stop offset="100%" stopColor="#4F46E5" />
                   </linearGradient>
                 </defs>
               </svg>
@@ -474,7 +484,7 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
                 justifyContent: 'center',
                 animation: passkeyLoading ? 'pulse-hex 2s infinite ease-in-out' : 'none'
               }}>
-                <FingerprintIcon sx={{ fontSize: 32, color: passkeyLoading ? '#A855F7' : 'rgba(255, 255, 255, 0.4)' }} />
+                <FingerprintIcon sx={{ fontSize: 32, color: passkeyLoading ? '#6366F1' : 'rgba(255, 255, 255, 0.4)' }} />
               </Box>
             </Box>
 
@@ -524,13 +534,13 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
                     bgcolor: 'rgba(255, 255, 255, 0.03)',
                     '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.1)' },
                     '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.2)' },
-                    '&.Mui-focused fieldset': { borderColor: '#A855F7' },
+                    '&.Mui-focused fieldset': { borderColor: '#6366F1' },
                   },
                   '& .MuiInputBase-input': { color: 'white' }
                 }}
               />
               {capsLock && (
-                <Typography variant="caption" sx={{ color: 'warning.main', mt: 1, display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                <Typography variant="caption" sx={{ color: 'warning.main', mt: 1, display: 'flex', alignItems: 'center', gap: 0.5, fontWeight: 600 }}>
                   <ErrorOutlineIcon sx={{ fontSize: 12 }} /> Caps Lock is ON
                 </Typography>
               )}
@@ -561,13 +571,13 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
                       bgcolor: 'rgba(255, 255, 255, 0.03)',
                       '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.1)' },
                       '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.2)' },
-                      '&.Mui-focused fieldset': { borderColor: '#A855F7' },
+                      '&.Mui-focused fieldset': { borderColor: '#6366F1' },
                     },
                     '& .MuiInputBase-input': { color: 'white' }
                   }}
                 />
                 {confirmCapsLock && (
-                  <Typography variant="caption" sx={{ color: 'warning.main', mt: 1, display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <Typography variant="caption" sx={{ color: 'warning.main', mt: 1, display: 'flex', alignItems: 'center', gap: 0.5, fontWeight: 600 }}>
                     <ErrorOutlineIcon sx={{ fontSize: 12 }} /> Caps Lock is ON
                   </Typography>
                 )}
@@ -601,17 +611,18 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
               fullWidth
               disabled={loading}
               sx={{
-                py: 1.8,
+                py: 2,
                 borderRadius: '16px',
-                background: 'linear-gradient(135deg, #A855F7 0%, #7E22CE 100%)',
-                color: '#FFFFFF',
+                background: '#6366F1',
+                color: '#000',
                 fontWeight: 800,
-                fontFamily: 'var(--font-satoshi)',
+                fontFamily: 'var(--font-clash)',
                 textTransform: 'none',
+                boxShadow: '0 1px 0 rgba(0, 0, 0, 0.4)',
                 '&:hover': {
-                  background: 'linear-gradient(135deg, #9333EA 0%, #6B21A8 100%)',
+                  background: alpha('#6366F1', 0.8),
                   transform: 'translateY(-1px)',
-                  boxShadow: '0 8px 25px rgba(168, 85, 247, 0.25)'
+                  boxShadow: '0 10px 25px rgba(99, 102, 241, 0.2), 0 1px 0 rgba(0, 0, 0, 0.4)'
                 }
               }}
             >

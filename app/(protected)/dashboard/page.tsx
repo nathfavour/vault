@@ -369,7 +369,7 @@ export default function DashboardPage() {
           mb: 2
         }}>
           <Box sx={{ flexShrink: 0 }}>
-            <Typography variant="h4" sx={{ fontWeight: 900, fontFamily: 'var(--font-space-grotesk)', letterSpacing: '-0.03em' }}>
+            <Typography variant="h4" sx={{ fontWeight: 900, fontFamily: 'var(--font-clash)', letterSpacing: '-0.04em' }}>
               Vault
             </Typography>
             <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500 }}>
@@ -386,12 +386,12 @@ export default function DashboardPage() {
             startIcon={<AddIcon sx={{ fontSize: 18 }} />}
             onClick={handleAdd}
             sx={{ 
-              borderRadius: '12px', 
+              borderRadius: '14px', 
               px: 3, 
               py: 1.2, 
-              fontWeight: 700,
-              boxShadow: '0 0 20px rgba(0, 240, 255, 0.3)',
-              '&:hover': { boxShadow: '0 0 30px rgba(0, 240, 255, 0.5)' }
+              fontWeight: 800,
+              boxShadow: '0 1px 0 rgba(0, 0, 0, 0.4)',
+              '&:hover': { bgcolor: alpha('#6366F1', 0.8) }
             }}
           >
             Add Password
@@ -410,7 +410,7 @@ export default function DashboardPage() {
               sx={{ 
                 borderRadius: '12px', 
                 bgcolor: 'rgba(255, 255, 255, 0.02)',
-                borderColor: 'rgba(255, 255, 255, 0.08)',
+                borderColor: 'rgba(255, 255, 255, 0.05)',
                 color: 'text.primary',
                 fontWeight: 700,
                 px: 2,
@@ -428,22 +428,22 @@ export default function DashboardPage() {
                 sx: {
                   mt: 1,
                   borderRadius: '16px',
-                  bgcolor: 'rgba(10, 10, 10, 0.9)',
-                  backdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  bgcolor: '#161412',
+                  border: '1px solid rgba(255, 255, 255, 0.05)',
                   backgroundImage: 'none',
-                  minWidth: '200px'
+                  minWidth: '200px',
+                  boxShadow: '0 20px 40px rgba(0, 0, 0, 0.4)'
                 }
               }}
             >
-              <MenuItem onClick={() => { setSelectedFolder(null); setCurrentPage(1); setFolderAnchorEl(null); }} sx={{ fontWeight: 600 }}>
+              <MenuItem onClick={() => { setSelectedFolder(null); setCurrentPage(1); setFolderAnchorEl(null); }} sx={{ fontWeight: 700 }}>
                 All Folders
               </MenuItem>
               {folders.map((folder) => (
                 <MenuItem 
                   key={folder.$id} 
                   onClick={() => { setSelectedFolder(folder.$id); setCurrentPage(1); setFolderAnchorEl(null); }}
-                  sx={{ fontWeight: 500 }}
+                  sx={{ fontWeight: 600 }}
                 >
                   {folder.name}
                 </MenuItem>
@@ -455,11 +455,11 @@ export default function DashboardPage() {
                 label={`${effectiveTotal} results for "${searchTerm}"`}
                 onDelete={() => handleSearch("")}
                 sx={{ 
-                  borderRadius: '8px', 
-                  bgcolor: 'rgba(0, 240, 255, 0.1)', 
-                  color: 'primary.main',
-                  fontWeight: 700,
-                  border: '1px solid rgba(0, 240, 255, 0.2)'
+                  borderRadius: '10px', 
+                  bgcolor: alpha('#6366F1', 0.1), 
+                  color: '#6366F1',
+                  fontWeight: 800,
+                  border: '1px solid rgba(99, 102, 241, 0.2)'
                 }}
               />
             )}
@@ -572,26 +572,26 @@ export default function DashboardPage() {
           onSaved={refreshCredentials}
         />
 
-        {/* Delete Confirmation Dialog */}
+          {/* Delete Confirmation Dialog */}
         <Dialog
           open={isDeleteModalOpen}
           onClose={() => setIsDeleteModalOpen(false)}
           PaperProps={{
             sx: {
               borderRadius: '24px',
-              bgcolor: 'rgba(10, 10, 10, 0.9)',
-              backdropFilter: 'blur(20px)',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
+              bgcolor: '#161412',
+              border: '1px solid rgba(255, 255, 255, 0.05)',
               backgroundImage: 'none',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 1px 0 rgba(0, 0, 0, 0.4)',
               p: 1
             }
           }}
         >
-          <DialogTitle sx={{ fontWeight: 800, fontFamily: 'var(--font-space-grotesk)' }}>
+          <DialogTitle sx={{ fontWeight: 900, fontFamily: 'var(--font-clash)', letterSpacing: '-0.02em' }}>
             Delete Credential
           </DialogTitle>
           <DialogContent>
-            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+            <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500 }}>
               Are you sure you want to delete the credential for <strong>{credentialToDelete?.name}</strong>? This action cannot be undone.
             </Typography>
           </DialogContent>
@@ -600,7 +600,7 @@ export default function DashboardPage() {
               fullWidth 
               variant="outlined" 
               onClick={() => setIsDeleteModalOpen(false)}
-              sx={{ borderRadius: '12px' }}
+              sx={{ borderRadius: '14px', fontWeight: 700 }}
             >
               Cancel
             </Button>
@@ -613,7 +613,17 @@ export default function DashboardPage() {
                   onSuccess: () => handleDelete()
                 });
               }}
-              sx={{ borderRadius: '12px' }}
+              sx={{ 
+                borderRadius: '14px', 
+                fontWeight: 800,
+                bgcolor: alpha('#ef4444', 0.1),
+                color: '#ef4444',
+                border: '1px solid rgba(239, 68, 68, 0.2)',
+                '&:hover': {
+                  bgcolor: alpha('#ef4444', 0.2),
+                  borderColor: alpha('#ef4444', 0.4)
+                }
+              }}
             >
               Delete
             </Button>

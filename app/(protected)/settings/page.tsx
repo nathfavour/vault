@@ -226,34 +226,45 @@ export default function SettingsPage() {
   };
 
   return (
-    <Box sx={{ maxWidth: 800, mx: 'auto' }}>
-      <Typography variant="h3" sx={{ fontWeight: 900, mb: 1, fontFamily: 'var(--font-space-grotesk)', letterSpacing: '-0.03em' }}>
+    <Box sx={{ maxWidth: 900, mx: 'auto', p: { xs: 2, md: 4 } }}>
+      <Typography variant="h3" sx={{ fontWeight: 900, mb: 1, fontFamily: 'var(--font-clash)', letterSpacing: '-0.04em' }}>
         Settings
       </Typography>
       <Typography variant="body1" sx={{ color: 'text.secondary', mb: 5, fontWeight: 500 }}>
         Manage your security preferences and application behavior.
       </Typography>
 
-      <Stack spacing={4}>
+      <Stack spacing={5}>
         <DiscoverabilitySettings />
         {/* Security Section */}
         <Box>
-          <Typography variant="overline" sx={{ fontWeight: 900, color: 'primary.main', mb: 2, display: 'block', letterSpacing: '0.1em' }}>
-            SECURITY & ENCRYPTION
+          <Typography variant="caption" sx={{ fontWeight: 900, color: 'primary.main', mb: 2.5, display: 'block', letterSpacing: '0.15em', fontFamily: 'var(--font-mono)', fontSize: '0.7rem', textTransform: 'uppercase' }}>
+            Security & Encryption
           </Typography>
           
           <Paper sx={{ 
             p: 4, 
-            borderRadius: '32px', 
-            bgcolor: 'rgba(255, 255, 255, 0.02)', 
+            borderRadius: '28px', 
+            bgcolor: '#161412', 
             border: '1px solid rgba(255, 255, 255, 0.05)',
-            backdropFilter: 'blur(20px)'
+            position: 'relative',
+            boxShadow: '0 1px 0 rgba(0, 0, 0, 0.4)',
+            '&::before': {
+              content: '""',
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              height: '1px',
+              background: 'rgba(255, 255, 255, 0.03)',
+              borderRadius: '28px',
+            },
           }}>
             <Stack spacing={4}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Box>
-                  <Typography variant="h6" sx={{ fontWeight: 800, fontFamily: 'var(--font-space-grotesk)' }}>Vault Session</Typography>
-                  <Typography variant="body2" sx={{ opacity: 0.6 }}>Your current encryption status</Typography>
+                  <Typography variant="h6" sx={{ fontWeight: 800, fontFamily: 'var(--font-clash)' }}>Vault Session</Typography>
+                  <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500 }}>Your current encryption status</Typography>
                 </Box>
                 <Button 
                   variant={isUnlocked ? "outlined" : "contained"}
@@ -263,22 +274,23 @@ export default function SettingsPage() {
                   sx={{ 
                     borderRadius: '14px', 
                     px: 3, 
-                    py: 1, 
-                    fontWeight: 700,
-                    borderWidth: '2px',
-                    '&:hover': { borderWidth: '2px' }
+                    py: 1.2, 
+                    fontWeight: 800,
+                    boxShadow: isUnlocked ? 'none' : '0 1px 0 rgba(0, 0, 0, 0.4)',
+                    borderColor: 'rgba(255, 255, 255, 0.1)',
+                    '&:hover': { bgcolor: isUnlocked ? 'rgba(255, 255, 255, 0.05)' : alpha('#6366F1', 0.8), borderColor: 'rgba(255, 255, 255, 0.2)' }
                   }}
                 >
                   {isUnlocked ? "Lock Vault" : "Unlock Vault"}
                 </Button>
               </Box>
 
-              <Divider sx={{ opacity: 0.05 }} />
+              <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.05)' }} />
 
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Box>
-                  <Typography variant="h6" sx={{ fontWeight: 800, fontFamily: 'var(--font-space-grotesk)' }}>Master Password</Typography>
-                  <Typography variant="body2" sx={{ opacity: 0.6 }}>Rotate your vault access key (Data stays safe)</Typography>
+                  <Typography variant="h6" sx={{ fontWeight: 800, fontFamily: 'var(--font-clash)' }}>Master Password</Typography>
+                  <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500 }}>Rotate your vault access key (Data stays safe)</Typography>
                 </Box>
                 <Button 
                   variant="outlined"
@@ -293,25 +305,25 @@ export default function SettingsPage() {
                   sx={{ 
                     borderRadius: '14px', 
                     px: 3, 
-                    py: 1, 
+                    py: 1.2, 
                     fontWeight: 700,
-                    borderWidth: '2px',
-                    borderColor: alpha(muiTheme.palette.primary.main, 0.3),
-                    '&:hover': { borderWidth: '2px', bgcolor: alpha(muiTheme.palette.primary.main, 0.05) }
+                    borderColor: 'rgba(255, 255, 255, 0.1)',
+                    color: '#fff',
+                    '&:hover': { borderColor: 'rgba(255, 255, 255, 0.2)', bgcolor: 'rgba(255, 255, 255, 0.05)' }
                   }}
                 >
                   Change Password
                 </Button>
               </Box>
 
-              <Divider sx={{ opacity: 0.05 }} />
+              <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.05)' }} />
 
               {/* Passkey Management */}
               <Box>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
                     <Box>
-                        <Typography variant="h6" sx={{ fontWeight: 800, fontFamily: 'var(--font-space-grotesk)', mb: 1 }}>Passkeys</Typography>
-                        <Typography variant="body2" sx={{ opacity: 0.6 }}>
+                        <Typography variant="h6" sx={{ fontWeight: 800, fontFamily: 'var(--font-clash)', mb: 0.5 }}>Passkeys</Typography>
+                        <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500, maxWidth: '500px' }}>
                             Use your device biometric or hardware security key to unlock your vault.
                         </Typography>
                     </Box>
@@ -320,37 +332,41 @@ export default function SettingsPage() {
                         size="small" 
                         startIcon={<Fingerprint size={16} />}
                         onClick={() => setPasskeySetupOpen(true)}
-                        sx={{ borderRadius: '10px' }}
+                        sx={{ borderRadius: '12px', px: 2, py: 1, fontWeight: 800 }}
                     >
                         Add Passkey
                     </Button>
                 </Box>
 
-                <List sx={{ bgcolor: 'rgba(255, 255, 255, 0.03)', borderRadius: '16px', p: 0, overflow: 'hidden' }}>
+                <List sx={{ bgcolor: 'rgba(255, 255, 255, 0.02)', borderRadius: '18px', p: 0, border: '1px solid rgba(255, 255, 255, 0.05)' }}>
                 {passkeyEntries.length === 0 ? (
-                    <Box sx={{ p: 3, textAlign: 'center', opacity: 0.5 }}>
-                        <Typography variant="body2">No passkeys registered yet.</Typography>
+                    <Box sx={{ p: 4, textAlign: 'center', opacity: 0.5 }}>
+                        <Typography variant="body2" sx={{ fontWeight: 500 }}>No passkeys registered yet.</Typography>
                     </Box>
                 ) : (
                     passkeyEntries.map((pk, idx) => (
                         <React.Fragment key={pk.$id}>
                             <ListItem 
+                                sx={{ py: 2, px: 3 }}
                                 secondaryAction={
-                                    <IconButton edge="end" color="error" onClick={() => handleRemovePasskey(pk.$id)}>
+                                    <IconButton edge="end" color="error" onClick={() => handleRemovePasskey(pk.$id)} sx={{ bgcolor: alpha('#ef4444', 0.05), '&:hover': { bgcolor: alpha('#ef4444', 0.1) } }}>
                                         <Trash2 size={18} />
                                     </IconButton>
                                 }
                             >
-                                <ListItemIcon>
-                                    <Fingerprint size={20} color={muiTheme.palette.primary.main} />
+                                <ListItemIcon sx={{ minWidth: 48 }}>
+                                    <Box sx={{ p: 1, borderRadius: '10px', bgcolor: alpha('#6366F1', 0.1), color: '#6366F1', display: 'flex' }}>
+                                      <Fingerprint size={20} />
+                                    </Box>
                                 </ListItemIcon>
                                 <ListItemText 
                                     primary={pk.params?.name || `Passkey ${idx + 1}`}
                                     secondary={`Added on ${new Date(pk.$createdAt).toLocaleDateString()}`}
-                                    primaryTypographyProps={{ fontWeight: 700 }}
+                                    primaryTypographyProps={{ fontWeight: 800, color: '#fff' }}
+                                    secondaryTypographyProps={{ sx: { opacity: 0.5, fontWeight: 500 } }}
                                 />
                             </ListItem>
-                            {idx < passkeyEntries.length - 1 && <Divider sx={{ opacity: 0.05 }} />}
+                            {idx < passkeyEntries.length - 1 && <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.05)' }} />}
                         </React.Fragment>
                     ))
                 )}
@@ -358,19 +374,19 @@ export default function SettingsPage() {
 
               </Box>
 
-              <Divider sx={{ opacity: 0.05 }} />
+              <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.05)' }} />
 
               <Box>
-                <Typography variant="h6" sx={{ fontWeight: 800, fontFamily: 'var(--font-space-grotesk)', mb: 1 }}>Quick Unlock (PIN)</Typography>
-                <Typography variant="body2" sx={{ opacity: 0.6, mb: 4 }}>
+                <Typography variant="h6" sx={{ fontWeight: 800, fontFamily: 'var(--font-clash)', mb: 1 }}>Quick Unlock (PIN)</Typography>
+                <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500, mb: 4, maxWidth: '600px' }}>
                   {isPinSet 
                     ? "Your PIN is active. Use the form below to update it or reset if forgotten."
                     : "Enable a 4-digit PIN for instant access between sessions. PINs are wrapped by your Master Encryption Key."
                   }
                 </Typography>
 
-                <Box component="form" onSubmit={handleSetPin} sx={{ maxWidth: 360 }}>
-                  <Stack spacing={2}>
+                <Box component="form" onSubmit={handleSetPin} sx={{ maxWidth: 450 }}>
+                  <Stack spacing={2.5}>
                     {isPinSet && (
                         <TextField
                             fullWidth
@@ -379,8 +395,8 @@ export default function SettingsPage() {
                             value={oldPin}
                             onChange={(e) => setOldPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
                             variant="filled"
-                            inputProps={{ maxLength: 4, inputMode: 'numeric', style: { textAlign: 'center', fontWeight: 800, letterSpacing: '0.5em' } }}
-                            InputProps={{ disableUnderline: true, sx: { borderRadius: '16px', bgcolor: 'rgba(255, 255, 255, 0.05)' } }}
+                            inputProps={{ maxLength: 4, inputMode: 'numeric', style: { textAlign: 'center', fontWeight: 900, fontSize: '1.2rem', letterSpacing: '0.6em', padding: '16px' } }}
+                            InputProps={{ disableUnderline: true, sx: { borderRadius: '16px', bgcolor: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.05)' } }}
                         />
                     )}
                     <Box sx={{ display: 'flex', gap: 2 }}>
@@ -391,8 +407,8 @@ export default function SettingsPage() {
                         value={pin}
                         onChange={(e) => setPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
                         variant="filled"
-                        inputProps={{ maxLength: 4, inputMode: 'numeric', style: { textAlign: 'center', fontWeight: 800, letterSpacing: '0.5em' } }}
-                        InputProps={{ disableUnderline: true, sx: { borderRadius: '16px', bgcolor: 'rgba(255, 255, 255, 0.05)' } }}
+                        inputProps={{ maxLength: 4, inputMode: 'numeric', style: { textAlign: 'center', fontWeight: 900, fontSize: '1.2rem', letterSpacing: '0.6em', padding: '16px' } }}
+                        InputProps={{ disableUnderline: true, sx: { borderRadius: '16px', bgcolor: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.05)' } }}
                       />
                       <TextField
                         fullWidth
@@ -401,8 +417,8 @@ export default function SettingsPage() {
                         value={confirmPin}
                         onChange={(e) => setConfirmPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
                         variant="filled"
-                        inputProps={{ maxLength: 4, inputMode: 'numeric', style: { textAlign: 'center', fontWeight: 800, letterSpacing: '0.5em' } }}
-                        InputProps={{ disableUnderline: true, sx: { borderRadius: '16px', bgcolor: 'rgba(255, 255, 255, 0.05)' } }}
+                        inputProps={{ maxLength: 4, inputMode: 'numeric', style: { textAlign: 'center', fontWeight: 900, fontSize: '1.2rem', letterSpacing: '0.6em', padding: '16px' } }}
+                        InputProps={{ disableUnderline: true, sx: { borderRadius: '16px', bgcolor: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.05)' } }}
                       />
                     </Box>
                     <Button 
@@ -412,12 +428,13 @@ export default function SettingsPage() {
                       disabled={loading || pin.length !== 4 || pin !== confirmPin || (isPinSet && oldPin.length !== 4)}
                       sx={{ 
                         borderRadius: '16px', 
-                        py: 1.8, 
-                        fontWeight: 800,
-                        bgcolor: isPinSet ? alpha('#00F0FF', 0.1) : 'primary.main',
-                        color: isPinSet ? '#00F0FF' : 'black',
-                        border: isPinSet ? '1px solid rgba(0, 240, 255, 0.3)' : 'none',
-                        '&:hover': { bgcolor: isPinSet ? alpha('#00F0FF', 0.2) : alpha('#00F0FF', 0.8) }
+                        py: 2, 
+                        fontWeight: 900,
+                        bgcolor: isPinSet ? alpha('#6366F1', 0.1) : '#6366F1',
+                        color: isPinSet ? '#6366F1' : '#000',
+                        border: isPinSet ? '1px solid rgba(99, 102, 241, 0.3)' : 'none',
+                        boxShadow: isPinSet ? 'none' : '0 1px 0 rgba(0, 0, 0, 0.4)',
+                        '&:hover': { bgcolor: isPinSet ? alpha('#6366F1', 0.2) : alpha('#6366F1', 0.8) }
                       }}
                     >
                       {loading ? <CircularProgress size={24} color="inherit" /> : (isPinSet ? "Update Quick Unlock PIN" : "Setup Quick Unlock PIN")}
@@ -430,7 +447,7 @@ export default function SettingsPage() {
                             color="error"
                             onClick={handleWipePin}
                             startIcon={<Trash2 size={16} />}
-                            sx={{ textTransform: 'none', fontWeight: 700, mt: 1 }}
+                            sx={{ textTransform: 'none', fontWeight: 700, mt: 1, opacity: 0.7, '&:hover': { opacity: 1 } }}
                         >
                             Forgot PIN? Reset with Password
                         </Button>
@@ -444,37 +461,37 @@ export default function SettingsPage() {
 
         {/* Preferences Section */}
         <Box>
-          <Typography variant="overline" sx={{ fontWeight: 900, color: 'primary.main', mb: 2, display: 'block', letterSpacing: '0.1em' }}>
-            PREFERENCES
+          <Typography variant="caption" sx={{ fontWeight: 900, color: 'primary.main', mb: 2.5, display: 'block', letterSpacing: '0.15em', fontFamily: 'var(--font-mono)', fontSize: '0.7rem', textTransform: 'uppercase' }}>
+            Preferences
           </Typography>
           <Paper sx={{ 
             p: 4, 
-            borderRadius: '32px', 
-            bgcolor: 'rgba(255, 255, 255, 0.02)', 
+            borderRadius: '28px', 
+            bgcolor: '#161412', 
             border: '1px solid rgba(255, 255, 255, 0.05)',
-            backdropFilter: 'blur(20px)'
+            boxShadow: '0 1px 0 rgba(0, 0, 0, 0.4)',
           }}>
             <Stack spacing={1}>
               <FormControlLabel
                 control={<Switch defaultChecked color="primary" />}
                 label={
                   <Box sx={{ ml: 1 }}>
-                    <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>Auto-Lock Session</Typography>
-                    <Typography variant="caption" sx={{ opacity: 0.6, display: 'block' }}>Lock vault after 15 minutes of inactivity</Typography>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 800, fontFamily: 'var(--font-clash)' }}>Auto-Lock Session</Typography>
+                    <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 500, display: 'block' }}>Lock vault after 15 minutes of inactivity</Typography>
                   </Box>
                 }
-                sx={{ justifyContent: 'space-between', width: '100%', ml: 0, flexDirection: 'row-reverse', py: 1 }}
+                sx={{ justifyContent: 'space-between', width: '100%', ml: 0, flexDirection: 'row-reverse', py: 1.5 }}
               />
-              <Divider sx={{ opacity: 0.05 }} />
+              <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.05)' }} />
               <FormControlLabel
                 control={<Switch color="primary" />}
                 label={
                   <Box sx={{ ml: 1 }}>
-                    <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>Clipboard Auto-Clear</Typography>
-                    <Typography variant="caption" sx={{ opacity: 0.6, display: 'block' }}>Clear copied passwords after 30 seconds</Typography>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 800, fontFamily: 'var(--font-clash)' }}>Clipboard Auto-Clear</Typography>
+                    <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 500, display: 'block' }}>Clear copied passwords after 30 seconds</Typography>
                   </Box>
                 }
-                sx={{ justifyContent: 'space-between', width: '100%', ml: 0, flexDirection: 'row-reverse', py: 1 }}
+                sx={{ justifyContent: 'space-between', width: '100%', ml: 0, flexDirection: 'row-reverse', py: 1.5 }}
               />
             </Stack>
           </Paper>
@@ -484,15 +501,15 @@ export default function SettingsPage() {
         <Box sx={{ pt: 2 }}>
           <Paper sx={{ 
             p: 4, 
-            borderRadius: '32px', 
-            bgcolor: alpha('#FF4D4D', 0.02), 
-            border: '1px solid rgba(255, 77, 77, 0.1)',
+            borderRadius: '28px', 
+            bgcolor: alpha('#ef4444', 0.02), 
+            border: '1px solid rgba(239, 68, 68, 0.1)',
           }}>
-            <Typography variant="h6" sx={{ fontWeight: 800, color: '#FF4D4D', mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
-              <AlertTriangle size={20} /> Danger Zone
+            <Typography variant="h6" sx={{ fontWeight: 900, color: '#ef4444', mb: 1, display: 'flex', alignItems: 'center', gap: 1.5, fontFamily: 'var(--font-clash)' }}>
+              <AlertTriangle size={22} /> Danger Zone
             </Typography>
-            <Typography variant="body2" sx={{ opacity: 0.6, mb: 3 }}>
-              Once you reset your master password, all currently stored local data will be wiped to protect your privacy.
+            <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500, mb: 4, maxWidth: '600px' }}>
+              Once you reset your master password, all currently stored local data will be wiped to protect your privacy. This action is IRREVERSIBLE.
             </Typography>
             <Button 
               variant="outlined" 
@@ -500,7 +517,17 @@ export default function SettingsPage() {
               startIcon={loading ? <CircularProgress size={18} color="inherit" /> : <Trash2 size={18} />}
               onClick={handleResetMasterPassword}
               disabled={loading}
-              sx={{ borderRadius: '14px', fontWeight: 700, borderColor: alpha('#FF4D4D', 0.3) }}
+              sx={{ 
+                borderRadius: '14px', 
+                fontWeight: 800, 
+                px: 3, 
+                py: 1.2,
+                borderColor: alpha('#ef4444', 0.3),
+                '&:hover': {
+                  borderColor: '#ef4444',
+                  bgcolor: alpha('#ef4444', 0.05)
+                }
+              }}
             >
               {loading ? "Wiping Data..." : "Reset Vault & Wipe Data"}
             </Button>

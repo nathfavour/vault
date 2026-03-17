@@ -21,7 +21,7 @@ const getDesignTokens = (): ThemeOptions => ({
       secondary: '#A1A1AA', // Gunmetal
       disabled: '#404040',  // Carbon
     },
-    divider: 'rgba(255, 255, 255, 0.1)', // Subtle Border
+    divider: 'rgba(255, 255, 255, 0.05)', // Subtle Border
   },
   typography: {
     fontFamily: 'var(--font-satoshi), "Satoshi", sans-serif',
@@ -109,10 +109,21 @@ const getDesignTokens = (): ThemeOptions => ({
           borderRadius: 12,
           padding: '10px 20px',
           transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
+          border: '1px solid rgba(255, 255, 255, 0.05)',
+          position: 'relative',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '1px',
+            background: 'rgba(255, 255, 255, 0.05)',
+            borderRadius: '12px',
+          },
           '&:hover': {
-            borderColor: 'rgba(255, 255, 255, 0.2)',
-            backgroundColor: 'rgba(255, 255, 255, 0.05)',
+            borderColor: 'rgba(255, 255, 255, 0.1)',
+            backgroundColor: 'rgba(255, 255, 255, 0.03)',
           },
           '&:active': {
             transform: 'scale(0.98)',
@@ -123,9 +134,13 @@ const getDesignTokens = (): ThemeOptions => ({
           color: '#000000',
           border: 'none',
           fontWeight: 800,
+          boxShadow: '0 1px 0 rgba(0, 0, 0, 0.4)',
+          '&::before': {
+            background: 'rgba(255, 255, 255, 0.15)',
+          },
           '&:hover': {
-            backgroundColor: '#00D1DA',
-            boxShadow: '0 0 20px rgba(99, 102, 241, 0.4)',
+            backgroundColor: alpha('#6366F1', 0.8),
+            boxShadow: '0 8px 24px rgba(99, 102, 241, 0.2), 0 1px 0 rgba(0, 0, 0, 0.4)',
           },
         },
       },
@@ -134,15 +149,26 @@ const getDesignTokens = (): ThemeOptions => ({
       styleOverrides: {
         root: {
           borderRadius: 24,
-          backgroundColor: 'rgba(10, 10, 10, 0.95)',
-          backdropFilter: 'blur(25px) saturate(180%)',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
+          backgroundColor: '#161412',
+          border: '1px solid rgba(255, 255, 255, 0.05)',
           backgroundImage: 'none',
+          position: 'relative',
+          boxShadow: '0 1px 0 rgba(0, 0, 0, 0.4)',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '1px',
+            background: 'rgba(255, 255, 255, 0.03)',
+            borderRadius: '24px',
+          },
           transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
           '&:hover': {
-            borderColor: 'rgba(99, 102, 241, 0.3)',
-            transform: 'translateY(-4px)',
-            boxShadow: '0 20px 40px rgba(0,0,0,0.4)'
+            borderColor: 'rgba(99, 102, 241, 0.2)',
+            transform: 'translateY(-2px)',
+            boxShadow: '0 20px 40px rgba(0, 0, 0, 0.4), 0 1px 0 rgba(0, 0, 0, 0.4)'
           },
         },
       },
@@ -152,16 +178,17 @@ const getDesignTokens = (): ThemeOptions => ({
         root: {
           backgroundColor: '#161412',
           backgroundImage: 'none',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
+          border: '1px solid rgba(255, 255, 255, 0.05)',
+          boxShadow: '0 1px 0 rgba(0, 0, 0, 0.4)',
         },
       },
     },
     MuiAppBar: {
       styleOverrides: {
         root: {
-          backgroundColor: 'rgba(10, 10, 10, 0.8)',
+          backgroundColor: 'rgba(11, 9, 8, 0.95)',
           backdropFilter: 'blur(25px) saturate(180%)',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
           boxShadow: 'none',
         },
       },
@@ -170,11 +197,21 @@ const getDesignTokens = (): ThemeOptions => ({
       styleOverrides: {
         paper: {
           borderRadius: 24,
-          backgroundColor: 'rgba(10, 10, 10, 0.95)',
-          backdropFilter: 'blur(25px) saturate(180%)',
-          border: '1px solid rgba(255, 255, 255, 0.1)',
+          backgroundColor: '#161412',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
           backgroundImage: 'none',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 1px 0 rgba(0, 0, 0, 0.4)',
+          position: 'relative',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: '1px',
+            background: 'rgba(255, 255, 255, 0.03)',
+            borderRadius: '24px',
+          },
         },
       },
     },
