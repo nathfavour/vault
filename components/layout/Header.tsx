@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { 
   AppBar, 
   Toolbar, 
@@ -57,7 +57,20 @@ export function Header({ onMenuClick }: HeaderProps) {
   const { openAIModal } = useAI();
   const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const pathname = usePathname();
+
+  useEffect(() => {
+    if (searchParams.get('openWallet') === 'true') {
+      setIsWalletOpen(true);
+      // Optional: Clean up URL
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete('openWallet');
+      const newQuery = params.toString();
+      router.replace(pathname + (newQuery ? `?${newQuery}` : ''));
+    }
+  }, [searchParams, router, pathname]);
+
   const [anchorElAccount, setAnchorElAccount] = useState<null | HTMLElement>(null);
   const [anchorElNotifications, setAnchorElNotifications] = useState<null | HTMLElement>(null);
   const [isEcosystemPortalOpen, setIsEcosystemPortalOpen] = useState(false);
@@ -192,27 +205,6 @@ export function Header({ onMenuClick }: HeaderProps) {
 
         {/* Right: Actions */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, sm: 1.5 }, flexShrink: 0 }}>
-          <Tooltip title="Secure Wallet">
-            <IconButton 
-              onClick={() => setIsWalletOpen(true)}
-              sx={{ 
-                color: '#10B981',
-                bgcolor: alpha('#10B981', 0.03),
-                border: '1px solid',
-                borderColor: alpha('#10B981', 0.1),
-                borderRadius: '12px',
-                width: { xs: 36, sm: 42 },
-                height: { xs: 36, sm: 42 },
-                '&:hover': { 
-                  bgcolor: alpha('#10B981', 0.08), 
-                  boxShadow: '0 0 15px rgba(16, 185, 129, 0.2)' 
-                }
-              }}
-            >
-              <Wallet size={18} strokeWidth={1.5} />
-            </IconButton>
-          </Tooltip>
-
           <Tooltip title="Intelligence Feed">
             <IconButton 
               onClick={(e) => setAnchorElNotifications(e.currentTarget)}
@@ -273,6 +265,27 @@ export function Header({ onMenuClick }: HeaderProps) {
               }}
             >
               <Sparkles size={18} strokeWidth={1.5} />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip title="Secure Wallet">
+            <IconButton 
+              onClick={() => setIsWalletOpen(true)}
+              sx={{ 
+                color: '#10B981',
+                bgcolor: alpha('#10B981', 0.03),
+                border: '1px solid',
+                borderColor: alpha('#10B981', 0.1),
+                borderRadius: '12px',
+                width: { xs: 36, sm: 42 },
+                height: { xs: 36, sm: 42 },
+                '&:hover': { 
+                  bgcolor: alpha('#10B981', 0.08), 
+                  boxShadow: '0 0 15px rgba(16, 185, 129, 0.2)' 
+                }
+              }}
+            >
+              <Wallet size={18} strokeWidth={1.5} />
             </IconButton>
           </Tooltip>
 
