@@ -280,20 +280,29 @@ const createWalletRow = async (
 ) => {
     const address = await deriveAddress(root, chain, cache);
     const encryptedSecret = await ecosystemSecurity.encrypt(JSON.stringify(root));
+    const walletId = `main-${chain}-${userId}`;
 
-    return tablesDB.createRow(
-        PASSWORD_MANAGER_DB,
-        WALLETS_TABLE,
-        ID.unique(),
-        {
-            ownerId: ownerIdForUser(userId),
-            address,
-            chain,
-            encryptedSecret,
-            type: 'main',
-        },
-        walletPermissions(userId)
-    );
+    try {
+        return await tablesDB.createRow(
+            PASSWORD_MANAGER_DB,
+            WALLETS_TABLE,
+            walletId,
+            {
+                ownerId: ownerIdForUser(userId),
+                address,
+                chain,
+                encryptedSecret,
+                type: 'main',
+            },
+            walletPermissions(userId)
+        );
+    } catch (error: any) {
+        // If the document already exists, fetch it instead
+        if (error?.code === 409) {
+            return await tablesDB.getRow(PASSWORD_MANAGER_DB, WALLETS_TABLE, walletId);
+        }
+        throw error;
+    }
 };
 
 const syncWalletMap = async (userId: string, wallets: any[]) => {

@@ -44,7 +44,7 @@ const VAULT_PRIMARY = "#10B981"; // Emerald
 const BG_COLOR = "#0A0908";
 const SURFACE_COLOR = "#161412";
 
-export default function SudoModal({
+export function SudoModal({
     isOpen,
     onSuccess,
     onCancel,

@@ -1,16 +1,18 @@
 "use client";
 
 import React, { createContext, useContext, useState, useCallback, ReactNode } from "react";
-import SudoModal from "@/components/overlays/SudoModal";
-import { markSudoActive, isSudoActive } from "@/lib/sudo-mode";
+import { SudoModal } from "@/components/overlays/SudoModal";
+import { ecosystemSecurity } from "@/lib/ecosystem/security";
 
 interface SudoOptions {
     onSuccess: () => void;
     onCancel?: () => void;
+    intent?: "unlock" | "initialize" | "reset";
 }
 
 interface SudoContextType {
     requestSudo: (options: SudoOptions) => void;
+    isUnlocked: boolean;
 }
 
 const SudoContext = createContext<SudoContextType | undefined>(undefined);
@@ -19,8 +21,10 @@ export function SudoProvider({ children }: { children: ReactNode }) {
     const [isSudoOpen, setIsSudoOpen] = useState(false);
     const [pendingAction, setPendingAction] = useState<SudoOptions | null>(null);
 
+    const isUnlocked = ecosystemSecurity.status.isUnlocked;
+
     const requestSudo = useCallback((options: SudoOptions) => {
-        if (isSudoActive()) {
+        if (ecosystemSecurity.status.isUnlocked) {
             options.onSuccess();
             return;
         }
@@ -30,7 +34,6 @@ export function SudoProvider({ children }: { children: ReactNode }) {
     }, []);
 
     const handleSuccess = useCallback(() => {
-        markSudoActive();
         setIsSudoOpen(false);
         if (pendingAction) {
             pendingAction.onSuccess();
@@ -47,12 +50,13 @@ export function SudoProvider({ children }: { children: ReactNode }) {
     }, [pendingAction]);
 
     return (
-        <SudoContext.Provider value={{ requestSudo }}>
+        <SudoContext.Provider value={{ requestSudo, isUnlocked }}>
             {children}
             <SudoModal
                 isOpen={isSudoOpen}
                 onSuccess={handleSuccess}
                 onCancel={handleCancel}
+                intent={pendingAction?.intent}
             />
         </SudoContext.Provider>
     );
