@@ -3,6 +3,8 @@
 import { Box, Container, Typography, Grid, Paper, Stack } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
 
+const VAULT_PRIMARY = "#10B981";
+
 const testimonials = [
   {
     quote:
@@ -54,7 +56,7 @@ export default function Testimonials() {
               }}>
                 <Stack direction="row" spacing={0.5} sx={{ mb: 3 }}>
                   {[...Array(t.stars)].map((_, j) => (
-                    <StarIcon key={j} sx={{ fontSize: 18, color: "#6366F1" }} />
+                    <StarIcon key={j} sx={{ fontSize: 18, color: VAULT_PRIMARY }} />
                   ))}
                 </Stack>
                 <Typography variant="body1" sx={{ fontStyle: 'italic', mb: 4, color: 'rgba(255, 255, 255, 0.8)', lineHeight: 1.7 }}>

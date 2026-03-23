@@ -6,6 +6,8 @@ import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
 import { alpha } from "@mui/material/styles";
+
+const VAULT_PRIMARY = "#10B981";
 import ShieldIcon from "@mui/icons-material/Shield";
 import LockIcon from "@mui/icons-material/Lock";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
@@ -76,7 +78,7 @@ export default function Features() {
                 transition: 'all 0.3s ease',
                 '&:hover': {
                   transform: 'translateY(-8px)',
-                  borderColor: alpha('#6366F1', 0.3),
+                  borderColor: alpha(VAULT_PRIMARY, 0.3),
                   bgcolor: 'rgba(255, 255, 255, 0.04)'
                 }
               }}>
@@ -84,8 +86,8 @@ export default function Features() {
                   width: 56, 
                   height: 56, 
                   borderRadius: '16px', 
-                  bgcolor: alpha('#6366F1', 0.1), 
-                  color: '#6366F1', 
+                  bgcolor: alpha(VAULT_PRIMARY, 0.1), 
+                  color: VAULT_PRIMARY, 
                   display: 'flex', 
                   alignItems: 'center', 
                   justifyContent: 'center',

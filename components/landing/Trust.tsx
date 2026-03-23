@@ -1,6 +1,8 @@
 "use client";
 
 import { Box, Container, Typography, Grid, Paper, Stack, alpha } from "@mui/material";
+
+const VAULT_PRIMARY = "#10B981";
 import ShieldIcon from "@mui/icons-material/Shield";
 import LockIcon from "@mui/icons-material/Lock";
 import FingerprintIcon from "@mui/icons-material/Fingerprint";
@@ -50,7 +52,7 @@ export default function Trust() {
                 right: '-10%',
                 width: '120%',
                 height: '120%',
-                background: 'radial-gradient(circle, rgba(99, 102, 241, 0.05) 0%, transparent 70%)',
+                background: `radial-gradient(circle, ${alpha(VAULT_PRIMARY, 0.05)} 0%, transparent 70%)`,
                 zIndex: 0
               }
             }}>

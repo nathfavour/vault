@@ -98,6 +98,7 @@ export default function LandingPage() {
             <Button
               variant="contained"
               size="large"
+              style={{ backgroundColor: '#10B981', color: '#000' }}
               endIcon={isAuthenticating ? <CircularProgress size={20} color="inherit" /> : <ChevronRightIcon sx={{ fontSize: 20 }} />}
               onClick={() => {
                 if (user) {
@@ -111,17 +112,13 @@ export default function LandingPage() {
                 }
               }}
               sx={{
-                bgcolor: '#6366F1',
-                color: '#000',
                 px: 4,
                 py: 2,
                 borderRadius: '16px',
                 fontWeight: 800,
                 fontSize: '1.1rem',
                 '&:hover': {
-                  bgcolor: '#00D1DA',
-                  transform: 'translateY(-2px)',
-                  boxShadow: '0 12px 30px rgba(99, 102, 241, 0.3)'
+                  transform: 'translateY(-2px)'
                 },
                 transition: 'all 0.3s ease'
               }}

@@ -1,11 +1,14 @@
 "use client";
 
 import { Box, Container, Typography, Button, CircularProgress } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { useAppwriteVault } from "@/context/appwrite-context";
 import { useRouter } from "next/navigation";
 
 export default function CTA() {
+  // Use the app's secondary color for the primary hero CTA to balance branding
+  const VAULT_SECONDARY = "#10B981";
   const { user, openIDMWindow, isAuthenticating } = useAppwriteVault();
   const router = useRouter();
 
@@ -18,6 +21,7 @@ export default function CTA() {
         transform: 'translateX(-50%)',
         width: '100%',
         height: '100%',
+        // keep the subtle ecosystem radial as a background accent for balance
         background: 'radial-gradient(circle at bottom, rgba(99, 102, 241, 0.1) 0%, transparent 70%)',
         zIndex: 0,
         pointerEvents: 'none'
@@ -33,6 +37,7 @@ export default function CTA() {
         <Button
           variant="contained"
           size="large"
+          style={{ backgroundColor: VAULT_SECONDARY, color: '#000' }}
           endIcon={isAuthenticating ? <CircularProgress size={20} color="inherit" /> : <ChevronRightIcon sx={{ fontSize: 20 }} />}
           onClick={() => {
             if (user) {
@@ -45,8 +50,11 @@ export default function CTA() {
               alert(err instanceof Error ? err.message : "Failed to open authentication");
             }
           }}
-          sx={{
-            bgcolor: '#6366F1',
+        sx={{
+            bgcolor: VAULT_SECONDARY,
+            // ensure MUI contained button styles don't override our app-specific color
+            '&.MuiButton-contained': { bgcolor: VAULT_SECONDARY },
+            '&.MuiButton-contained:hover': { bgcolor: alpha(VAULT_SECONDARY, 0.85) },
             color: '#000',
             px: 6,
             py: 2.5,
@@ -54,9 +62,9 @@ export default function CTA() {
             fontWeight: 900,
             fontSize: '1.2rem',
             '&:hover': {
-              bgcolor: '#00D1DA',
+              bgcolor: alpha(VAULT_SECONDARY, 0.85),
               transform: 'scale(1.05)',
-              boxShadow: '0 20px 40px rgba(99, 102, 241, 0.4)'
+              boxShadow: (theme) => `0 20px 40px ${alpha(VAULT_SECONDARY, 0.4)}`
             },
             transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
           }}
