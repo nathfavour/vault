@@ -413,7 +413,7 @@ export default function SudoModal({
                         border: `3px solid ${BG_COLOR}`,
                         zIndex: 1
                     }}>
-                        <ShieldIcon sx={{ fontSize: 16 }} />
+                        <LockIcon sx={{ fontSize: 16 }} />
                     </Box>
                 </Box>
                 <Typography variant="h5" sx={{

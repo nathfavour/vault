@@ -9,6 +9,7 @@ import {
   DialogActions,
   Button,
   TextField,
+  InputAdornment,
   IconButton,
   Typography,
   Box,
@@ -25,6 +26,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import FingerprintIcon from "@mui/icons-material/Fingerprint";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import AppsIcon from "@mui/icons-material/Apps";
+import Logo from "../common/Logo";
 import { useAppwriteVault } from "@/context/appwrite-context";
 import { masterPassCrypto } from "@/app/(protected)/masterpass/logic";
 import { useFinalizeAuth } from "@/lib/finalizeAuth";
@@ -307,11 +309,12 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
       PaperProps={{
         sx: {
           borderRadius: '32px',
-          bgcolor: BG_COLOR,
-          backdropFilter: 'blur(32px) saturate(200%)',
+          bgcolor: SURFACE_COLOR,
+          /* Following Kylrix design guidance: avoid glassmorphism/backdrop blur on surfaces */
           border: '1px solid rgba(255, 255, 255, 0.05)',
           backgroundImage: 'none',
-          boxShadow: '0 32px 64px rgba(0, 0, 0, 0.8)',
+          /* Subtle ambient shadow instead of heavy glass blur */
+          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.6)',
           width: '100%',
           maxWidth: '400px',
           overflow: 'hidden',
@@ -332,20 +335,12 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
       `}</style>
       <DialogTitle sx={{ textAlign: 'center', pt: 6, pb: 1, position: 'relative' }}>
         <Box sx={{ position: 'absolute', top: -32, left: '50%', transform: 'translateX(-50%)' }}>
-            <Box sx={{ position: 'relative' }}>
-              <Box
-                component="img"
-                src="/logo.jpg"
-                alt="App Logo"
-                sx={{
-                  width: 64,
-                  height: 64,
-                  borderRadius: '18px',
-                  objectFit: 'cover',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)'
-                }}
-              />
+              <Box sx={{ position: 'relative', width: 64, height: 64, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {/* Use app-specific logo variant for Vault so the left hemisphere uses the Vault color */}
+                <Logo app="vault" size={64} variant="icon" />
+              
+              
+              </Box>
               <Box sx={{
                 position: 'absolute',
                 bottom: -6,
@@ -364,7 +359,6 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
               }}>
                 <LockIcon sx={{ fontSize: 14 }} />
               </Box>
-            </Box>
         </Box>
 
         <Typography variant="h5" sx={{
