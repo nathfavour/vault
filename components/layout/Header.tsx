@@ -29,7 +29,8 @@ import {
   XCircle, 
   Clock,
   Menu as MenuIcon,
-  Search
+  Search,
+  Wallet
 } from "lucide-react";
 import { SubscriptionBadge } from "@/context/subscription";
 import { useAppwriteVault } from "@/context/appwrite-context";
@@ -41,6 +42,7 @@ import { getEcosystemUrl } from "@/lib/constants/ecosystem";
 import Logo from "../common/Logo";
 import { getUserProfilePicId } from "@/lib/user-utils";
 import { fetchProfilePreview, getCachedProfilePreview } from "@/lib/profile-preview";
+import { WalletSidebar } from "../overlays/WalletSidebar";
 
 // Pages that should use the simplified layout (no sidebar/header)
 const SIMPLIFIED_LAYOUT_PATHS = ["/"];
@@ -59,6 +61,7 @@ export function Header({ onMenuClick }: HeaderProps) {
   const [anchorElAccount, setAnchorElAccount] = useState<null | HTMLElement>(null);
   const [anchorElNotifications, setAnchorElNotifications] = useState<null | HTMLElement>(null);
   const [isEcosystemPortalOpen, setIsEcosystemPortalOpen] = useState(false);
+  const [isWalletOpen, setIsWalletOpen] = useState(false);
   const [profileUrl, setProfileUrl] = useState<string | null>(null);
 
   useEffect(() => {
@@ -189,6 +192,27 @@ export function Header({ onMenuClick }: HeaderProps) {
 
         {/* Right: Actions */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0.5, sm: 1.5 }, flexShrink: 0 }}>
+          <Tooltip title="Secure Wallet">
+            <IconButton 
+              onClick={() => setIsWalletOpen(true)}
+              sx={{ 
+                color: '#10B981',
+                bgcolor: alpha('#10B981', 0.03),
+                border: '1px solid',
+                borderColor: alpha('#10B981', 0.1),
+                borderRadius: '12px',
+                width: { xs: 36, sm: 42 },
+                height: { xs: 36, sm: 42 },
+                '&:hover': { 
+                  bgcolor: alpha('#10B981', 0.08), 
+                  boxShadow: '0 0 15px rgba(16, 185, 129, 0.2)' 
+                }
+              }}
+            >
+              <Wallet size={18} strokeWidth={1.5} />
+            </IconButton>
+          </Tooltip>
+
           <Tooltip title="Intelligence Feed">
             <IconButton 
               onClick={(e) => setAnchorElNotifications(e.currentTarget)}
@@ -486,7 +510,12 @@ export function Header({ onMenuClick }: HeaderProps) {
           open={isEcosystemPortalOpen} 
           onClose={() => setIsEcosystemPortalOpen(false)} 
         />
-      </Toolbar>
-    </AppBar>
-  );
-}
+
+        <WalletSidebar
+          isOpen={isWalletOpen}
+          onClose={() => setIsWalletOpen(false)}
+        />
+        </Toolbar>
+        </AppBar>
+        );
+        }
