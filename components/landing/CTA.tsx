@@ -64,7 +64,7 @@ export default function CTA() {
             '&:hover': {
               bgcolor: alpha(VAULT_SECONDARY, 0.85),
               transform: 'scale(1.05)',
-              boxShadow: (theme) => `0 20px 40px ${alpha(VAULT_SECONDARY, 0.4)}`
+              boxShadow: `0 20px 40px ${alpha(VAULT_SECONDARY, 0.4)}`
             },
             transition: 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
           }}

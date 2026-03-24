@@ -21,7 +21,6 @@ import FingerprintIcon from "@mui/icons-material/Fingerprint";
 import CloseIcon from "@mui/icons-material/Close";
 import ShieldIcon from "@mui/icons-material/Shield";
 import AppsIcon from "@mui/icons-material/Apps";
-import KeyRoundIcon from "@mui/icons-material/Key";
 import Logo from "../common/Logo";
 import { AppwriteService } from "@/lib/appwrite";
 import { ecosystemSecurity } from "@/lib/ecosystem/security";
@@ -212,43 +211,6 @@ export function SudoModal({
         }
     };
 
-    const handleFinalReset = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!password || !user?.$id) return;
-        setLoading(true);
-        try {
-            const mek = await ecosystemSecurity.generateRandomMEK();
-            const salt = crypto.getRandomValues(new Uint8Array(32));
-            const wrappedKey = await ecosystemSecurity.wrapMEK(mek, password, salt);
-            
-            const entries = await AppwriteService.listKeychainEntries(user.$id);
-            const passEntry = entries.find((e: any) => e.type === 'password');
-            
-            if (passEntry) {
-                await AppwriteService.deleteKeychainEntry(passEntry.$id);
-            }
-
-            await AppwriteService.createKeychainEntry({
-                userId: user.$id,
-                type: 'password',
-                wrappedKey,
-                salt: btoa(String.fromCharCode(...salt)),
-                createdAt: new Date().toISOString()
-            } as any);
-
-            const rawMek = await crypto.subtle.exportKey("raw", mek);
-            await masterPassCrypto.importKey(rawMek);
-            await masterPassCrypto.unlockWithImportedKey();
-            
-            toast.success("MasterPass Reset Successful");
-            onSuccess();
-        } catch (_e) {
-            toast.error("Reset failed");
-        } finally {
-            setLoading(false);
-        }
-    };
-
     useEffect(() => {
         if (isOpen && user?.$id) {
             const isKylrixDomain = typeof window !== 'undefined' && 
@@ -328,7 +290,7 @@ export function SudoModal({
         if (isOpen && mode === "passkey" && hasPasskey && !passkeyLoading) {
             handlePasskeyVerify();
         }
-    }, [isOpen, mode, hasPasskey, handlePasskeyVerify]);
+    }, [isOpen, mode, hasPasskey, handlePasskeyVerify, passkeyLoading]);
 
     if (showPasskeyIncentive && user) {
         return (

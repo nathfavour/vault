@@ -6,7 +6,6 @@ import {
   GridViewOutlined as GripIcon,
   AutoAwesomeOutlined as SparklesIcon,
   VpnKeyOutlined as KeyIcon,
-  PersonOutline as UserIcon,
   SettingsOutlined as SettingsIcon,
   LockOutlined as LockIcon,
   LogoutOutlined as LogOutIcon,

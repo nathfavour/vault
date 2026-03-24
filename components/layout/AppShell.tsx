@@ -8,7 +8,6 @@ import {
   Settings, 
   LogOut, 
   Home, 
-  PlusCircle, 
   Share2, 
   Upload, 
   Lock 

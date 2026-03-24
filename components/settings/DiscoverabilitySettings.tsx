@@ -130,7 +130,7 @@ export const DiscoverabilitySettings = () => {
                     setProfile({ ...profile, publicKey: pub });
                     toast.success("E2E Identity initialized and discovery enabled");
                 }
-            } catch (e) {
+            } catch (_e) {
                 toast.error("Failed to initialize identity");
             } finally {
                 setSaving(false);

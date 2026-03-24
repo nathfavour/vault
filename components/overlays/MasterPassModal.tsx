@@ -15,9 +15,7 @@ import {
   Box,
   Stack,
   CircularProgress,
-  Paper,
-  alpha,
-  useTheme
+  alpha
 } from "@mui/material"; import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import LockIcon from "@mui/icons-material/Lock";
@@ -31,9 +29,7 @@ import { useAppwriteVault } from "@/context/appwrite-context";
 import { masterPassCrypto } from "@/app/(protected)/masterpass/logic";
 import { useFinalizeAuth } from "@/lib/finalizeAuth";
 import {
-  hasMasterpass,
   setMasterpassFlag,
-  logoutAppwrite,
   AppwriteService,
 } from "@/lib/appwrite";
 import { checkRateLimit, getBlockedDuration } from "@/lib/rate-limiter";
@@ -52,15 +48,14 @@ const BG_COLOR = "#0A0908";
 const SURFACE_COLOR = "#161412";
 
 export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
-  const muiTheme = useTheme();
   const [masterPassword, setMasterPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [isFirstTime, setIsFirstTime] = useState<boolean | null>(null);
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [capsLock, setCapsLock] = useState(false);
-  const [confirmCapsLock, setConfirmCapsLock] = useState(false);
+  const [capsLock] = useState(false);
+  const [confirmCapsLock] = useState(false);
   const [hasPasskey, setHasPasskey] = useState(false);
   const [passkeyLoading, setPasskeyLoading] = useState(false);
   const [showPasskeyIncentive, setShowPasskeyIncentive] = useState(false);
@@ -68,9 +63,8 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
   const [mode, setMode] = useState<"passkey" | "password" | "pin" | "initialize" | null>(null);
   const [pin, setPin] = useState("");
   const [hasPin, setHasPin] = useState(false);
-  const [hasMasterpassLocal, setHasMasterpassLocal] = useState<boolean | null>(null);
 
-  const { user, logout } = useAppwriteVault();
+  const { user } = useAppwriteVault();
   const { finalizeAuth } = useFinalizeAuth();
   const router = useRouter();
 

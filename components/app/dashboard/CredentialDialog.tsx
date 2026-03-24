@@ -31,7 +31,6 @@ import { useAppwriteVault } from "@/context/appwrite-context";
 import { generateRandomPassword } from "@/utils/password";
 
 const VAULT_PRIMARY = "#10B981"; // Emerald
-const ECOSYSTEM_PRIMARY = "#6366F1"; // Indigo
 const SURFACE_COLOR = "#161412";
 const BG_COLOR = "#0A0908";
 
