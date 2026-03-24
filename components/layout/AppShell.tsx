@@ -41,7 +41,6 @@ interface ExtendedUser extends Models.User<Models.Preferences> {
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: Home },
   { name: "Sharing", href: "/sharing", icon: Share2 },
-  { name: "New", href: "/credentials/new", icon: PlusCircle, big: true },
   { name: "TOTP", href: "/totp", icon: Shield },
   { name: "Import", href: "/import", icon: Upload },
   { name: "Settings", href: "/settings", icon: Settings },
@@ -181,7 +180,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                       sx={{
                         borderRadius: '14px',
                         bgcolor: isActive ? 'rgba(255, 255, 255, 0.03)' : 'transparent',
-                        color: isActive ? '#6366F1' : 'rgba(255, 255, 255, 0.5)',
+                        color: isActive ? '#10B981' : 'rgba(255, 255, 255, 0.5)',
                         border: isActive ? '1px solid rgba(255, 255, 255, 0.08)' : '1px solid transparent',
                         '&:hover': {
                           bgcolor: 'rgba(255, 255, 255, 0.05)',
@@ -399,7 +398,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   p: 1,
                   minWidth: 64,
                   textDecoration: 'none',
-                  color: isActive ? '#6366F1' : 'rgba(255, 255, 255, 0.4)',
+                  color: isActive ? '#10B981' : 'rgba(255, 255, 255, 0.4)',
                   transition: 'all 0.2s ease',
                   '&:active': { transform: 'scale(0.9)' }
                 }}

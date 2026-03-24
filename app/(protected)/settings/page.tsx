@@ -225,6 +225,9 @@ export default function SettingsPage() {
     }
   };
 
+  const isKylrixDomain = typeof window !== 'undefined' && 
+    (window.location.hostname === 'kylrix.space' || window.location.hostname.endsWith('.kylrix.space'));
+
   return (
     <Box sx={{ maxWidth: 900, mx: 'auto', p: { xs: 2, md: 4 } }}>
       <Typography variant="h3" sx={{ fontWeight: 900, mb: 1, fontFamily: 'var(--font-clash)', letterSpacing: '-0.04em' }}>
@@ -331,8 +334,21 @@ export default function SettingsPage() {
                         variant="contained" 
                         size="small" 
                         startIcon={<Fingerprint size={16} />}
-                        onClick={() => setPasskeySetupOpen(true)}
-                        sx={{ borderRadius: '12px', px: 2, py: 1, fontWeight: 800 }}
+                        onClick={() => {
+                            if (!isKylrixDomain) {
+                                toast.error("Passkeys are only supported on kylrix.space");
+                                return;
+                            }
+                            setPasskeySetupOpen(true);
+                        }}
+                        disabled={!isKylrixDomain}
+                        sx={{ 
+                            borderRadius: '12px', 
+                            px: 2, 
+                            py: 1, 
+                            fontWeight: 800,
+                            opacity: isKylrixDomain ? 1 : 0.5
+                        }}
                     >
                         Add Passkey
                     </Button>

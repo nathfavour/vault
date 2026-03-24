@@ -38,8 +38,9 @@ import {
   MenuItem,
   useTheme,
   useMediaQuery,
-  alpha
+  Fab
 } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 import FolderIcon from "@mui/icons-material/Folder";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AddIcon from "@mui/icons-material/Add";
@@ -51,7 +52,7 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
       sx={{ 
         display: 'block',
         fontWeight: 800, 
-        color: 'primary.main', 
+        color: '#10B981', 
         mb: 2, 
         letterSpacing: '0.15em',
         fontFamily: 'var(--font-mono)',
@@ -391,13 +392,42 @@ export default function DashboardPage() {
               px: 3, 
               py: 1.2, 
               fontWeight: 800,
+              bgcolor: '#10B981',
+              color: '#000',
               boxShadow: '0 1px 0 rgba(0, 0, 0, 0.4)',
-              '&:hover': { bgcolor: alpha('#6366F1', 0.8) }
+              '&:hover': { bgcolor: alpha('#10B981', 0.8) }
             }}
           >
             Add Password
           </Button>
         </Box>
+
+        <Fab
+          color="secondary"
+          aria-label="add"
+          onClick={handleAdd}
+          sx={{
+            position: 'fixed',
+            bottom: { xs: 112, lg: 32 },
+            right: { xs: 24, lg: 32 },
+            borderRadius: '20px',
+            width: 64,
+            height: 64,
+            bgcolor: '#10B981',
+            color: '#000',
+            boxShadow: '0 8px 32px rgba(16, 185, 129, 0.4)',
+            '&:hover': {
+              bgcolor: alpha('#10B981', 0.9),
+              transform: 'scale(1.05) translateY(-2px)',
+              boxShadow: '0 12px 40px rgba(16, 185, 129, 0.5)',
+            },
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            zIndex: 1000,
+            display: { xs: 'flex', lg: 'none' } // Show FAB only on mobile as it's replacing bottom bar icon
+          }}
+        >
+          <AddIcon sx={{ fontSize: 32 }} />
+        </Fab>
 
         {/* Main Content Area */}
         <Container maxWidth="lg" sx={{ px: { xs: 2, md: 4 } }}>
@@ -457,10 +487,10 @@ export default function DashboardPage() {
                 onDelete={() => handleSearch("")}
                 sx={{ 
                   borderRadius: '10px', 
-                  bgcolor: alpha('#6366F1', 0.1), 
-                  color: '#6366F1',
+                  bgcolor: alpha('#10B981', 0.1), 
+                  color: '#10B981',
                   fontWeight: 800,
-                  border: '1px solid rgba(99, 102, 241, 0.2)'
+                  border: '1px solid rgba(16, 185, 129, 0.2)'
                 }}
               />
             )}

@@ -14,8 +14,10 @@ import {
   DialogTitle, 
   DialogContent, 
   DialogActions, 
-  Chip 
+  Chip,
+  Fab
 } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 import ShieldIcon from "@mui/icons-material/Shield";
 import AddIcon from "@mui/icons-material/Add";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
@@ -221,10 +223,10 @@ export default function TOTPPage() {
 
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Typography variant="h4" sx={{ fontWeight: 800, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', color: '#00F0FF' }}>
+            <Typography variant="h4" sx={{ fontWeight: 800, fontFamily: 'var(--font-mono)', letterSpacing: '0.1em', color: '#10B981' }}>
               {code.substring(0, 3)} {code.substring(3)}
             </Typography>
-            <IconButton size="small" onClick={() => copyToClipboard(code)} sx={{ color: '#00F0FF', bgcolor: 'rgba(0, 240, 255, 0.05)' }}>
+            <IconButton size="small" onClick={() => copyToClipboard(code)} sx={{ color: '#10B981', bgcolor: 'rgba(16, 185, 129, 0.05)' }}>
               <ContentCopyIcon sx={{ fontSize: 16 }} />
             </IconButton>
           </Box>
@@ -240,7 +242,7 @@ export default function TOTPPage() {
                 size={28}
                 thickness={6}
                 sx={{
-                  color: timeRemaining <= 5 ? 'error.main' : 'primary.main',
+                  color: timeRemaining <= 5 ? 'error.main' : '#10B981',
                   '& .MuiCircularProgress-circle': {
                     strokeLinecap: 'round',
                   },
@@ -280,11 +282,45 @@ export default function TOTPPage() {
             variant="contained" 
             startIcon={<AddIcon sx={{ fontSize: 18 }} />} 
             onClick={() => setShowNew(true)}
-            sx={{ borderRadius: '12px', fontWeight: 700, px: 3 }}
+            sx={{ 
+              borderRadius: '12px', 
+              fontWeight: 700, 
+              px: 3,
+              bgcolor: '#10B981',
+              color: '#000',
+              '&:hover': { bgcolor: alpha('#10B981', 0.8) }
+            }}
           >
             Add TOTP
           </Button>
         </Box>
+
+        <Fab
+          color="secondary"
+          aria-label="add"
+          onClick={() => setShowNew(true)}
+          sx={{
+            position: 'fixed',
+            bottom: { xs: 112, lg: 32 },
+            right: { xs: 24, lg: 32 },
+            borderRadius: '20px',
+            width: 64,
+            height: 64,
+            bgcolor: '#10B981',
+            color: '#000',
+            boxShadow: '0 8px 32px rgba(16, 185, 129, 0.4)',
+            '&:hover': {
+              bgcolor: alpha('#10B981', 0.9),
+              transform: 'scale(1.05) translateY(-2px)',
+              boxShadow: '0 12px 40px rgba(16, 185, 129, 0.5)',
+            },
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            zIndex: 1000,
+            display: { xs: 'flex', lg: 'none' }
+          }}
+        >
+          <AddIcon sx={{ fontSize: 32 }} />
+        </Fab>
 
         <TextField
           fullWidth

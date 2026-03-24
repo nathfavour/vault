@@ -74,7 +74,7 @@ export default function CredentialItem({
         alignItems: 'center',
         '&:hover': {
           bgcolor: 'rgba(255, 255, 255, 0.04)',
-          borderColor: 'rgba(168, 85, 247, 0.4)',
+          borderColor: 'rgba(16, 185, 129, 0.4)',
           transform: 'translateY(-2px)',
           boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)'
         }
@@ -96,7 +96,7 @@ export default function CredentialItem({
         {faviconUrl ? (
           <Box component="img" src={faviconUrl} sx={{ width: 28, height: 28 }} />
         ) : (
-          <Typography sx={{ fontWeight: 800, color: 'primary.main', fontSize: '1.2rem' }}>
+          <Typography sx={{ fontWeight: 800, color: '#10B981', fontSize: '1.2rem' }}>
             {credential.name?.charAt(0)?.toUpperCase() || "?"}
           </Typography>
         )}
@@ -122,7 +122,7 @@ export default function CredentialItem({
               </IconButton>
             </Tooltip>
             <Tooltip title="Copy Password">
-              <IconButton size="small" onClick={(e) => { e.stopPropagation(); handleCopy(credential.password); }} sx={{ color: 'primary.main' }}>
+              <IconButton size="small" onClick={(e) => { e.stopPropagation(); handleCopy(credential.password); }} sx={{ color: '#10B981' }}>
                 <LockIcon sx={{ fontSize: 18 }} />
               </IconButton>
             </Tooltip>
@@ -139,7 +139,7 @@ export default function CredentialItem({
           </>
         ) : (
           <>
-            <IconButton size="small" onClick={(e) => { e.stopPropagation(); setCopyAnchorEl(e.currentTarget); }} sx={{ color: 'primary.main' }}>
+            <IconButton size="small" onClick={(e) => { e.stopPropagation(); setCopyAnchorEl(e.currentTarget); }} sx={{ color: '#10B981' }}>
               <ContentCopyIcon sx={{ fontSize: 20 }} />
             </IconButton>
             <IconButton size="small" onClick={(e) => { e.stopPropagation(); setAnchorEl(e.currentTarget); }} sx={{ color: 'text.secondary' }}>

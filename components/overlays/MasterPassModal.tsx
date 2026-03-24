@@ -145,6 +145,9 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
     if (!user || !isOpen) return;
     setLoading(true);
 
+    const isKylrixDomain = typeof window !== 'undefined' && 
+      (window.location.hostname === 'kylrix.space' || window.location.hostname.endsWith('.kylrix.space'));
+
     const pinSet = ecosystemSecurity.isPinSet();
     setHasPin(pinSet);
 
@@ -154,13 +157,16 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
         const passkeyPresent = entries.some((e: any) => e.type === 'passkey');
         const passwordPresent = entries.some((e: any) => e.type === 'password');
 
-        setHasPasskey(passkeyPresent);
+        // Disable passkey if not on kylrix.space domain
+        const effectivePasskeyPresent = passkeyPresent && isKylrixDomain;
+
+        setHasPasskey(effectivePasskeyPresent);
         setHasMasterpassLocal(passwordPresent);
         setIsFirstTime(!passwordPresent);
 
         if (!passwordPresent) {
           setMode("initialize");
-        } else if (passkeyPresent) {
+        } else if (effectivePasskeyPresent) {
           setMode("passkey");
           handlePasskeyUnlock();
         } else if (pinSet) {
