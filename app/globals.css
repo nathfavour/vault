@@ -8,6 +8,7 @@
 :root {
   --font-satoshi: "Satoshi", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-clash: "Clash Display", "Satoshi", sans-serif;
+  --font-clash-display: "Clash Display", "Satoshi", sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   
   --color-void: #050505;
