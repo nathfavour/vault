@@ -88,8 +88,10 @@ export function SudoModal({
                 // Incentive: If user doesn't have a passkey, show incentive (7-day snooze)
                 const entries = await AppwriteService.listKeychainEntries(user.$id);
                 const hasPasskey = entries.some((e: any) => e.type === 'passkey');
+                const isKylrixDomain = typeof window !== 'undefined' && 
+                    (window.location.hostname === 'kylrix.space' || window.location.hostname.endsWith('.kylrix.space'));
 
-                if (!hasPasskey) {
+                if (!hasPasskey && isKylrixDomain) {
                     const lastSkip = localStorage.getItem(`passkey_skip_${user.$id}`);
                     const sevenDays = 7 * 24 * 60 * 60 * 1000;
                     if (!lastSkip || (Date.now() - parseInt(lastSkip)) > sevenDays) {

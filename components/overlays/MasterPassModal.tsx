@@ -231,7 +231,10 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
           }
 
           await setMasterpassFlag(user.$id, user.email);
-          if (!hasPasskey) {
+          const isKylrixDomain = typeof window !== 'undefined' && 
+            (window.location.hostname === 'kylrix.space' || window.location.hostname.endsWith('.kylrix.space'));
+          
+          if (!hasPasskey && isKylrixDomain) {
             setShowPasskeyIncentive(true);
           } else {
             onSuccess();
@@ -257,8 +260,12 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
             `passkey_skip_${user.$id}`
           );
           const sevenDays = 7 * 24 * 60 * 60 * 1000;
+          const isKylrixDomain = typeof window !== 'undefined' && 
+            (window.location.hostname === 'kylrix.space' || window.location.hostname.endsWith('.kylrix.space'));
+
           const shouldShowIncentive =
             !hasPasskey &&
+            isKylrixDomain &&
             (!skipTimestamp ||
               Date.now() - parseInt(skipTimestamp) > sevenDays);
 
