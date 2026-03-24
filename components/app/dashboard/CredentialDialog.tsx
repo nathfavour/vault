@@ -13,7 +13,7 @@ import LockIcon from "@mui/icons-material/Lock";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import { 
   Dialog, 
-...
+  DialogTitle, 
   DialogContent, 
   DialogActions, 
   Button, 
