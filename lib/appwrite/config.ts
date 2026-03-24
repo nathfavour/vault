@@ -8,7 +8,9 @@ export const APPWRITE_CONFIG = {
         VAULT: 'passwordManagerDb',
         FLOW: 'whisperrflow',
         CHAT: 'chat',
-        PASSWORD_MANAGER: 'passwordManagerDb'
+        PASSWORD_MANAGER: 'passwordManagerDb',
+        KYLRIXNOTE: '67ff05a9000296822396',
+        KYLRIXFLOW: 'whisperrflow'
     },
     TABLES: {
         NOTE: {
@@ -25,7 +27,13 @@ export const APPWRITE_CONFIG = {
             SUBSCRIPTIONS: 'subscriptions',
             NOTE_TAGS: 'note_tags',
             NOTE_REVISIONS: 'note_revisions',
-            BLOGPOSTS: '67ff065a003e2bb950f7'
+            BLOGPOSTS: '67ff065a003e2bb950f7',
+            WALLET_MAP: 'walletMap'
+        },
+        KYLRIXNOTE: {
+            USERS: '67ff05c900247b5673d3',
+            ACTIVITY_LOG: 'activityLog',
+            WALLET_MAP: 'walletMap'
         },
         VAULT: {
             CREDENTIALS: 'credentials',
@@ -33,11 +41,13 @@ export const APPWRITE_CONFIG = {
             FOLDERS: 'folders',
             SECURITY_LOGS: 'securityLogs',
             USER: 'user',
-            KEYCHAIN: 'keychain'
+            KEYCHAIN: 'keychain',
+            WALLETS: 'wallets'
         },
         PASSWORD_MANAGER: {
             KEYCHAIN: 'keychain',
-            IDENTITIES: 'identities'
+            IDENTITIES: 'identities',
+            WALLETS: 'wallets'
         },
         FLOW: {
             TASKS: 'tasks',
