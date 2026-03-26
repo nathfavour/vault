@@ -64,23 +64,30 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
   const [pin, setPin] = useState("");
   const [hasPin, setHasPin] = useState(false);
 
-  const { user } = useAppwriteVault();
+  const { user, refresh } = useAppwriteVault();
   const { finalizeAuth } = useFinalizeAuth();
   const router = useRouter();
 
   const onSuccess = useCallback(async () => {
+    // 1. Sudo Hook: Ensure E2E Identity is created and published
     if (user?.$id) {
       try {
-        // Sudo Hook: Ensure E2E Identity is created and published upon successful MasterPass unlock
         console.log("Synchronizing Identity...");
         await ecosystemSecurity.ensureE2EIdentity(user.$id);
       } catch (e) {
         console.error("Failed to sync identity on unlock", e);
       }
     }
+
+    // 2. Refresh global Appwrite context state (crucial for clearing needsMasterPassword)
+    await refresh();
+
+    // 3. Complete the flow and redirect
     onClose();
-    await finalizeAuth({ redirect: true, fallback: "/masterpass" });
-  }, [user?.$id, onClose, finalizeAuth]);
+    
+    // 4. Background finalization
+    await finalizeAuth({ redirect: false });
+  }, [user?.$id, onClose, finalizeAuth, refresh]);
 
   const handleSuccessWithSync = onSuccess;
 
@@ -137,6 +144,13 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
 
   useEffect(() => {
     if (!user || !isOpen) return;
+
+    // Auto-success if already unlocked
+    if (masterPassCrypto.isVaultUnlocked()) {
+      onSuccess();
+      return;
+    }
+
     setLoading(true);
 
     const isKylrixDomain = typeof window !== 'undefined' && 
@@ -217,12 +231,6 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
         );
 
         if (success) {
-          // Sync MasterPassCrypto MEK back to EcosystemSecurity for identity logic
-          const mekBuffer = await masterPassCrypto.exportKey();
-          if (mekBuffer) {
-            await ecosystemSecurity.importMasterKey(mekBuffer);
-          }
-
           await setMasterpassFlag(user.$id, user.email);
           const isKylrixDomain = typeof window !== 'undefined' && 
             (window.location.hostname === 'kylrix.space' || window.location.hostname.endsWith('.kylrix.space'));
@@ -243,12 +251,6 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
         );
 
         if (success) {
-          // Sync MasterPassCrypto MEK back to EcosystemSecurity
-          const mekBuffer = await masterPassCrypto.exportKey();
-          if (mekBuffer) {
-            await ecosystemSecurity.importMasterKey(mekBuffer);
-          }
-
           const skipTimestamp = localStorage.getItem(
             `passkey_skip_${user.$id}`
           );
@@ -398,6 +400,7 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
                 placeholder="••••"
                 value={pin}
                 onChange={handlePinChange}
+                disabled={loading}
                 autoFocus
                 inputProps={{
                   maxLength: 4,
@@ -505,6 +508,7 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
               </Typography>
               <TextField
                 fullWidth
+                disabled={loading}
                 type={showPassword ? "text" : "password"}
                 placeholder={isFirstTime ? "Create a strong master password" : "Enter your master password"}
                 value={masterPassword}
@@ -550,6 +554,7 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
                 </Typography>
                 <TextField
                   fullWidth
+                  disabled={loading}
                   type={showConfirmPassword ? "text" : "password"}
                   placeholder="Confirm your master password"
                   value={confirmPassword}
