@@ -194,7 +194,7 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
     setMasterPassword("");
     setConfirmPassword("");
     setPin("");
-  }, [user, isOpen, handlePasskeyUnlock]);
+  }, [user, isOpen, handlePasskeyUnlock, onSuccess]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

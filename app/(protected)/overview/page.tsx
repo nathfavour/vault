@@ -197,6 +197,7 @@ export default function OverviewPage() {
   }, [
     user,
     locked,
+    fetchOptimized,
   ]);
 
   if (!user) return null;
