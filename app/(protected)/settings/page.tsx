@@ -47,12 +47,7 @@ export default function SettingsPage() {
   const muiTheme = useTheme();
   const { user } = useAppwriteVault();
   const [isUnlocked, setIsUnlocked] = useState(masterPassCrypto.isVaultUnlocked());
-  const [unlockModalOpen, setUnlockModalOpen] = useState(false);
   const [passkeySetupOpen, setPasskeySetupOpen] = useState(false);
-  const [oldPin, setOldPin] = useState("");
-  const [pin, setPin] = useState("");
-  const [confirmPin, setConfirmPin] = useState("");
-  const [isPinSet, setIsPinSet] = useState(false);
   const [loading, setLoading] = useState(false);
   
   // Master Password Change state
@@ -80,7 +75,6 @@ export default function SettingsPage() {
   }, [user?.$id]);
 
   useEffect(() => {
-    setIsPinSet(ecosystemSecurity.isPinSet());
     
     const interval = setInterval(() => {
       const currentUnlocked = masterPassCrypto.isVaultUnlocked();
@@ -105,67 +99,6 @@ export default function SettingsPage() {
     } catch (_e) {
         toast.error("Failed to remove passkey");
     }
-  };
-
-  const handleSetPin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (pin.length !== 4) {
-      toast.error("PIN must be 4 digits");
-      return;
-    }
-    if (pin !== confirmPin) {
-      toast.error("New PINs do not match");
-      return;
-    }
-
-    if (isPinSet) {
-        const verified = await ecosystemSecurity.verifyPin(oldPin);
-        if (!verified) {
-            toast.error("Current PIN is incorrect");
-            return;
-        }
-    }
-
-    if (!masterPassCrypto.isVaultUnlocked()) {
-      setUnlockModalOpen(true);
-      return;
-    }
-
-    await executePinSetup();
-  };
-
-  const executePinSetup = async () => {
-    setLoading(true);
-    try {
-      const success = await ecosystemSecurity.setupPin(pin);
-      if (success) {
-        toast.success(isPinSet ? "PIN updated successfully!" : "Quick Unlock PIN set successfully!");
-        setIsPinSet(true);
-        setPin("");
-        setConfirmPin("");
-        setOldPin("");
-      } else {
-        toast.error("Failed to setup PIN. Please ensure vault is unlocked.");
-      }
-    } catch (_err: unknown) {
-      toast.error("An unexpected error occurred.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleWipePin = () => {
-    if (!masterPassCrypto.isVaultUnlocked()) {
-      setUnlockModalOpen(true);
-      return;
-    }
-    
-    ecosystemSecurity.wipePin();
-    setIsPinSet(false);
-    setOldPin("");
-    setPin("");
-    setConfirmPin("");
-    toast.success("PIN reset successful. You can now set a new one.");
   };
 
   const handleResetMasterPassword = async () => {
@@ -391,89 +324,6 @@ export default function SettingsPage() {
               </Box>
 
               <Divider sx={{ borderColor: 'rgba(255, 255, 255, 0.05)' }} />
-
-              <Box>
-                <Typography variant="h6" sx={{ fontWeight: 800, fontFamily: 'var(--font-clash)', mb: 1 }}>Quick Unlock (PIN)</Typography>
-                <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500, mb: 4, maxWidth: '600px' }}>
-                  {isPinSet 
-                    ? "Your PIN is active. Use the form below to update it or reset if forgotten."
-                    : "Enable a 4-digit PIN for instant access between sessions. PINs are wrapped by your Master Encryption Key."
-                  }
-                </Typography>
-
-                <Box component="form" onSubmit={handleSetPin} sx={{ maxWidth: 450 }}>
-                  <Stack spacing={2.5}>
-                    {isPinSet && (
-                        <TextField
-                            fullWidth
-                            type="password"
-                            placeholder="Current PIN"
-                            value={oldPin}
-                            onChange={(e) => setOldPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                            variant="filled"
-                            inputProps={{ maxLength: 4, inputMode: 'numeric', style: { textAlign: 'center', fontWeight: 900, fontSize: '1.2rem', letterSpacing: '0.6em', padding: '16px' } }}
-                            InputProps={{ disableUnderline: true, sx: { borderRadius: '16px', bgcolor: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.05)' } }}
-                        />
-                    )}
-                    <Box sx={{ display: 'flex', gap: 2 }}>
-                      <TextField
-                        fullWidth
-                        type="password"
-                        placeholder={isPinSet ? "New PIN" : "Set PIN"}
-                        value={pin}
-                        onChange={(e) => setPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                        variant="filled"
-                        inputProps={{ maxLength: 4, inputMode: 'numeric', style: { textAlign: 'center', fontWeight: 900, fontSize: '1.2rem', letterSpacing: '0.6em', padding: '16px' } }}
-                        InputProps={{ disableUnderline: true, sx: { borderRadius: '16px', bgcolor: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.05)' } }}
-                      />
-                      <TextField
-                        fullWidth
-                        type="password"
-                        placeholder="Confirm"
-                        value={confirmPin}
-                        onChange={(e) => setConfirmPin(e.target.value.replace(/\D/g, '').slice(0, 4))}
-                        variant="filled"
-                        inputProps={{ maxLength: 4, inputMode: 'numeric', style: { textAlign: 'center', fontWeight: 900, fontSize: '1.2rem', letterSpacing: '0.6em', padding: '16px' } }}
-                        InputProps={{ disableUnderline: true, sx: { borderRadius: '16px', bgcolor: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.05)' } }}
-                      />
-                    </Box>
-                    <Button 
-                      fullWidth
-                      variant="contained" 
-                      type="submit"
-                      disabled={loading || pin.length !== 4 || pin !== confirmPin || (isPinSet && oldPin.length !== 4)}
-                      sx={{ 
-                        borderRadius: '16px', 
-                        py: 2, 
-                        fontWeight: 900,
-                        bgcolor: isPinSet ? alpha('#6366F1', 0.1) : '#6366F1',
-                        color: isPinSet ? '#6366F1' : '#000',
-                        border: isPinSet ? '1px solid rgba(99, 102, 241, 0.3)' : 'none',
-                        boxShadow: isPinSet ? 'none' : '0 1px 0 rgba(0, 0, 0, 0.4)',
-                        '&:hover': { bgcolor: isPinSet ? alpha('#6366F1', 0.2) : alpha('#6366F1', 0.8) }
-                      }}
-                    >
-                      {loading ? <CircularProgress size={24} color="inherit" /> : (isPinSet ? "Update Quick Unlock PIN" : "Setup Quick Unlock PIN")}
-                    </Button>
-
-                    {isPinSet && (
-                        <Button 
-                            fullWidth
-                            variant="text"
-                            color="error"
-                            onClick={handleWipePin}
-                            startIcon={<Trash2 size={16} />}
-                            sx={{ textTransform: 'none', fontWeight: 700, mt: 1, opacity: 0.7, '&:hover': { opacity: 1 } }}
-                        >
-                            Forgot PIN? Reset with Password
-                        </Button>
-                    )}
-                  </Stack>
-                </Box>
-              </Box>
-            </Stack>
-          </Paper>
-        </Box>
 
         {/* Preferences Section */}
         <Box>

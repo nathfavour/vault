@@ -20,7 +20,6 @@ import LockIcon from "@mui/icons-material/Lock";
 import FingerprintIcon from "@mui/icons-material/Fingerprint";
 import CloseIcon from "@mui/icons-material/Close";
 import ShieldIcon from "@mui/icons-material/Shield";
-import AppsIcon from "@mui/icons-material/Apps";
 import Logo from "../common/Logo";
 import { AppwriteService } from "@/lib/appwrite";
 import { ecosystemSecurity } from "@/lib/ecosystem/security";
@@ -52,12 +51,10 @@ export function SudoModal({
     const { user } = useAppwriteVault();
     const router = useRouter();
     const [password, setPassword] = useState("");
-    const [pin, setPin] = useState("");
     const [loading, setLoading] = useState(false);
     const [passkeyLoading, setPasskeyLoading] = useState(false);
     const [hasPasskey, setHasPasskey] = useState(false);
-    const [hasPin, setHasPin] = useState(false);
-    const [mode, setMode] = useState<"passkey" | "password" | "pin" | "initialize" | null>(null);
+    const [mode, setMode] = useState<"passkey" | "password" | "initialize" | "reset" | null>(null);
     const [isDetecting, setIsDetecting] = useState(true);
     const [showPasskeyIncentive, setShowPasskeyIncentive] = useState(false);
     const [confirmPhase, setConfirmPhase] = useState(0);
@@ -182,53 +179,19 @@ export function SudoModal({
         }
     };
 
-    const handlePinVerify = async (pinValue: string) => {
-        if (pinValue.length !== 4 || loading) return;
-
-        setLoading(true);
-        try {
-            const success = await ecosystemSecurity.unlockWithPin(pinValue);
-            if (success) {
-                toast.success("Verified via PIN");
-                handleSuccessWithSync();
-            } else {
-                toast.error("Incorrect PIN");
-                setPin("");
-            }
-        } catch (_error: unknown) {
-            console.error(_error);
-            toast.error("PIN verification failed");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handlePinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const val = e.target.value.replace(/\D/g, '').slice(0, 4);
-        setPin(val);
-        if (val.length === 4) {
-            handlePinVerify(val);
-        }
-    };
-
     useEffect(() => {
         if (isOpen && user?.$id) {
             const isKylrixDomain = typeof window !== 'undefined' && 
                 (window.location.hostname === 'kylrix.space' || window.location.hostname.endsWith('.kylrix.space'));
-                
-            const pinSet = ecosystemSecurity.isPinSet();
-            setHasPin(pinSet);
 
             AppwriteService.listKeychainEntries(user.$id).then(entries => {
                 const passkeyPresent = entries.some((e: any) => e.type === 'passkey');
                 const passwordPresent = entries.some((e: any) => e.type === 'password');
-                const pinPresent = entries.some((e: any) => e.type === 'pin') || pinSet;
                 
                 // Disable passkey if not on kylrix.space domain
                 const effectivePasskeyPresent = passkeyPresent && isKylrixDomain;
                 
                 setHasPasskey(effectivePasskeyPresent);
-                setHasPin(pinPresent);
 
                 if (intent === "initialize") {
                     if (passwordPresent) {
@@ -242,17 +205,10 @@ export function SudoModal({
                 }
 
                 if (intent === "reset") {
-                    const hasPin = entries.some((e: any) => e.type === 'pin') || pinSet;
-                    
                     if (effectivePasskeyPresent) {
                         setMode("passkey");
-                    } else if (hasPin) {
-                        setMode("pin");
                     } else {
-                        // If no passkey or PIN, we fall back to password for verification
-                        // (Usually a reset requires stronger verification but if those aren't set, 
-                        // we use what we have, or the reset flow will handle its own logic)
-                        setMode("password"); 
+                        setMode("password");
                     }
                     setIsDetecting(false);
                     return;
@@ -266,8 +222,6 @@ export function SudoModal({
 
                 if (effectivePasskeyPresent) {
                     setMode("passkey");
-                } else if (pinPresent) {
-                    setMode("pin");
                 } else {
                     setMode("password");
                 }
@@ -278,7 +232,6 @@ export function SudoModal({
             });
 
             setPassword("");
-            setPin("");
             setLoading(false);
             setPasskeyLoading(false);
             setIsDetecting(true);
@@ -534,71 +487,6 @@ export function SudoModal({
                             </Stack>
                         </form>
                     </Stack>
-                ) : mode === "pin" ? (
-                    <Stack spacing={3} sx={{ mt: 2 }}>
-                        <Box>
-                            <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.4)', fontWeight: 600, mb: 1, display: 'block', textAlign: 'center' }}>
-                                ENTER 4-DIGIT PIN
-                            </Typography>
-                            <TextField
-                                fullWidth
-                                type="password"
-                                placeholder="••••"
-                                value={pin}
-                                onChange={handlePinChange}
-                                autoFocus
-                                inputProps={{
-                                    maxLength: 4,
-                                    inputMode: 'numeric',
-                                    style: { textAlign: 'center', fontSize: '2rem', letterSpacing: '0.5em' }
-                                }}
-                                InputProps={{
-                                    startAdornment: (
-                                        <InputAdornment position="start">
-                                            <AppsIcon sx={{ fontSize: 18, color: "rgba(255, 255, 255, 0.3)" }} />
-                                        </InputAdornment>
-                                    ),
-                                }}
-                                sx={{
-                                    '& .MuiOutlinedInput-root': {
-                                        borderRadius: '14px',
-                                        bgcolor: SURFACE_COLOR,
-                                        '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.05)' },
-                                        '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.1)' },
-                                        '&.Mui-focused fieldset': { borderColor: VAULT_PRIMARY },
-                                    },
-                                    '& .MuiInputBase-input': { color: 'white' }
-                                }}
-                            />
-                        </Box>
-
-                        <Box sx={{ width: '100%', position: 'relative', py: 1 }}>
-                            <Box sx={{ position: 'absolute', top: '50%', left: 0, right: 0, height: '1px', bgcolor: 'rgba(255, 255, 255, 0.1)' }} />
-                            <Typography variant="caption" sx={{
-                                position: 'relative',
-                                bgcolor: BG_COLOR,
-                                px: 2,
-                                mx: 'auto',
-                                display: 'table',
-                                color: 'rgba(255, 255, 255, 0.3)',
-                                textTransform: 'uppercase',
-                                letterSpacing: '0.1em',
-                                fontWeight: 800
-                            }}>
-                                Or
-                            </Typography>
-                        </Box>
-
-                        <Button
-                            fullWidth
-                            variant="text"
-                            size="small"
-                            onClick={() => setMode("password")}
-                            sx={{ color: 'rgba(255, 255, 255, 0.5)', fontWeight: 700, '&:hover': { color: 'white' } }}
-                        >
-                            Use Master Password
-                        </Button>
-                    </Stack>
                 ) : mode === "passkey" ? (
                     <Stack spacing={3} sx={{ mt: 2, alignItems: 'center' }}>
                         <Box
@@ -787,18 +675,6 @@ export function SudoModal({
                                 }}
                             >
                                 Use Passkey
-                            </Button>
-                        )}
-
-                        {hasPin && mode !== "pin" && (
-                            <Button
-                                fullWidth
-                                variant="text"
-                                startIcon={<AppsIcon sx={{ fontSize: 18 }} />}
-                                onClick={() => setMode("pin")}
-                                sx={{ color: 'rgba(255, 255, 255, 0.5)', fontWeight: 700, '&:hover': { color: 'white' } }}
-                            >
-                                Use PIN
                             </Button>
                         )}
 
