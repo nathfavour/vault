@@ -26,12 +26,13 @@ export default function MasterPassPage() {
       <MasterPassModal 
         isOpen={true} 
         onClose={() => {
+          // Navigation is handled by the unlock finalizer; this stays as a noop.
           if (callbackUrl) {
             window.location.href = callbackUrl;
           } else {
             router.replace("/dashboard");
           }
-        }} 
+        }}
       />
     </Box>
   );

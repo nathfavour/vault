@@ -79,14 +79,11 @@ export function MasterPassModal({ isOpen, onClose }: MasterPassModalProps) {
       }
     }
 
-    // 2. Refresh global Appwrite context state (crucial for clearing needsMasterPassword)
+    // 2. Refresh global Appwrite context state so route guards see the unlocked vault
     await refresh();
 
-    // 3. Complete the flow and redirect
-    onClose();
-    
-    // 4. Background finalization
-    await finalizeAuth({ redirect: false });
+    // 3. Complete the flow and navigate once the state is settled
+    await finalizeAuth({ redirect: true, fallback: "/dashboard" });
   }, [user?.$id, onClose, finalizeAuth, refresh]);
 
   const handleSuccessWithSync = onSuccess;
