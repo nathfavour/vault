@@ -22,7 +22,7 @@ import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import GppMaybeIcon from "@mui/icons-material/GppMaybe";
 import GppGoodIcon from "@mui/icons-material/GppGood";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
-import { Credentials } from "@/types/appwrite";
+import { Credentials } from "@/generated/appwrite/types";
 import { useAI } from "@/app/context/AIContext";
 import { useSudo } from "@/app/context/SudoContext";
 

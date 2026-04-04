@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import type { Credentials, Folders as FolderDoc } from "@/types/appwrite.d";
+import type { Credentials, Folders as FolderDoc } from "@/generated/appwrite/types";
 import { useAppwriteVault } from "@/context/appwrite-context";
 import {
   deleteCredential,
