@@ -178,6 +178,7 @@ class AuditLogger {
             userAgent: event.userAgent || null,
             details: event.details ? JSON.stringify(event.details) : null,
             timestamp: event.timestamp,
+            success: event.success,
           })
         )
       );

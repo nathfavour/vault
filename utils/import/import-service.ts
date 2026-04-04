@@ -1,5 +1,5 @@
 import { createCredential, createFolder, createTotpSecret, AppwriteService } from "@/lib/appwrite";
-import type { Credentials, TotpSecrets, Folders } from "@/types/appwrite.d";
+import type { Credentials, TotpSecrets, Folders } from "@/generated/appwrite/types";
 import type { BitwardenExport } from "./bitwarden-types";
 import {
   analyzeBitwardenExport,

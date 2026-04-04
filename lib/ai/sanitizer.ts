@@ -1,4 +1,4 @@
-import { Credentials } from "@/types/appwrite.d";
+import { Credentials } from "@/generated/appwrite/types";
 import { AnalysisMode } from "./types";
 
 /**

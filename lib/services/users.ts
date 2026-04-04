@@ -109,7 +109,7 @@ export const UsersService = {
                 Permission.update(Role.user(userId)),
                 Permission.delete(Role.user(userId))
             ]
-        ).then(async (row) => {
+        ).then(async (row: any) => {
             await syncProfileEvent({
                 type: 'username_change',
                 userId,

@@ -45,7 +45,7 @@ export default function CredentialItem({
     setCopyAnchorEl(null);
   };
 
-  const getFaviconUrl = (url: string | null) => {
+  const getFaviconUrl = (url: string | null | undefined) => {
     if (!url) return null;
     try {
       const domain = new URL(url).hostname;
