@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { AppwriteService, resolveCurrentUser } from '@/lib/appwrite';
+import { AppwriteService, resolveCurrentUser, appwriteDatabases } from '@/lib/appwrite';
 import { Query } from 'appwrite';
 import { APPWRITE_CONFIG } from '@/lib/appwrite/config';
 
@@ -34,8 +34,6 @@ export async function POST(req: NextRequest) {
         const CONV_TABLE = APPWRITE_CONFIG.TABLES.CHAT.CONVERSATIONS;
         const MSG_TABLE = APPWRITE_CONFIG.TABLES.CHAT.MESSAGES;
         
-        const { appwriteDatabases } = await import('@/lib/appwrite');
-        
         const convsRes = await appwriteDatabases.listDocuments(CHAT_DB, CONV_TABLE, [
             Query.contains('participants', userId),
             Query.equal('type', 'direct')
@@ -69,16 +67,51 @@ export async function POST(req: NextRequest) {
         
         await Promise.all(keychainEntries.map(e => AppwriteService.deleteKeychainEntry(e.$id)));
 
-        // 4. Reset Chat Identity (Clear public key so others know it's stale)
+        const identityRows = await appwriteDatabases.listDocuments(
+            APPWRITE_CONFIG.DATABASES.PASSWORD_MANAGER,
+            APPWRITE_CONFIG.TABLES.PASSWORD_MANAGER.IDENTITIES,
+            [Query.equal('userId', userId)]
+        );
+        await Promise.all(identityRows.documents.map(row => appwriteDatabases.deleteDocument(
+            APPWRITE_CONFIG.DATABASES.PASSWORD_MANAGER,
+            APPWRITE_CONFIG.TABLES.PASSWORD_MANAGER.IDENTITIES,
+            row.$id
+        )));
+
+        const keyMappings = await appwriteDatabases.listDocuments(
+            APPWRITE_CONFIG.DATABASES.PASSWORD_MANAGER,
+            'key_mapping',
+            [
+                Query.or([
+                    Query.equal('grantee', userId),
+                    Query.contains('metadata', userId),
+                    Query.equal('resourceId', userId),
+                ])
+            ]
+        );
+        await Promise.all(keyMappings.documents.map(row => appwriteDatabases.deleteDocument(
+            APPWRITE_CONFIG.DATABASES.PASSWORD_MANAGER,
+            'key_mapping',
+            row.$id
+        )));
+
+        // 4. Reset profile public keys (Clear public key so others know it's stale)
         const CHAT_USERS_TABLE = APPWRITE_CONFIG.TABLES.CHAT.USERS;
+        const NOTE_USERS_TABLE = APPWRITE_CONFIG.TABLES.NOTE.USERS;
         try {
-            await appwriteDatabases.updateDocument(CHAT_DB, CHAT_USERS_TABLE, userId, {
-                publicKey: null,
-                updatedAt: new Date().toISOString()
-            });
-            console.log(`[MasterPurge] Reset Chat Identity for user: ${userId}`);
+            await Promise.all([
+                appwriteDatabases.updateDocument(CHAT_DB, CHAT_USERS_TABLE, userId, {
+                    publicKey: null,
+                    updatedAt: new Date().toISOString()
+                }).catch(() => null),
+                appwriteDatabases.updateDocument(APPWRITE_CONFIG.DATABASES.NOTE, NOTE_USERS_TABLE, userId, {
+                    publicKey: null,
+                    updatedAt: new Date().toISOString()
+                }).catch(() => null),
+            ]);
+            console.log(`[MasterPurge] Reset profile public keys for user: ${userId}`);
         } catch (e) {
-            console.warn(`[MasterPurge] Could not reset Chat Identity (might not exist yet):`, e);
+            console.warn(`[MasterPurge] Could not reset profile keys (might not exist yet):`, e);
         }
 
         // 4. Update User Doc (Clear masterpass flag)
