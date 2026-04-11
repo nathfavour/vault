@@ -35,7 +35,7 @@ import {
   createTotpSecret,
   listFolders,
 } from "@/lib/appwrite";
-import type { Folders, Credentials, TotpSecrets } from "@/generated/appwrite/types";
+import type { Folders, Credentials, TotpSecrets } from "@/lib/appwrite/types";
 import { generateRandomPassword } from "@/utils/password";
 import { masterPassCrypto } from "@/app/(protected)/masterpass/logic";
 import toast from "react-hot-toast";

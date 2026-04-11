@@ -24,7 +24,6 @@ import type {
   User,
   Keychain,
   KeychainCreate,
-} from "@/generated/appwrite/types";
 } from "@/lib/appwrite/types";
 import { AuthenticatorType } from "appwrite";
 import { sanitizeString } from "@/lib/validation";

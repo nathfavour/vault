@@ -18,7 +18,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import PersonIcon from "@mui/icons-material/Person";
 import LockIcon from "@mui/icons-material/Lock";
-import type { Credentials } from "@/generated/appwrite/types";
+import type { Credentials } from "@/lib/appwrite/types";
 
 export default function CredentialItem({
   credential,

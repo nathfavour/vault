@@ -1,4 +1,4 @@
-import { Credentials } from "@/generated/appwrite/types";
+import type { Credentials } from "@/lib/appwrite/types";
 import { AnalysisMode } from "./types";
 
 /**
@@ -53,4 +53,3 @@ export class PrivacyFilter {
     }
   }
 }
-

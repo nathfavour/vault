@@ -1,4 +1,4 @@
-import type { Credentials, TotpSecrets, Folders } from "@/generated/appwrite/types";
+import type { Credentials, TotpSecrets, Folders } from "@/lib/appwrite/types";
 import type {
   BitwardenExport,
   BitwardenItem,
