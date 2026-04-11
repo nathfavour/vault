@@ -56,6 +56,7 @@ export const APPWRITE_CONFIG = {
         },
         CHAT: {
             CONVERSATIONS: 'conversations',
+            CONVERSATION_MEMBERS: 'conversationMembers',
             MESSAGES: 'messages',
             USERS: 'users'
         }

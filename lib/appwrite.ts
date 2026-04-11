@@ -428,6 +428,8 @@ export const COLLECTION_SCHEMAS = {
 
 // --- Secure CRUD Operations ---
 export class AppwriteService {
+  private static credentialsListCache = new Map<string, { expiresAt: number; documents: Credentials[] }>();
+
   // Map a single Appwrite document to domain type
   private static mapDoc<T>(doc: Models.Document | Record<string, unknown>): T {
     return doc as unknown as T;
@@ -890,6 +892,12 @@ export class AppwriteService {
     userId: string,
     queries: string[] = [],
   ): Promise<Credentials[]> {
+    const cacheKey = `${userId}:${JSON.stringify(queries)}`;
+    const cached = this.credentialsListCache.get(cacheKey);
+    if (cached && cached.expiresAt > Date.now()) {
+      return cached.documents;
+    }
+
     let documents: Credentials[] = [];
     let offset = 0;
     const limit = 100; // Max limit per request
@@ -923,6 +931,10 @@ export class AppwriteService {
       documents.length < response.total
     );
 
+    this.credentialsListCache.set(cacheKey, {
+      expiresAt: Date.now() + 15_000,
+      documents,
+    });
     return documents;
   }
 
@@ -1926,18 +1938,27 @@ export async function resetMasterpassAndWipe(userId: string): Promise<void> {
   const wipeChatData = async () => {
     try {
       // 1. Find self-chats (direct chats where the user is the only participant or repeated)
-      const selfChats = await appwriteDatabases.listDocuments(
+      const memberRows = await appwriteDatabases.listDocuments(
+        CHAT_DATABASE_ID,
+        "conversationMembers",
+        [
+          Query.equal("userId", userId),
+          Query.limit(1000)
+        ]
+      );
+      const conversationIds = Array.from(new Set((memberRows.documents || []).map((row: any) => row.conversationId).filter(Boolean)));
+      const selfChats = conversationIds.length ? await appwriteDatabases.listDocuments(
         CHAT_DATABASE_ID,
         CHAT_COLLECTION_CONVERSATIONS_ID,
         [
-          Query.contains("participants", userId),
+          Query.equal("$id", conversationIds),
           Query.equal("type", "direct")
         ]
-      );
+      ) : { documents: [] as any[] };
 
       for (const conv of selfChats.documents) {
-        const participants = conv.participants || [];
-        const isSelf = participants.length === 1 || (participants.length === 2 && participants[0] === participants[1]);
+        const participants = Array.isArray(conv.participants) ? conv.participants : [userId];
+        const isSelf = participants.length === 1 || participants.every((p: string) => p === userId);
 
         if (isSelf) {
           // Nuclear wipe messages in this self-chat

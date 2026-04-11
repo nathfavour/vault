@@ -32,12 +32,18 @@ export async function POST(req: NextRequest) {
         // Group chats are PRESERVED so the user doesn't lose access to communities.
         const CHAT_DB = APPWRITE_CONFIG.DATABASES.CHAT;
         const CONV_TABLE = APPWRITE_CONFIG.TABLES.CHAT.CONVERSATIONS;
+        const CONV_MEMBERS_TABLE = APPWRITE_CONFIG.TABLES.CHAT.CONVERSATION_MEMBERS || 'conversationMembers';
         const MSG_TABLE = APPWRITE_CONFIG.TABLES.CHAT.MESSAGES;
         
-        const convsRes = await appwriteDatabases.listDocuments(CHAT_DB, CONV_TABLE, [
-            Query.contains('participants', userId),
-            Query.equal('type', 'direct')
+        const memberRows = await appwriteDatabases.listDocuments(CHAT_DB, CONV_MEMBERS_TABLE, [
+            Query.equal('userId', userId),
+            Query.limit(1000)
         ]);
+        const conversationIds = Array.from(new Set((memberRows.documents || []).map((row: any) => row.conversationId).filter(Boolean)));
+        const convsRes = conversationIds.length ? await appwriteDatabases.listDocuments(CHAT_DB, CONV_TABLE, [
+            Query.equal('$id', conversationIds),
+            Query.equal('type', 'direct')
+        ]) : { documents: [] as any[], total: 0 };
 
         console.log(`[MasterPurge] Found ${convsRes.total} direct conversations to purge`);
 
