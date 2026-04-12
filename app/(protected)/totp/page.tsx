@@ -45,6 +45,7 @@ export default function TOTPPage() {
     digits?: number | null;
     algorithm?: string | null;
     folderId?: string | null;
+    sharedFrom?: string | null;
   };
   const [totpCodes, setTotpCodes] = useState<TotpItem[]>([]);
   const [folders, setFolders] = useState<Map<string, string>>(new Map());
@@ -224,6 +225,21 @@ export default function TOTPPage() {
                   color: 'text.secondary',
                   borderRadius: '6px'
                 }} 
+              />
+            )}
+            {totp.sharedFrom && (
+              <Chip
+                label={`shared from ${totp.sharedFrom}`}
+                size="small"
+                sx={{
+                  mt: 1,
+                  height: 20,
+                  fontSize: '0.65rem',
+                  fontWeight: 700,
+                  bgcolor: 'rgba(255, 255, 255, 0.05)',
+                  color: 'text.secondary',
+                  borderRadius: '6px'
+                }}
               />
             )}
           </Box>

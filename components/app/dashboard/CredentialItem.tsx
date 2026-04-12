@@ -4,11 +4,12 @@ import {
   Typography, 
   IconButton, 
   Paper, 
-  Tooltip, 
-  Menu, 
-  MenuItem, 
-  ListItemIcon, 
+  Tooltip,
+  Menu,
+  MenuItem,
+  ListItemIcon,
   ListItemText,
+  Chip,
   useTheme,
   useMediaQuery
 } from "@mui/material";
@@ -110,6 +111,21 @@ export default function CredentialItem({
         <Typography variant="body2" noWrap sx={{ color: 'text.secondary', mt: 0.5 }}>
           {credential.username}
         </Typography>
+        {credential.sharedFrom && (
+          <Chip
+            size="small"
+            label={`shared from ${credential.sharedFrom}`}
+            sx={{
+              mt: 1,
+              height: 20,
+              fontSize: '0.65rem',
+              fontWeight: 700,
+              bgcolor: 'rgba(255, 255, 255, 0.05)',
+              color: 'text.secondary',
+              borderRadius: '6px'
+            }}
+          />
+        )}
       </Box>
 
       {/* Actions */}

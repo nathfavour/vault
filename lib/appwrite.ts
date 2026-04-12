@@ -164,6 +164,97 @@ function isFetchNetworkError(error: unknown): boolean {
   );
 }
 
+function base64ToBytes(value: string): Uint8Array {
+  return new Uint8Array(atob(value).split("").map((char) => char.charCodeAt(0)));
+}
+
+function bytesToBase64(bytes: Uint8Array): string {
+  return btoa(String.fromCharCode(...bytes));
+}
+
+function readShareMetadata(metadata: string | null | undefined): Record<string, unknown> {
+  if (!metadata) return {};
+  try {
+    const parsed = JSON.parse(metadata);
+    return parsed && typeof parsed === "object" ? (parsed as Record<string, unknown>) : {};
+  } catch {
+    return {};
+  }
+}
+
+async function importX25519PublicKey(publicKeyBase64: string): Promise<CryptoKey> {
+  return await crypto.subtle.importKey(
+    "raw",
+    base64ToBytes(publicKeyBase64),
+    { name: "X25519" },
+    false,
+    [],
+  );
+}
+
+async function exportX25519PublicKey(publicKey: CryptoKey): Promise<string> {
+  const exported = await crypto.subtle.exportKey("raw", publicKey);
+  return bytesToBase64(new Uint8Array(exported));
+}
+
+async function encryptShareEnvelope<T extends Record<string, unknown>>(
+  payload: T,
+  recipientPublicKeyBase64: string,
+): Promise<{ wrappedKey: string; senderPublicKey: string }> {
+  const recipientPublicKey = await importX25519PublicKey(recipientPublicKeyBase64);
+  const ephemeralKeyPair = await crypto.subtle.generateKey(
+    { name: "X25519" },
+    true,
+    ["deriveKey", "deriveBits"],
+  );
+
+  const sharedKey = await crypto.subtle.deriveKey(
+    { name: "X25519", public: recipientPublicKey },
+    ephemeralKeyPair.privateKey,
+    { name: "AES-GCM", length: 256 },
+    false,
+    ["encrypt", "decrypt"],
+  );
+
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const encoded = new TextEncoder().encode(JSON.stringify(payload));
+  const encrypted = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, sharedKey, encoded);
+  const combined = new Uint8Array(iv.length + encrypted.byteLength);
+  combined.set(iv, 0);
+  combined.set(new Uint8Array(encrypted), iv.length);
+
+  return {
+    wrappedKey: bytesToBase64(combined),
+    senderPublicKey: await exportX25519PublicKey(ephemeralKeyPair.publicKey),
+  };
+}
+
+async function decryptShareEnvelope<T extends Record<string, unknown>>(
+  wrappedKeyBase64: string,
+  senderPublicKeyBase64: string,
+): Promise<T> {
+  const { EcosystemSecurity } = await import("./ecosystem/security");
+  const privateKey = EcosystemSecurity.getInstance().getIdentityPrivateKey();
+  if (!privateKey) {
+    throw new Error("Vault is locked - cannot decrypt shared item");
+  }
+
+  const senderPublicKey = await importX25519PublicKey(senderPublicKeyBase64);
+  const sharedKey = await crypto.subtle.deriveKey(
+    { name: "X25519", public: senderPublicKey },
+    privateKey,
+    { name: "AES-GCM", length: 256 },
+    false,
+    ["encrypt", "decrypt"],
+  );
+
+  const combined = base64ToBytes(wrappedKeyBase64);
+  const iv = combined.slice(0, 12);
+  const ciphertext = combined.slice(12);
+  const plaintext = await crypto.subtle.decrypt({ name: "AES-GCM", iv }, sharedKey, ciphertext);
+  return JSON.parse(new TextDecoder().decode(plaintext)) as T;
+}
+
 async function listDocumentsWithRetry(
   collectionId: string,
   queries: string[] = [],
@@ -433,6 +524,14 @@ export const COLLECTION_SCHEMAS = {
 export class AppwriteService {
   private static credentialsListCache = new Map<string, { expiresAt: number; documents: Credentials[] }>();
 
+  private static clearCredentialCache(userId: string) {
+    for (const key of this.credentialsListCache.keys()) {
+      if (key.startsWith(`${userId}:`)) {
+        this.credentialsListCache.delete(key);
+      }
+    }
+  }
+
   // Map a single Appwrite document to domain type
   private static mapDoc<T>(doc: Models.Document | Record<string, unknown>): T {
     return doc as unknown as T;
@@ -504,6 +603,7 @@ export class AppwriteService {
         ]
       );
       console.log("[AppwriteService] Credential Created Successfully:", doc.$id);
+      this.clearCredentialCache(data.userId);
       return (await this.decryptDocumentFields(
         doc,
         "credentials",
@@ -530,10 +630,207 @@ export class AppwriteService {
         Permission.delete(Role.user(data.userId)),
       ]
     );
+    this.clearCredentialCache(data.userId);
     return (await this.decryptDocumentFields(
       doc,
       "totpSecrets",
     )) as unknown as TotpSecrets;
+  }
+
+  static async createKeyMapping(
+    data: KeyMappingCreate,
+    permissions: string[],
+  ): Promise<KeyMapping> {
+    const doc = await appwriteDatabases.createDocument(
+      APPWRITE_DATABASE_ID,
+      APPWRITE_COLLECTION_KEY_MAPPING_ID,
+      ID.unique(),
+      {
+        ...data,
+        metadata: data.metadata ?? null,
+      },
+      permissions,
+    );
+    return doc as unknown as KeyMapping;
+  }
+
+  static async listIncomingKeyMappings(userId: string): Promise<KeyMapping[]> {
+    const response = await listDocumentsWithRetry(APPWRITE_COLLECTION_KEY_MAPPING_ID, [
+      Query.equal("grantee", userId),
+      Query.orderDesc("$createdAt"),
+    ]);
+    return response.documents as unknown as KeyMapping[];
+  }
+
+  static async deleteKeyMapping(id: string): Promise<void> {
+    await appwriteDatabases.deleteDocument(
+      APPWRITE_DATABASE_ID,
+      APPWRITE_COLLECTION_KEY_MAPPING_ID,
+      id,
+    );
+  }
+
+  static async shareCredential(
+    credentialId: string,
+    recipient: { userId: string; publicKey: string },
+  ): Promise<KeyMapping> {
+    const credential = await this.getCredential(credentialId);
+    const payload = {
+      kind: "credential",
+      resourceId: credentialId,
+      sharedFrom: credential.userId,
+      data: {
+        userId: recipient.userId,
+        itemType: credential.itemType,
+        name: credential.name,
+        url: credential.url,
+        notes: credential.notes,
+        totpId: credential.totpId,
+        password: credential.password,
+        cardNumber: credential.cardNumber,
+        cardholderName: credential.cardholderName,
+        cardExpiry: credential.cardExpiry,
+        cardCVV: credential.cardCVV,
+        cardPIN: credential.cardPIN,
+        cardType: credential.cardType,
+        folderId: null,
+        tags: credential.tags,
+        customFields: credential.customFields,
+        faviconUrl: credential.faviconUrl,
+        isFavorite: credential.isFavorite,
+        isDeleted: false,
+        deletedAt: null,
+        lastAccessedAt: null,
+        passwordChangedAt: credential.passwordChangedAt,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        username: credential.username,
+        sharedFrom: credential.userId,
+      },
+    };
+
+    const wrapped = await encryptShareEnvelope(payload, recipient.publicKey);
+    return await this.createKeyMapping(
+      {
+        resourceId: credentialId,
+        resourceType: "credential",
+        grantee: recipient.userId,
+        wrappedKey: wrapped.wrappedKey,
+        metadata: JSON.stringify({
+          senderId: credential.userId,
+          senderPublicKey: wrapped.senderPublicKey,
+          sourceName: credential.name,
+          createdAt: new Date().toISOString(),
+        }),
+      },
+      [
+        Permission.read(Role.user(recipient.userId)),
+        Permission.read(Role.user(credential.userId)),
+        Permission.delete(Role.user(recipient.userId)),
+        Permission.delete(Role.user(credential.userId)),
+      ],
+    );
+  }
+
+  static async shareTotpSecret(
+    totpSecretId: string,
+    recipient: { userId: string; publicKey: string },
+  ): Promise<KeyMapping> {
+    const totpSecret = await this.getTOTPSecret(totpSecretId);
+    const payload = {
+      kind: "totp",
+      resourceId: totpSecretId,
+      sharedFrom: totpSecret.userId,
+      data: {
+        userId: recipient.userId,
+        issuer: totpSecret.issuer,
+        accountName: totpSecret.accountName,
+        secretKey: totpSecret.secretKey,
+        algorithm: totpSecret.algorithm,
+        digits: totpSecret.digits,
+        period: totpSecret.period,
+        url: totpSecret.url,
+        folderId: null,
+        tags: totpSecret.tags,
+        isFavorite: totpSecret.isFavorite,
+        isDeleted: false,
+        deletedAt: null,
+        lastUsedAt: null,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        sharedFrom: totpSecret.userId,
+      },
+    };
+
+    const wrapped = await encryptShareEnvelope(payload, recipient.publicKey);
+    return await this.createKeyMapping(
+      {
+        resourceId: totpSecretId,
+        resourceType: "totp",
+        grantee: recipient.userId,
+        wrappedKey: wrapped.wrappedKey,
+        metadata: JSON.stringify({
+          senderId: totpSecret.userId,
+          senderPublicKey: wrapped.senderPublicKey,
+          sourceName: `${totpSecret.issuer} / ${totpSecret.accountName}`,
+          createdAt: new Date().toISOString(),
+        }),
+      },
+      [
+        Permission.read(Role.user(recipient.userId)),
+        Permission.read(Role.user(totpSecret.userId)),
+        Permission.delete(Role.user(recipient.userId)),
+        Permission.delete(Role.user(totpSecret.userId)),
+      ],
+    );
+  }
+
+  static async acceptSharedCredential(mapping: KeyMapping): Promise<Credentials> {
+    const metadata = readShareMetadata(mapping.metadata);
+    const senderPublicKey = String(metadata.senderPublicKey ?? "");
+    if (!senderPublicKey) {
+      throw new Error("Missing share metadata");
+    }
+
+    const envelope = await decryptShareEnvelope<{
+      kind: string;
+      resourceId: string;
+      sharedFrom: string;
+      data: CredentialsCreate & { sharedFrom?: string | null };
+    }>(mapping.wrappedKey, senderPublicKey);
+
+    const created = await this.createCredential({
+      ...envelope.data,
+      userId: mapping.grantee,
+      sharedFrom: envelope.sharedFrom,
+    });
+
+    await this.deleteKeyMapping(mapping.$id);
+    return created;
+  }
+
+  static async acceptSharedTotp(mapping: KeyMapping): Promise<TotpSecrets> {
+    const metadata = readShareMetadata(mapping.metadata);
+    const senderPublicKey = String(metadata.senderPublicKey ?? "");
+    if (!senderPublicKey) {
+      throw new Error("Missing share metadata");
+    }
+
+    const envelope = await decryptShareEnvelope<{
+      kind: string;
+      resourceId: string;
+      sharedFrom: string;
+      data: TotpSecretsCreate & { sharedFrom?: string | null };
+    }>(mapping.wrappedKey, senderPublicKey);
+
+    const created = await this.createTOTPSecret({
+      ...envelope.data,
+      userId: mapping.grantee,
+      sharedFrom: envelope.sharedFrom,
+    });
+
+    await this.deleteKeyMapping(mapping.$id);
+    return created;
   }
 
   static async createFolder(
@@ -1013,6 +1310,7 @@ export class AppwriteService {
     id: string,
     data: Partial<Credentials>,
   ): Promise<Credentials> {
+    const existing = await this.getCredential(id);
     const sanitizedData = this.sanitizeCredentialData(data);
     const encryptedData = await this.encryptDocumentFields(sanitizedData, "credentials");
     const doc = await appwriteDatabases.updateDocument(
@@ -1021,6 +1319,7 @@ export class AppwriteService {
       id,
       encryptedData,
     );
+    this.clearCredentialCache(existing.userId);
     return (await this.decryptDocumentFields(
       doc,
       "credentials",
@@ -1031,6 +1330,7 @@ export class AppwriteService {
     id: string,
     data: Partial<TotpSecrets>,
   ): Promise<TotpSecrets> {
+    const existing = await this.getTOTPSecret(id);
     const sanitizedData = this.sanitizeTotpData(data);
     const encryptedData = await this.encryptDocumentFields(sanitizedData, "totpSecrets");
     const doc = await appwriteDatabases.updateDocument(
@@ -1039,6 +1339,7 @@ export class AppwriteService {
       id,
       encryptedData,
     );
+    this.clearCredentialCache(existing.userId);
     return (await this.decryptDocumentFields(
       doc,
       "totpSecrets",
@@ -1087,19 +1388,23 @@ export class AppwriteService {
 
   // Delete operations
   static async deleteCredential(id: string): Promise<void> {
+    const existing = await this.getCredential(id);
     await appwriteDatabases.deleteDocument(
       APPWRITE_DATABASE_ID,
       APPWRITE_COLLECTION_CREDENTIALS_ID,
       id,
     );
+    this.clearCredentialCache(existing.userId);
   }
 
   static async deleteTOTPSecret(id: string): Promise<void> {
+    const existing = await this.getTOTPSecret(id);
     await appwriteDatabases.deleteDocument(
       APPWRITE_DATABASE_ID,
       APPWRITE_COLLECTION_TOTPSECRETS_ID,
       id,
     );
+    this.clearCredentialCache(existing.userId);
   }
 
   static async deleteFolder(id: string): Promise<void> {
@@ -1430,6 +1735,36 @@ export async function generateRecoveryCodes(): Promise<{
  */
 export async function updateTotpSecret(id: string, data: Partial<TotpSecrets>) {
   return await AppwriteService.updateTOTPSecret(id, data);
+}
+
+export async function shareCredential(
+  credentialId: string,
+  recipient: { userId: string; publicKey: string },
+) {
+  return await AppwriteService.shareCredential(credentialId, recipient);
+}
+
+export async function shareTotpSecret(
+  totpSecretId: string,
+  recipient: { userId: string; publicKey: string },
+) {
+  return await AppwriteService.shareTotpSecret(totpSecretId, recipient);
+}
+
+export async function listIncomingKeyMappings(userId: string) {
+  return await AppwriteService.listIncomingKeyMappings(userId);
+}
+
+export async function acceptSharedCredential(mapping: KeyMapping) {
+  return await AppwriteService.acceptSharedCredential(mapping);
+}
+
+export async function acceptSharedTotp(mapping: KeyMapping) {
+  return await AppwriteService.acceptSharedTotp(mapping);
+}
+
+export async function deleteKeyMapping(id: string) {
+  return await AppwriteService.deleteKeyMapping(id);
 }
 
 /**
