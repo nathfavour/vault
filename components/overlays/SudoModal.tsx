@@ -14,6 +14,8 @@ import {
     Stack,
     alpha,
     InputAdornment,
+    useMediaQuery,
+    useTheme,
 } from "@mui/material";
 import LockIcon from "@mui/icons-material/Lock";
 import FingerprintIcon from "@mui/icons-material/Fingerprint";
@@ -49,6 +51,8 @@ export function SudoModal({
 }: SudoModalProps) {
     const { user } = useAppwriteVault();
     const router = useRouter();
+    const theme = useTheme();
+    const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const [passkeyLoading, setPasskeyLoading] = useState(false);
@@ -266,14 +270,14 @@ export function SudoModal({
         <Drawer
             open={isOpen}
             onClose={onCancel}
-            anchor="bottom"
+            anchor={isDesktop ? "right" : "bottom"}
             ModalProps={{ keepMounted: true }}
             sx={{ zIndex: 2200 }}
             PaperProps={{
                 sx: {
-                    borderTopLeftRadius: '32px',
-                    borderTopRightRadius: '32px',
-                    borderBottomLeftRadius: 0,
+                    borderTopLeftRadius: isDesktop ? '32px' : '32px',
+                    borderTopRightRadius: isDesktop ? 0 : '32px',
+                    borderBottomLeftRadius: isDesktop ? '32px' : 0,
                     borderBottomRightRadius: 0,
                     bgcolor: BG_COLOR,
                     backdropFilter: 'none',
@@ -283,10 +287,10 @@ export function SudoModal({
                     overflow: 'hidden',
                     display: 'flex',
                     flexDirection: 'column',
-                    width: '100%',
+                    width: isDesktop ? 'min(100vw, 460px)' : '100%',
                     maxWidth: '100vw',
-                    height: 'auto',
-                    maxHeight: 'calc(100dvh - 12px)',
+                    height: isDesktop ? '100dvh' : 'auto',
+                    maxHeight: isDesktop ? '100dvh' : 'calc(100dvh - 12px)',
                 }
             }}
         >
