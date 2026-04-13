@@ -31,6 +31,8 @@ import { AuthenticatorType } from "appwrite";
 import { sanitizeString } from "@/lib/validation";
 
 import { APPWRITE_CONFIG } from "./appwrite/config";
+import { KYLRIX_AUTH_URI } from "./constants/ecosystem";
+import { sendKylrixEmailNotification } from "./email-notifications";
 
 // --- Appwrite Client Setup ---
 function normalizeEndpoint(ep?: string): string {
@@ -675,6 +677,7 @@ export class AppwriteService {
     recipient: { userId: string; publicKey: string },
   ): Promise<KeyMapping> {
     const credential = await this.getCredential(credentialId);
+    const currentUser = await getCurrentUser();
     const payload = {
       kind: "credential",
       resourceId: credentialId,
@@ -710,7 +713,7 @@ export class AppwriteService {
     };
 
     const wrapped = await encryptShareEnvelope(payload, recipient.publicKey);
-    return await this.createKeyMapping(
+    const created = await this.createKeyMapping(
       {
         resourceId: credentialId,
         resourceType: "credential",
@@ -730,6 +733,23 @@ export class AppwriteService {
         Permission.delete(Role.user(credential.userId)),
       ],
     );
+
+    await sendKylrixEmailNotification({
+      eventType: 'password_shared',
+      sourceApp: 'vault',
+      actorName: currentUser?.name || currentUser?.email || credential.userId,
+      recipientIds: [recipient.userId],
+      resourceId: credentialId,
+      resourceTitle: credential.name || 'Credential',
+      resourceType: 'credential',
+      templateKey: 'vault:credential-shared',
+      ctaUrl: `${KYLRIX_AUTH_URI}/sharing`,
+      ctaText: 'Open sharing',
+    }).catch((error) => {
+      console.error('[Vault] Failed to queue credential share email', error);
+    });
+
+    return created;
   }
 
   static async shareTotpSecret(
@@ -737,6 +757,7 @@ export class AppwriteService {
     recipient: { userId: string; publicKey: string },
   ): Promise<KeyMapping> {
     const totpSecret = await this.getTOTPSecret(totpSecretId);
+    const currentUser = await getCurrentUser();
     const payload = {
       kind: "totp",
       resourceId: totpSecretId,
@@ -763,7 +784,7 @@ export class AppwriteService {
     };
 
     const wrapped = await encryptShareEnvelope(payload, recipient.publicKey);
-    return await this.createKeyMapping(
+    const created = await this.createKeyMapping(
       {
         resourceId: totpSecretId,
         resourceType: "totp",
@@ -783,6 +804,23 @@ export class AppwriteService {
         Permission.delete(Role.user(totpSecret.userId)),
       ],
     );
+
+    await sendKylrixEmailNotification({
+      eventType: 'password_shared',
+      sourceApp: 'vault',
+      actorName: currentUser?.name || currentUser?.email || totpSecret.userId,
+      recipientIds: [recipient.userId],
+      resourceId: totpSecretId,
+      resourceTitle: `${totpSecret.issuer} / ${totpSecret.accountName}`.trim(),
+      resourceType: 'totp',
+      templateKey: 'vault:totp-shared',
+      ctaUrl: `${KYLRIX_AUTH_URI}/sharing`,
+      ctaText: 'Open sharing',
+    }).catch((error) => {
+      console.error('[Vault] Failed to queue TOTP share email', error);
+    });
+
+    return created;
   }
 
   static async acceptSharedCredential(mapping: KeyMapping): Promise<Credentials> {
