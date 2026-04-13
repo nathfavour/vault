@@ -65,6 +65,7 @@ tableIdMap["chat"]["Conversation Members"] = "conversationMembers";
 tableIdMap["chat"]["profiles"] = "profiles";
 tableIdMap["chat"]["Message Reactions"] = "messageReactions";
 tableIdMap["chat"]["Join Requests"] = "joinRequests";
+tableIdMap["chat"]["Unorganic Emails"] = "unorganic_emails";
 tableIdMap["whisperrflow"] = Object.create(null);
 tableIdMap["whisperrflow"]["focusSessions"] = "focusSessions";
 tableIdMap["whisperrflow"]["eventGuests"] = "eventGuests";

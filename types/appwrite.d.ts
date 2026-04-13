@@ -94,6 +94,14 @@ export enum JoinRequestsStatus {
     REJECTED = "rejected"
 }
 
+export enum UnorganicEmailsStatus {
+    QUEUED = "queued",
+    SENDING = "sending",
+    SENT = "sent",
+    SUPPRESSED = "suppressed",
+    FAILED = "failed"
+}
+
 export enum FormsStatus {
     DRAFT = "draft",
     PUBLISHED = "published",
@@ -517,6 +525,26 @@ export type JoinRequests = Models.Row & {
     createdAt: string | null;
     resolvedAt: string | null;
     resolvedBy: string | null;
+}
+
+export type UnorganicEmails = Models.Row & {
+    eventType: string;
+    sourceApp: string;
+    actorId: string | null;
+    recipientId: string | null;
+    recipientEmail: string | null;
+    resourceType: string | null;
+    resourceId: string | null;
+    templateKey: string;
+    priority: number;
+    status: UnorganicEmailsStatus;
+    dedupeKey: string;
+    attempts: number;
+    sentAt: string | null;
+    expiresAt: string | null;
+    processedAt: string | null;
+    blockedReason: string | null;
+    metadata: string | null;
 }
 
 export type FocusSessions = Models.Row & {
