@@ -31,7 +31,7 @@ import { AuthenticatorType } from "appwrite";
 import { sanitizeString } from "@/lib/validation";
 
 import { APPWRITE_CONFIG } from "./appwrite/config";
-import { KYLRIX_AUTH_URI } from "./constants/ecosystem";
+import { getEcosystemUrl } from "./constants/ecosystem";
 import { sendKylrixEmailNotification } from "./email-notifications";
 
 // --- Appwrite Client Setup ---
@@ -743,7 +743,7 @@ export class AppwriteService {
       resourceTitle: credential.name || 'Credential',
       resourceType: 'credential',
       templateKey: 'vault:credential-shared',
-      ctaUrl: `${KYLRIX_AUTH_URI}/sharing`,
+      ctaUrl: `${getEcosystemUrl('vault')}/sharing`,
       ctaText: 'Open sharing',
     }).catch((error) => {
       console.error('[Vault] Failed to queue credential share email', error);
@@ -814,7 +814,7 @@ export class AppwriteService {
       resourceTitle: `${totpSecret.issuer} / ${totpSecret.accountName}`.trim(),
       resourceType: 'totp',
       templateKey: 'vault:totp-shared',
-      ctaUrl: `${KYLRIX_AUTH_URI}/sharing`,
+      ctaUrl: `${getEcosystemUrl('vault')}/sharing`,
       ctaText: 'Open sharing',
     }).catch((error) => {
       console.error('[Vault] Failed to queue TOTP share email', error);
