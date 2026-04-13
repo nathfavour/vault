@@ -734,20 +734,26 @@ export class AppwriteService {
       ],
     );
 
-    await sendKylrixEmailNotification({
-      eventType: 'password_shared',
-      sourceApp: 'vault',
-      actorName: currentUser?.name || currentUser?.email || credential.userId,
-      recipientIds: [recipient.userId],
-      resourceId: credentialId,
-      resourceTitle: credential.name || 'Credential',
-      resourceType: 'credential',
-      templateKey: 'vault:credential-shared',
-      ctaUrl: `${getEcosystemUrl('vault')}/sharing`,
-      ctaText: 'Open sharing',
-    }).catch((error) => {
+    try {
+      await sendKylrixEmailNotification({
+        eventType: 'password_shared',
+        sourceApp: 'vault',
+        verificationMode: 'error',
+        actorName: currentUser?.name || currentUser?.email || credential.userId,
+        recipientIds: [recipient.userId],
+        resourceId: credentialId,
+        resourceTitle: credential.name || 'Credential',
+        resourceType: 'credential',
+        templateKey: 'vault:credential-shared',
+        ctaUrl: `${getEcosystemUrl('vault')}/sharing`,
+        ctaText: 'Open sharing',
+      });
+    } catch (error: any) {
+      if (String(error?.message || '').toLowerCase().includes('not verified')) {
+        throw error;
+      }
       console.error('[Vault] Failed to queue credential share email', error);
-    });
+    }
 
     return created;
   }
@@ -805,20 +811,26 @@ export class AppwriteService {
       ],
     );
 
-    await sendKylrixEmailNotification({
-      eventType: 'password_shared',
-      sourceApp: 'vault',
-      actorName: currentUser?.name || currentUser?.email || totpSecret.userId,
-      recipientIds: [recipient.userId],
-      resourceId: totpSecretId,
-      resourceTitle: `${totpSecret.issuer} / ${totpSecret.accountName}`.trim(),
-      resourceType: 'totp',
-      templateKey: 'vault:totp-shared',
-      ctaUrl: `${getEcosystemUrl('vault')}/sharing`,
-      ctaText: 'Open sharing',
-    }).catch((error) => {
+    try {
+      await sendKylrixEmailNotification({
+        eventType: 'password_shared',
+        sourceApp: 'vault',
+        verificationMode: 'error',
+        actorName: currentUser?.name || currentUser?.email || totpSecret.userId,
+        recipientIds: [recipient.userId],
+        resourceId: totpSecretId,
+        resourceTitle: `${totpSecret.issuer} / ${totpSecret.accountName}`.trim(),
+        resourceType: 'totp',
+        templateKey: 'vault:totp-shared',
+        ctaUrl: `${getEcosystemUrl('vault')}/sharing`,
+        ctaText: 'Open sharing',
+      });
+    } catch (error: any) {
+      if (String(error?.message || '').toLowerCase().includes('not verified')) {
+        throw error;
+      }
       console.error('[Vault] Failed to queue TOTP share email', error);
-    });
+    }
 
     return created;
   }
