@@ -160,7 +160,7 @@ export function Header({ onMenuClick }: HeaderProps) {
       elevation={0}
       sx={{ 
         zIndex: 1201,
-        bgcolor: 'rgba(11, 9, 8, 0.95)',
+        bgcolor: '#000000',
         borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
         backgroundImage: 'none'
       }}
