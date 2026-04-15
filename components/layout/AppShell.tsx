@@ -137,8 +137,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     }
   }, [user, isSimplifiedLayout, pathname, router]);
 
+  useEffect(() => {
+    const mood = isSimplifiedLayout || pathname?.startsWith('/totp') || pathname?.startsWith('/settings')
+      ? 'serious'
+      : 'ambient';
+    document.body.dataset.uiMood = mood;
+    return () => {
+      document.body.dataset.uiMood = 'ambient';
+    };
+  }, [isSimplifiedLayout, pathname]);
+
   if (isSimplifiedLayout) {
-    return <Box sx={{ minHeight: '100vh', bgcolor: '#000' }}>{children}</Box>;
+    return <Box sx={{ minHeight: '100vh', bgcolor: 'var(--background)' }}>{children}</Box>;
   }
 
   if (!loading && !user) {
@@ -146,7 +156,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: '#000', display: 'flex', flexDirection: 'column', overflowX: 'hidden' }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'var(--background)', display: 'flex', flexDirection: 'column', overflowX: 'hidden' }}>
       <Navbar />
 
       <Box sx={{ flex: 1, display: 'flex', width: '100%', overflowX: 'hidden', pt: '72px' }}>
@@ -159,8 +169,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             top: 72,
             height: 'calc(100vh - 72px)',
             width: 280,
-            bgcolor: 'rgba(8, 8, 8, 0.9)',
-            backdropFilter: 'blur(32px) saturate(180%)',
+             bgcolor: 'var(--color-surface)',
             borderRight: '1px solid rgba(255, 255, 255, 0.05)',
             overflowY: 'auto',
             zIndex: 30,
@@ -279,8 +288,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           left: 24,
           right: 24,
           zIndex: 50,
-          bgcolor: 'rgba(10, 10, 10, 0.85)',
-          backdropFilter: 'blur(24px) saturate(180%)',
+           bgcolor: 'var(--color-surface)',
           border: '1px solid rgba(255, 255, 255, 0.08)',
           borderRadius: '24px',
           display: { xs: 'flex', lg: 'none' },

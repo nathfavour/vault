@@ -96,7 +96,7 @@ export default function EcosystemPortal({ open, onClose }: EcosystemPortalProps)
                     width: 'min(960px, calc(100vw - 24px))',
                     maxHeight: 'calc(100vh - 32px)',
                     m: 0,
-                    bgcolor: '#000000',
+                    bgcolor: 'var(--color-surface)',
                     boxShadow: '0 24px 64px rgba(0, 0, 0, 0.7), 0 0 120px rgba(16, 185, 129, 0.06)',
                     border: '1px solid rgba(255, 255, 255, 0.08)',
                     borderTop: 'none',
@@ -116,8 +116,7 @@ export default function EcosystemPortal({ open, onClose }: EcosystemPortalProps)
                     sx={{
                         p: 0,
                         borderRadius: 0,
-                        bgcolor: '#000000',
-                        backdropFilter: 'blur(28px) saturate(180%)',
+                        bgcolor: 'var(--color-surface)',
                         border: 'none',
                         boxShadow: 'none',
                         overflow: 'hidden'

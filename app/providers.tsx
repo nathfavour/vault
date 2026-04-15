@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { AppwriteProvider } from "./appwrite-provider";
 import { BackgroundTaskProvider } from "./context/BackgroundTaskContext";
 import { AIProvider } from "./context/AIContext";
@@ -16,7 +17,18 @@ import { useEcosystemNode } from "@/hooks/useEcosystemNode";
 
 function GlobalEcosystemHandler() {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
   useEcosystemNode('vault');
+
+  useEffect(() => {
+    const mood = pathname?.startsWith('/masterpass') || pathname?.startsWith('/totp') || pathname?.startsWith('/settings')
+      ? 'serious'
+      : 'ambient';
+    document.body.dataset.uiMood = mood;
+    return () => {
+      document.body.dataset.uiMood = 'ambient';
+    };
+  }, [pathname]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
