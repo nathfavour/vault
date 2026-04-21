@@ -9,7 +9,8 @@ import {
 } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import {
-  appwriteAccount,
+  getCurrentUser,
+  getCurrentUserSnapshot,
   resetMasterpassAndWipe,
   logoutAppwrite,
 } from "@/lib/appwrite";
@@ -28,10 +29,11 @@ interface AppwriteError extends Error {
 }
 
 export function AppwriteProvider({ children }: { children: ReactNode }) {
+  const initialUser = getCurrentUserSnapshot();
   const [user, setUser] = useState<Models.User<Models.Preferences> | null>(
-    null,
+    initialUser,
   );
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!initialUser);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [needsMasterPassword, setNeedsMasterPassword] = useState(false);
   const [isAuthReady, setIsAuthReady] = useState(false);
@@ -46,7 +48,7 @@ export function AppwriteProvider({ children }: { children: ReactNode }) {
     if (typeof window === 'undefined') return;
     if (!isRetry) setLoading(true);
     try {
-      const account = await appwriteAccount.get();
+      const account = await getCurrentUser(isRetry);
       
       if (verbose)
         logDebug("[auth] account.get success", { hasAccount: !!account });
@@ -162,7 +164,7 @@ export function AppwriteProvider({ children }: { children: ReactNode }) {
 
     // First, check if we already have a session locally
     try {
-      const account = await appwriteAccount.get();
+        const account = await getCurrentUser(true);
       if (account) {
         console.log("[auth] Active session detected, skipping IDM window");
         setUser(account);
@@ -179,7 +181,7 @@ export function AppwriteProvider({ children }: { children: ReactNode }) {
     // Try silent auth before opening popup
     await attemptSilentAuth();
     try {
-      const account = await appwriteAccount.get();
+        const account = await getCurrentUser(true);
       if (account) {
         setUser(account);
         setIsAuthenticating(false);
@@ -268,7 +270,7 @@ export function AppwriteProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const initAuth = async () => {
       try {
-        await fetchUser();
+        await fetchUser(true);
       } catch (err: unknown) {
         const e = err as AppwriteError;
         if (e.code === 401) {
@@ -289,7 +291,7 @@ export function AppwriteProvider({ children }: { children: ReactNode }) {
     window.addEventListener("vault-locked", handleVaultLocked);
 
     // Listen for storage changes (multi-tab logout)
-    const handleStorageChange = () => fetchUser();
+    const handleStorageChange = () => fetchUser(true);
     window.addEventListener("storage", handleStorageChange);
 
     return () => {
@@ -299,7 +301,7 @@ export function AppwriteProvider({ children }: { children: ReactNode }) {
   }, [fetchUser, attemptSilentAuth]);
 
   const refresh = async () => {
-    await fetchUser();
+    await fetchUser(true);
     // After refresh, re-calculate needsMasterPassword specifically
     const unlocked = masterPassCrypto.isVaultUnlocked();
     const isAuthPage = pathname === "/" || pathname === "/landing" || pathname?.startsWith("/masterpass");
