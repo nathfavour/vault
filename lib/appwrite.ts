@@ -117,6 +117,7 @@ let currentUserCache: CurrentUserSnapshot | null = null;
 let currentUserInFlight: Promise<any | null> | null = null;
 const CURRENT_USER_CACHE_TTL = 5000;
 const CURRENT_USER_CACHE_KEY = 'kylrix_vault_current_user_v1';
+const CURRENT_USER_EVENT = 'kylrix:vault-current-user-changed';
 
 function canUseStorage() {
   return typeof window !== 'undefined';
@@ -143,12 +144,14 @@ function writeCurrentUserSnapshot(user: any | null) {
   try {
     if (!user) {
       localStorage.removeItem(CURRENT_USER_CACHE_KEY);
+      window.dispatchEvent(new CustomEvent(CURRENT_USER_EVENT, { detail: null }));
       return;
     }
     localStorage.setItem(CURRENT_USER_CACHE_KEY, JSON.stringify({
       user,
       expiresAt: Date.now() + CURRENT_USER_CACHE_TTL,
     }));
+    window.dispatchEvent(new CustomEvent(CURRENT_USER_EVENT, { detail: user }));
   } catch {
     // Best effort only.
   }
@@ -167,14 +170,19 @@ export function getCurrentUserSnapshot() {
   return currentUserCache && currentUserCache.expiresAt > Date.now() ? currentUserCache.user : null;
 }
 
-export async function getCurrentUser(): Promise<any | null> {
+export async function getCurrentUser(force = false): Promise<any | null> {
   try {
-    hydrateCurrentUserCache();
-    if (currentUserCache && currentUserCache.expiresAt > Date.now()) {
-      return currentUserCache.user;
+    if (force) {
+      currentUserCache = null;
+      currentUserInFlight = null;
+    } else {
+      hydrateCurrentUserCache();
+      if (currentUserCache && currentUserCache.expiresAt > Date.now()) {
+        return currentUserCache.user;
+      }
     }
 
-    if (currentUserInFlight) {
+    if (!force && currentUserInFlight) {
       return currentUserInFlight;
     }
 
@@ -197,6 +205,26 @@ export async function getCurrentUser(): Promise<any | null> {
   } catch {
     return null;
   }
+}
+
+export function invalidateCurrentUserCache() {
+  currentUserCache = null;
+  currentUserInFlight = null;
+  writeCurrentUserSnapshot(null);
+}
+
+export function onCurrentUserChanged(listener: (user: any | null) => void) {
+  if (typeof window === 'undefined') {
+    return () => {};
+  }
+
+  const handler = (event: Event) => {
+    const customEvent = event as CustomEvent<any | null>;
+    listener(customEvent.detail ?? null);
+  };
+
+  window.addEventListener(CURRENT_USER_EVENT, handler as EventListener);
+  return () => window.removeEventListener(CURRENT_USER_EVENT, handler as EventListener);
 }
 
 // Unified resolver: attempts global session then cookie-based fallback
@@ -2594,11 +2622,7 @@ export async function logoutAppwrite() {
   try {
     await appwriteAccount.deleteSession("current");
   } catch { }
-  currentUserCache = null;
-  currentUserInFlight = null;
-  if (typeof window !== "undefined") {
-    localStorage.removeItem(CURRENT_USER_CACHE_KEY);
-  }
+  invalidateCurrentUserCache();
   // Clear vault/session data
   if (typeof window !== "undefined") {
     sessionStorage.removeItem("vault_unlocked");
